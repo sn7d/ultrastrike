@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 1,
+  "title": "Ultrastrike first playable",
+  "mode": "standalone",
+  "requiredGames": [
+    { "slug": "counter-strike-2", "role": "primary", "use": "read local map VPKs; never launch or modify CS2" },
+    { "slug": "ultrakill", "role": "secondary", "use": "read-only source for the guest weapon and enemy content" }
+  ],
+  "systems": [
+    {
+      "id": "movement",
+      "unit": "meters and seconds",
+      "properties": {
+        "walkSpeed": 8.0,
+        "jumpHeight": 2.0,
+        "airDashCount": 1,
+        "slideEnabled": true,
+        "slamEnabled": true
+      },
+      "source": "Original implementation inspired by ULTRAKILL; tune in offline play",
+      "verification": "pending runtime"
+    },
+    {
+      "id": "wave-combat",
+      "properties": {
+        "startMode": "practice",
+        "firstWaveEnemyCount": 3,
+        "nextWaveAfterClear": true,
+        "openExitAfterFinalWave": true
+      },
+      "verification": "pending runtime"
+    },
+    {
+      "id": "level-transition",
+      "properties": {
+        "trigger": "player enters open exit door",
+        "preserveLoadout": true,
+        "advanceLevelIndex": true,
+        "wrapAtLastLevel": true
+      },
+      "verification": "pending runtime"
+    },
+    {
+      "id": "map-import",
+      "properties": {
+        "format": "Source 2 map VPK to local glTF",
+        "converter": "ValveResourceFormat CLI 20.0 or later",
+        "outputRoot": "{localappdata}/Ultrastrike/maps",
+        "shipExtractedGameData": false
+      },
+      "source": "CS2 install; map inputs and collision output not yet inspected",
+      "verification": "blocked on Windows game files"
+    }
+  ],
+  "weapons": [
+    {
+      "id": "cs2-sidearm",
+      "sourceGame": "counter-strike-2",
+      "archetype": "semi-automatic hitscan sidearm",
+      "properties": {
+        "damage": 34,
+        "shotsPerSecond": 4.0,
+        "magazineSize": 12,
+        "reserveAmmo": 48
+      },
+      "assets": "original prototype geometry and effects; no CS2 assets bundled",
+      "verification": "prototype values"
+    },
+    {
+      "id": "ultrakill-piercer",
+      "sourceGame": "ultrakill",
+      "archetype": "charged precision revolver",
+      "properties": {
+        "damage": 80,
+        "shotsPerSecond": 1.0,
+        "magazineSize": 6,
+        "reserveAmmo": 24,
+        "chargedShotEnabled": true
+      },
+      "assets": "read-only local source inspection pending; do not bundle ULTRAKILL assets",
+      "verification": "blocked on Windows game files"
+    }
+  ],
+  "enemies": [
+    {
+      "id": "ultrakill-rusher",
+      "sourceGame": "ultrakill",
+      "archetype": "close-range rushing enemy",
+      "properties": {
+        "health": 100,
+        "moveSpeed": 5.0,
+        "attackRange": 1.5,
+        "attackDamage": 20,
+        "attackCooldownSeconds": 1.2
+      },
+      "assets": "original prototype geometry and effects; verify source behavior before tuning",
+      "verification": "prototype values"
+    }
+  ],
+  "levels": [
+    {
+      "id": "level-01",
+      "mapVpk": "{game}/game/csgo/maps/de_dust2.vpk",
+      "sequence": 1,
+      "waves": ["wave-01"],
+      "verification": "map filename and collision pending install inspection"
+    },
+    {
+      "id": "level-02",
+      "mapVpk": "{game}/game/csgo/maps/de_mirage.vpk",
+      "sequence": 2,
+      "waves": ["wave-01"],
+      "verification": "map filename and collision pending install inspection"
+    }
+  ],
+  "waves": [
+    {
+      "id": "wave-01",
+      "enemyIds": ["ultrakill-rusher"],
+      "spawnCount": 3,
+      "spawnRule": "spawn inside validated walkable map bounds, out of immediate melee range",
+      "verification": "pending map collision"
+    }
+  ]
+}
