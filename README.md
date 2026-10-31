@@ -53,6 +53,7 @@ all drawn locally on your screen. Nothing is sent to the server.
 - **Live "selfie" preview**: the camera swings round to face you while the menu is open, so you see every change as you make it.
 - **Share codes**: copy your whole look to the clipboard and paste a friend's.
 - **Constant-width lines**: thickness is set in screen pixels, so the ring stays crisp near and far, like the reference.
+- **Depth-aware**: draws through blocks like the reference, or lets your body and walls partly hide the far side so effects look 3D. You choose the opacity.
 - **Never reacts to hurt or death** unless you opt in. The ring is anchored in the world, not on the player model.
 
 ## Install
@@ -158,23 +159,28 @@ Pickers: hex input, a draggable **hue bar**, a 16-colour palette (left-click = p
 <td align="center"><img src="docs/images/gallery/preset_classic.jpg" width="180"><br><b>Classic</b></td>
 <td align="center"><img src="docs/images/gallery/preset_classic_scan.jpg" width="180"><br><b>Classic Scan</b></td>
 <td align="center"><img src="docs/images/gallery/preset_angelic.jpg" width="180"><br><b>Angelic</b></td>
-<td align="center"><img src="docs/images/gallery/preset_scanner.jpg" width="180"><br><b>Scanner</b></td>
+<td align="center"><img src="docs/images/gallery/preset_seraph.jpg" width="180"><br><b>Seraph</b></td>
 </tr>
 <tr>
+<td align="center"><img src="docs/images/gallery/preset_scanner.jpg" width="180"><br><b>Scanner</b></td>
 <td align="center"><img src="docs/images/gallery/preset_inferno.jpg" width="180"><br><b>Inferno</b></td>
 <td align="center"><img src="docs/images/gallery/preset_frost.jpg" width="180"><br><b>Frost</b></td>
 <td align="center"><img src="docs/images/gallery/preset_void.jpg" width="180"><br><b>Void</b></td>
-<td align="center"><img src="docs/images/gallery/preset_toxic.jpg" width="180"><br><b>Toxic</b></td>
 </tr>
 <tr>
+<td align="center"><img src="docs/images/gallery/preset_toxic.jpg" width="180"><br><b>Toxic</b></td>
 <td align="center"><img src="docs/images/gallery/preset_sakura.jpg" width="180"><br><b>Sakura</b></td>
 <td align="center"><img src="docs/images/gallery/preset_aurora.jpg" width="180"><br><b>Aurora</b></td>
 <td align="center"><img src="docs/images/gallery/preset_rainbow.jpg" width="180"><br><b>Rainbow Scan</b></td>
+</tr>
+<tr>
 <td align="center"><img src="docs/images/gallery/preset_radar.jpg" width="180"><br><b>Radar</b></td>
+<td align="center"><img src="docs/images/gallery/preset_storm.jpg" width="180"><br><b>Storm</b></td>
+<td align="center"><img src="docs/images/gallery/preset_galaxy.jpg" width="180"><br><b>Galaxy</b></td>
 </tr>
 </table>
 
-Presets keep your visibility settings (first/third person, through blocks and so on) and replace the look.
+**15 presets.** They keep your visibility settings (first/third person, through blocks and so on) and replace the look.
 
 ## Settings screen
 

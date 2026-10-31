@@ -21,3 +21,8 @@ curl -s 'https://api.modrinth.com/v2/project/fabric-api/version?game_versions=%5
 javap -cp "$CP" -c -p net.minecraft.client.renderer.RenderPipelines > "$OUT/bytecode-RenderPipelines.txt" 2>&1 || true
 javap -cp "$CP" -c -p net.minecraft.client.renderer.rendertype.RenderTypes > "$OUT/bytecode-RenderTypes.txt" 2>&1 || true
 javap -cp "$CP" -c -p net.minecraft.client.gui.components.AbstractSliderButton > "$OUT/bytecode-AbstractSliderButton.txt" 2>&1 || true
+javap -cp "$CP" -c -p net.minecraft.client.gui.screens.PauseScreen > "$OUT/bytecode-PauseScreen.txt" 2>&1 || true
+for j in $(grep -E 'minecraft' "$OUT/classpath.txt"); do
+  unzip -Z1 "$j" 2>/dev/null | grep -iE 'font|chat/Style' >> "$OUT/classlist-font.txt"
+  unzip -Z1 "$j" 2>/dev/null | grep -E '^assets/minecraft/font/' >> "$OUT/classlist-font.txt"
+done
