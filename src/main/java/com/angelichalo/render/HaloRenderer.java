@@ -57,7 +57,23 @@ public final class HaloRenderer {
 			.withDepthStencilState(new DepthStencilState(CompareOp.ALWAYS_PASS, false))
 			.build();
 
+	// Only where something is in front (reverse-Z: occluded fragments are LESS than the stored depth).
+	private static final RenderPipeline HIDDEN_PIPELINE = RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)
+			.withLocation(id("pipeline/halo_hidden"))
+			.withCull(false)
+			.withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN, false))
+			.build();
+
+	private static final RenderPipeline GLOW_HIDDEN_PIPELINE = RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)
+			.withLocation(id("pipeline/halo_glow_hidden"))
+			.withCull(false)
+			.withColorTargetState(new ColorTargetState(BlendFunction.LIGHTNING))
+			.withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN, false))
+			.build();
+
 	private static final RenderType CORE = type("halo_core", DEPTH_PIPELINE);
+	private static final RenderType CORE_HIDDEN = type("halo_core_hidden", HIDDEN_PIPELINE);
+	private static final RenderType GLOW_HIDDEN = type("halo_glow_hidden", GLOW_HIDDEN_PIPELINE);
 	private static final RenderType CORE_XRAY = type("halo_core_xray", XRAY_PIPELINE);
 	private static final RenderType GLOW = type("halo_glow", GLOW_PIPELINE);
 	private static final RenderType GLOW_XRAY = type("halo_glow_xray", GLOW_XRAY_PIPELINE);
@@ -135,18 +151,24 @@ public final class HaloRenderer {
 		HaloGeometry.build(c, frame, CORE_QUADS, GLOW_QUADS);
 
 		PoseStack poseStack = context.poseStack();
+		boolean allOnTop = c.throughWalls && c.hiddenOpacity >= 0.995;
+		boolean hiddenPass = c.throughWalls && !allOnTop && c.hiddenOpacity > 0.005;
 
 		if (!GLOW_QUADS.isEmpty()) {
 			QuadBuffer glow = GLOW_QUADS.snapshot();
-			context.submitNodeCollector().submitCustomGeometry(poseStack, c.throughWalls ? GLOW_XRAY : GLOW,
-					(pose, buffer) -> glow.emit(pose, buffer));
+			submit(context, poseStack, allOnTop ? GLOW_XRAY : GLOW, glow, 1.0);
+			if (hiddenPass) submit(context, poseStack, GLOW_HIDDEN, glow, c.hiddenOpacity);
 		}
 
 		if (!CORE_QUADS.isEmpty()) {
 			QuadBuffer core = CORE_QUADS.snapshot();
-			context.submitNodeCollector().submitCustomGeometry(poseStack, c.throughWalls ? CORE_XRAY : CORE,
-					(pose, buffer) -> core.emit(pose, buffer));
+			submit(context, poseStack, allOnTop ? CORE_XRAY : CORE, core, 1.0);
+			if (hiddenPass) submit(context, poseStack, CORE_HIDDEN, core, c.hiddenOpacity);
 		}
+	}
+
+	private static void submit(LevelRenderContext context, PoseStack poseStack, RenderType type, QuadBuffer quads, double alpha) {
+		context.submitNodeCollector().submitCustomGeometry(poseStack, type, (pose, buffer) -> quads.emit(pose, buffer, alpha));
 	}
 
 	/** Growable float/int buffer of quads; geometry is built once, then replayed into the vertex consumer. */
@@ -206,10 +228,11 @@ public final class HaloRenderer {
 			put(x3, y3, z3, c3);
 		}
 
-		void emit(PoseStack.Pose pose, VertexConsumer buffer) {
+		void emit(PoseStack.Pose pose, VertexConsumer buffer, double alpha) {
 			for (int v = 0; v < vertices; v++) {
 				int p = v * 3;
-				buffer.addVertex(pose, pos[p], pos[p + 1], pos[p + 2]).setColor(col[v]);
+				int c = alpha >= 0.999 ? col[v] : HaloColors.withAlpha(col[v], alpha);
+				buffer.addVertex(pose, pos[p], pos[p + 1], pos[p + 2]).setColor(c);
 			}
 		}
 	}

@@ -39,6 +39,11 @@ public final class HaloConfig {
 	public boolean hideWhenSneaking = false;
 	public boolean hideWhenInvisible = true;
 	public boolean throughWalls = true;
+	/**
+	 * With "through blocks" on: opacity of the parts hidden behind blocks or your own body.
+	 * 1.0 draws everything on top (the reference video); lower values make effects read as 3D.
+	 */
+	public double hiddenOpacity = 1.0;
 	/** Switch to third person while the settings screen is open so you can watch edits live. */
 	public boolean previewInThirdPerson = true;
 
@@ -219,6 +224,7 @@ public final class HaloConfig {
 		trailColor.sanitize();
 		extrasColor.sanitize();
 
+		hiddenOpacity = clamp(hiddenOpacity, 0.0, 1.0);
 		radius = clamp(radius, 0.2, 16.0);
 		lineWidth = clamp(lineWidth, 0.5, 12.0);
 		heightOffset = clamp(heightOffset, -1.0, 3.0);

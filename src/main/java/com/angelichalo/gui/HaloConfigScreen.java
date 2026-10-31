@@ -66,6 +66,8 @@ public class HaloConfigScreen extends Screen {
 	private int contentTop;
 	private int contentBottom;
 	private int colW;
+	private int fullW;
+	private int columns;
 
 	private record Label(int x, int y, Component text, int color) { }
 
@@ -115,10 +117,15 @@ public class HaloConfigScreen extends Screen {
 
 		labels.clear();
 		panelX = 6;
-		panelW = Math.min(372, width - 12);
-		int tabW = 70;
+		// keep the centre of the screen (your character in the selfie preview) uncovered when in a world
+		boolean inWorld = minecraft.level != null;
+		panelW = inWorld ? Math.max(220, Math.min(372, width / 2 - 24)) : Math.min(372, width - 12);
+		panelW = Math.min(panelW, width - 12);
+		int tabW = panelW < 300 ? 60 : 70;
 		contentX = panelX + tabW + 8;
-		colW = (panelX + panelW - 6 - contentX - 6) / 2;
+		fullW = panelX + panelW - 8 - contentX;
+		columns = fullW >= 250 ? 2 : 1;
+		colW = columns == 2 ? (fullW - 6) / 2 : fullW;
 		contentTop = 30;
 		contentBottom = height - 32;
 
@@ -140,15 +147,15 @@ public class HaloConfigScreen extends Screen {
 		List<Entry> entries = entries(tab);
 		int rowH = 24;
 		int visibleRows = Math.max(1, (contentBottom - contentTop) / rowH);
-		int totalRows = countRows(entries);
+		int totalRows = countRows(entries, columns);
 		maxScroll = Math.max(0, totalRows - visibleRows);
 		scroll = Math.max(0, Math.min(scroll, maxScroll));
 
 		int row = 0;
 		int col = 0;
 		for (Entry e : entries) {
-			int span = e.span();
-			if (col + span > 2) {
+			int span = Math.min(e.span(), columns);
+			if (col + span > columns) {
 				row++;
 				col = 0;
 			}
@@ -157,13 +164,13 @@ public class HaloConfigScreen extends Screen {
 			if (visibleRow >= 0 && visibleRow < visibleRows) {
 				int x = contentX + col * (colW + 6);
 				int y = contentTop + visibleRow * rowH;
-				int w = span == 2 ? colW * 2 + 6 : colW;
+				int w = span == columns ? fullW : colW;
 				AbstractWidget widget = e.create(x, y, w);
 				if (widget != null) addRenderableWidget(widget);
 			}
 
 			col += span;
-			if (col >= 2) {
+			if (col >= columns) {
 				row++;
 				col = 0;
 			}
@@ -172,6 +179,7 @@ public class HaloConfigScreen extends Screen {
 		// footer
 		int fy = height - 26;
 		int bw = (panelW - 16) / 3;
+
 		addRenderableWidget(Button.builder(Component.translatable("angelichalo.gui.reset"), b -> {
 			HaloConfig fresh = new HaloConfig();
 			fresh.previewInThirdPerson = cfg().previewInThirdPerson;
@@ -188,16 +196,17 @@ public class HaloConfigScreen extends Screen {
 		}).bounds(panelX + 12 + bw * 2, fy, bw, 20).build());
 	}
 
-	private static int countRows(List<Entry> entries) {
+	private static int countRows(List<Entry> entries, int columns) {
 		int row = 0;
 		int col = 0;
 		for (Entry e : entries) {
-			if (col + e.span() > 2) {
+			int span = Math.min(e.span(), columns);
+			if (col + span > columns) {
 				row++;
 				col = 0;
 			}
-			col += e.span();
-			if (col >= 2) {
+			col += span;
+			if (col >= columns) {
 				row++;
 				col = 0;
 			}
@@ -262,7 +271,7 @@ public class HaloConfigScreen extends Screen {
 		g.fill(panelX, 4, x1, height - 4, 0xC00C0C12);
 		g.fill(panelX, 4, x1, 5, 0xFFFFD27A);
 		g.fillGradient(panelX, 5, x1, 26, 0x40FFD27A, 0x00FFD27A);
-		g.fill(panelX + 76, contentTop - 2, panelX + 77, contentBottom, 0x30FFFFFF);
+		g.fill(contentX - 5, contentTop - 2, contentX - 4, contentBottom, 0x30FFFFFF);
 	}
 
 	@Override
@@ -271,7 +280,9 @@ public class HaloConfigScreen extends Screen {
 
 		g.text(font, title, panelX + 8, 11, 0xFFFFE7A0, true);
 		Component hint = Component.translatable("angelichalo.gui.hint");
-		g.text(font, hint, panelX + panelW - 6 - font.width(hint), 11, 0xFF9A9AA6, false);
+		if (font.width(title) + font.width(hint) + 24 < panelW) {
+			g.text(font, hint, panelX + panelW - 6 - font.width(hint), 11, 0xFF9A9AA6, false);
+		}
 
 		for (Label l : labels) {
 			g.text(font, l.text(), l.x(), l.y(), l.color(), true);
@@ -401,14 +412,15 @@ public class HaloConfigScreen extends Screen {
 			@Override
 			public @Nullable AbstractWidget create(int x, int y, int w) {
 				Component label = Component.translatable("angelichalo.option." + key);
-				int labelW = 62;
-				labels.add(new Label(x, y + 6, label, 0xFFE0E0E8));
+				int labelW = w >= 230 ? 62 : 0;
+				if (labelW > 0) labels.add(new Label(x, y + 6, label, 0xFFE0E0E8));
 
 				int sx = x + labelW;
 				addRenderableWidget(new HaloWidgets.Preview(sx, y + 2, 16, 16, u -> 0xFF000000 | get.getAsInt()));
 
 				EditBox hex = new EditBox(font, sx + 20, y + 1, 58, 18, label);
 				hex.setMaxLength(7);
+				hex.setTooltip(Tooltip.create(label));
 				hex.setValue(String.format("#%06X", get.getAsInt()));
 				hex.setResponder(text -> {
 					String t = text.startsWith("#") ? text.substring(1) : text;
@@ -469,8 +481,9 @@ public class HaloConfigScreen extends Screen {
 
 			@Override
 			public AbstractWidget create(int x, int y, int w) {
-				labels.add(new Label(x, y + 6, Component.translatable("angelichalo.gui.preview"), 0xFFE0E0E8));
-				return new HaloWidgets.Preview(x + 62, y + 3, w - 64, 14,
+				int lw = w >= 230 ? 62 : 0;
+				if (lw > 0) labels.add(new Label(x, y + 6, Component.translatable("angelichalo.gui.preview"), 0xFFE0E0E8));
+				return new HaloWidgets.Preview(x + lw, y + 3, w - lw - 2, 14,
 						u -> HaloColors.color(spec.get(), u, u, HaloState.now(), 0.5 + 0.5 * Math.sin(HaloState.now()), 1.0));
 			}
 		};
@@ -714,6 +727,7 @@ public class HaloConfigScreen extends Screen {
 				e.add(header("angelichalo.section.general"));
 				e.add(toggle("enabled", () -> cfg().enabled, v -> cfg().enabled = v));
 				e.add(toggle("through_walls", () -> cfg().throughWalls, v -> cfg().throughWalls = v));
+				e.add(slider("hidden_opacity", 0, 1, 0.01, () -> cfg().hiddenOpacity, v -> cfg().hiddenOpacity = v, "%.2f"));
 				e.add(toggle("show_first_person", () -> cfg().showInFirstPerson, v -> cfg().showInFirstPerson = v));
 				e.add(toggle("show_third_person", () -> cfg().showInThirdPerson, v -> cfg().showInThirdPerson = v));
 				e.add(toggle("hide_sneaking", () -> cfg().hideWhenSneaking, v -> cfg().hideWhenSneaking = v));

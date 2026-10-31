@@ -72,7 +72,7 @@
 	"angelichalo.preset.void": "Void",
 	"angelichalo.preset.void.tip": "A breathing dark-purple disc with violet helix strands.",
 	"angelichalo.preset.toxic": "Toxic",
-	"angelichalo.preset.toxic.tip": "Three stacked dashed rings, spinning with a green comet.",
+	"angelichalo.preset.toxic.tip": "Three stacked dashed rings spinning with a green comet, plus rising spores.",
 	"angelichalo.preset.sakura": "Sakura",
 	"angelichalo.preset.sakura.tip": "Soft pink ripples spreading out like petals on water, with jump rings.",
 	"angelichalo.preset.aurora": "Aurora",
@@ -80,7 +80,7 @@
 	"angelichalo.preset.rainbow": "Rainbow Scan",
 	"angelichalo.preset.rainbow.tip": "A smooth rainbow scanner with matching echoes.",
 	"angelichalo.preset.radar": "Radar",
-	"angelichalo.preset.radar.tip": "Green sonar pings expanding from your feet.",
+	"angelichalo.preset.radar.tip": "A green sonar disc with a sweeping beam, plus jump rings.",
 	"angelichalo.option.style": "Style",
 	"angelichalo.option.style.tip": "How the ring is drawn.",
 	"angelichalo.option.radius": "Radius",
@@ -272,5 +272,13 @@
 	"angelichalo.enum.colormode.fire": "Fire",
 	"angelichalo.enum.trailstyle.smear": "Smear",
 	"angelichalo.enum.trailstyle.echoes": "Echoes",
-	"angelichalo.enum.trailstyle.both": "Smear + Echoes"
+	"angelichalo.enum.trailstyle.both": "Smear + Echoes",
+	"angelichalo.option.hidden_opacity": "Behind-Block Opacity",
+	"angelichalo.option.hidden_opacity.tip": "With Through Blocks on: how visible the parts hidden behind blocks or your body are. 1.00 = everything on top (like the video); lower = more 3D.",
+	"angelichalo.preset.seraph": "Seraph",
+	"angelichalo.preset.seraph.tip": "A golden crown-halo above your head with twin spirals of light around you.",
+	"angelichalo.preset.storm": "Storm",
+	"angelichalo.preset.storm.tip": "A crackling electric ring that wobbles like a gyroscope.",
+	"angelichalo.preset.galaxy": "Galaxy",
+	"angelichalo.preset.galaxy.tip": "Four spiral arms of stars swirling at your feet."
 }

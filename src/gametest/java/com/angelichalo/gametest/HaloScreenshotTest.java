@@ -46,15 +46,18 @@ public class HaloScreenshotTest implements FabricClientGameTest {
 			ctx.getInput().pressKey(o -> o.keyToggleGui); // clean shots: hide HUD
 			ctx.waitTicks(5);
 
-			// 1) the reference video: classic thin red ring, first person, daytime
-			server.runCommand("time set 6000");
-			pose(server, 0, 22);
-			shot(ctx, "classic_first_person", CameraType.FIRST_PERSON, c -> { });
+			// 1) the reference video: classic thin red ring in a dungeon-like corridor, first person
+			buildCorridor(server);
+			server.runCommand("time set 18000");
+			server.runCommand(String.format(java.util.Locale.ROOT, "tp @a %d.5 %d %d.5 180 12", sx + 40, sy, sz));
+			sp.getConnection().waitForChunksRender();
+			shot(ctx, "classic_first_person", CameraType.FIRST_PERSON, c -> HaloConfig.set(new HaloConfig()));
 			shot(ctx, "classic_third_person", CameraType.THIRD_PERSON_BACK, c -> { });
 
-			// 2) every preset as a front "selfie" at dusk
-			server.runCommand("time set 12800");
+			// 2) every preset as a front "selfie" at sunset, with a tighter lens
+			server.runCommand("time set 11900");
 			pose(server, 0, 8);
+			ctx.runOnClient(mc -> mc.options.fov().set(48));
 			for (HaloPresets.Preset preset : HaloPresets.ALL) {
 				shot(ctx, "preset_" + preset.id(), CameraType.THIRD_PERSON_FRONT, c -> HaloConfig.set(preset.build(c)));
 			}
@@ -94,16 +97,18 @@ public class HaloScreenshotTest implements FabricClientGameTest {
 			ctx.takeScreenshot("extras_jump_ring_burst");
 
 			// 6) the hero "selfie" for the README
-			server.runCommand("time set 13200");
-			pose(server, 0, 4);
+			server.runCommand("time set 12250");
+			pose(server, 0, 6);
+			ctx.runOnClient(mc -> mc.options.fov().set(40));
 			shot(ctx, "hero_selfie", CameraType.THIRD_PERSON_FRONT, c -> {
-				HaloConfig n = HaloPresets.ALL.stream().filter(x -> x.id().equals("angelic")).findFirst().orElseThrow().build(c);
-				n.style = HaloOptions.Style.GLOW_LINE;
+				HaloConfig n = HaloPresets.ALL.stream().filter(x -> x.id().equals("seraph")).findFirst().orElseThrow().build(c);
 				n.embers = true;
-				n.emberCount = 26;
-				n.helix = false;
+				n.emberCount = 22;
+				n.emberRise = 0.5;
 				HaloConfig.set(n);
 			});
+			ctx.waitTicks(10);
+			ctx.takeScreenshot("hero_selfie_b");
 			shot(ctx, "hero_scan", CameraType.THIRD_PERSON_FRONT, c -> {
 				HaloConfig n = scan.copy();
 				n.embers = true;
@@ -113,8 +118,16 @@ public class HaloScreenshotTest implements FabricClientGameTest {
 			});
 
 			// 7) the settings screen, every tab (screens render on top of the live world)
-			ctx.getInput().pressKey(o -> o.keyToggleGui);
-			ctx.runOnClient(mc -> HaloConfig.set(new HaloConfig()));
+			ctx.runOnClient(mc -> {
+				mc.options.fov().set(70);
+				mc.options.guiScale().set(3);
+				mc.resizeGui();
+				HaloConfig n = HaloPresets.ALL.stream().filter(x -> x.id().equals("scanner")).findFirst().orElseThrow().build(new HaloConfig());
+				n.radius = 1.0;
+				HaloConfig.set(n);
+			});
+			server.runCommand("time set 12000");
+			ctx.waitTicks(2);
 			for (int tab = 0; tab < HaloConfigScreen.tabCount(); tab++) {
 				int t = tab;
 				ctx.runOnClient(mc -> HaloConfigScreen.setStartTab(t));
@@ -151,6 +164,23 @@ public class HaloScreenshotTest implements FabricClientGameTest {
 
 	private void pose(TestServerContext server, float yaw, float pitch) {
 		server.runCommand(String.format(java.util.Locale.ROOT, "tp @a %d.5 %d %d.5 %.1f %.1f", sx, sy, sz, yaw, pitch));
+	}
+
+	/** A narrow stone corridor, like a dungeon hallway, to recreate the reference clip. */
+	private void buildCorridor(TestServerContext s) {
+		int x = sx + 40;
+		int y = sy - 1;
+		int z = sz;
+		s.runCommand(fill(x - 6, y, z - 20, x + 6, y + 6, z + 4, "minecraft:air"));
+		s.runCommand(fill(x - 6, y, z - 20, x + 6, y, z + 4, "minecraft:deepslate_tiles"));
+		s.runCommand(fill(x - 2, y + 1, z - 20, x - 2, y + 4, z + 2, "minecraft:cobbled_deepslate"));
+		s.runCommand(fill(x + 2, y + 1, z - 20, x + 2, y + 4, z + 2, "minecraft:cobbled_deepslate"));
+		s.runCommand(fill(x - 2, y + 5, z - 20, x + 2, y + 5, z + 2, "minecraft:deepslate_bricks"));
+		s.runCommand(fill(x - 1, y + 1, z + 2, x + 1, y + 4, z + 2, "minecraft:cobbled_deepslate"));
+		for (int dz = -2; dz >= -18; dz -= 4) {
+			s.runCommand(set(x - 1, y + 4, z + dz, "minecraft:soul_lantern[hanging=true]"));
+			s.runCommand(set(x + 1, y + 4, z + dz - 2, "minecraft:lantern[hanging=true]"));
+		}
 	}
 
 	private void buildStage(TestServerContext s) {

@@ -24,6 +24,8 @@ public final class HaloPresets {
 			c.hideWhenInvisible = current.hideWhenInvisible;
 			c.throughWalls = current.throughWalls;
 			c.previewInThirdPerson = current.previewInThirdPerson;
+			// effects wrap around you, so let your body/blocks partly hide the far side
+			c.hiddenOpacity = id.equals("classic") ? 1.0 : 0.3;
 			apply.accept(c);
 			c.sanitize();
 			return c;
@@ -113,10 +115,17 @@ public final class HaloPresets {
 			new Preset("toxic", 0x7CFF2B, c -> {
 				c.style = Style.DASHED;
 				c.radius = 1.2;
+				c.lineWidth = 3.5;
 				c.spinSpeed = 120;
 				c.ringCount = 3;
-				c.ringSpacing = 0.18;
-				ring(c, ColorMode.COMET, 0x7CFF2B, 0x0E3D00);
+				c.ringSpacing = 0.22;
+				ring(c, ColorMode.COMET, 0x9DFF3B, 0x2E7D00);
+				c.ringColor.speed = 0.7;
+				c.embers = true;
+				c.emberCount = 14;
+				c.emberRise = 0.8;
+				c.extrasColor.mode = ColorMode.SOLID;
+				c.extrasColor.primary = 0x9DFF3B;
 			}),
 			new Preset("sakura", 0xFF9EC7, c -> {
 				c.style = Style.GLOW_LINE;
@@ -147,11 +156,50 @@ public final class HaloPresets {
 				c.trailMatchRing = true;
 			}),
 			new Preset("radar", 0x00FF88, c -> {
-				c.radius = 3.0;
-				c.motion = Motion.RIPPLE;
-				c.rippleCount = 2;
-				ring(c, ColorMode.COMET, 0x00FF88, 0x003322);
-				c.ringColor.speed = 0.6;
+				c.style = Style.SONAR;
+				c.radius = 2.2;
+				c.sonarSpeed = 0.6;
+				ring(c, ColorMode.SOLID, 0x00FF88, 0x003322);
+				c.jumpRings = true;
+				c.extrasColor.mode = ColorMode.SOLID;
+				c.extrasColor.primary = 0x00FF88;
+			}),
+			new Preset("seraph", 0xFFF1C1, c -> {
+				c.style = Style.CROWN;
+				c.motion = Motion.HALO;
+				c.haloRadius = 0.42;
+				c.haloHeight = 0.18;
+				c.crownSpikes = 10;
+				c.crownHeight = 0.16;
+				c.lineWidth = 2.5;
+				c.glowStrength = 0.7;
+				ring(c, ColorMode.PULSE, 0xFFF6DC, 0xFFC94A);
+				c.ringColor.speed = 0.35;
+				c.helix = true;
+				c.helixRadius = 0.6;
+				c.helixSpeed = 0.45;
+				c.extrasColor.mode = ColorMode.PULSE;
+				c.extrasColor.primary = 0xFFF1C1;
+				c.extrasColor.secondary = 0xFFB347;
+			}),
+			new Preset("storm", 0x8FD8FF, c -> {
+				c.style = Style.LIGHTNING;
+				c.radius = 1.1;
+				c.motion = Motion.GYRO;
+				c.gyroAngle = 12;
+				c.lightningIntensity = 0.65;
+				c.glowWidth = 16;
+				c.glowStrength = 0.65;
+				ring(c, ColorMode.SPARKLE, 0x8FD8FF, 0xFFFFFF);
+			}),
+			new Preset("galaxy", 0xB48CFF, c -> {
+				c.style = Style.GALAXY;
+				c.radius = 1.6;
+				c.galaxyArms = 4;
+				c.spinSpeed = 30;
+				ring(c, ColorMode.GRADIENT, 0xB48CFF, 0x5CE1FF);
+				c.ringColor.repeats = 2;
+				c.glowStrength = 0.6;
 			})
 	);
 }
