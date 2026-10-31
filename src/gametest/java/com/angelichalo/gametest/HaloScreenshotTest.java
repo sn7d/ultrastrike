@@ -117,6 +117,82 @@ public class HaloScreenshotTest implements FabricClientGameTest {
 				HaloConfig.set(n);
 			});
 
+			// 6b) custom text and emblems
+			ctx.runOnClient(mc -> mc.options.fov().set(48));
+			pose(server, 0, 14);
+			shot(ctx, "feature_text_orbit", CameraType.THIRD_PERSON_FRONT, c -> {
+				HaloConfig n = new HaloConfig();
+				n.style = HaloOptions.Style.GLOW_LINE;
+				n.radius = 1.3;
+				n.lineWidth = 2.5;
+				n.hiddenOpacity = 0.3;
+				n.ringColor.mode = HaloOptions.ColorMode.GRADIENT;
+				n.ringColor.primary = 0xFFD27A;
+				n.ringColor.secondary = 0xFF7AA8;
+				n.textEnabled = true;
+				n.text = "ANGELIC HALO";
+				n.textMode = HaloOptions.TextMode.ORBIT;
+				n.textHeight = 0.35;
+				n.textRepeat = 2;
+				HaloConfig.set(n);
+			});
+			shot(ctx, "feature_text_engraved", CameraType.THIRD_PERSON_FRONT, c -> {
+				HaloConfig n = c.copy();
+				n.textMode = HaloOptions.TextMode.ENGRAVED;
+				n.textSize = 1.6;
+				n.textOffset = 0.35;
+				HaloConfig.set(n);
+			});
+			shot(ctx, "feature_text_banner", CameraType.THIRD_PERSON_FRONT, c -> {
+				HaloConfig n = c.copy();
+				n.textMode = HaloOptions.TextMode.BANNER;
+				n.text = "sn7d";
+				n.textSize = 1.4;
+				n.textColor.mode = HaloOptions.ColorMode.RAINBOW;
+				HaloConfig.set(n);
+			});
+			pose(server, 0, 30);
+			shot(ctx, "feature_emblem_floor", CameraType.THIRD_PERSON_FRONT, c -> {
+				HaloConfig n = new HaloConfig();
+				n.style = HaloOptions.Style.GLOW_LINE;
+				n.radius = 1.5;
+				n.hiddenOpacity = 0.3;
+				n.ringColor.primary = 0xFFD27A;
+				n.emblemEnabled = true;
+				n.emblem = "builtin:sigil";
+				n.emblemSize = 2.8;
+				HaloConfig.set(n);
+			});
+			pose(server, 0, 8);
+			shot(ctx, "feature_emblem_back", CameraType.THIRD_PERSON_BACK, c -> {
+				HaloConfig n = c.copy();
+				n.emblem = "builtin:sunburst";
+				n.emblemMode = HaloOptions.EmblemMode.BACK;
+				n.emblemSize = 1.8;
+				n.emblemColor.mode = HaloOptions.ColorMode.GRADIENT;
+				n.emblemColor.primary = 0xFFD27A;
+				n.emblemColor.secondary = 0xFF7AA8;
+				HaloConfig.set(n);
+			});
+			shot(ctx, "feature_emblem_above", CameraType.THIRD_PERSON_FRONT, c -> {
+				HaloConfig n = c.copy();
+				n.emblem = "builtin:crescent";
+				n.emblemMode = HaloOptions.EmblemMode.ABOVE;
+				n.emblemSize = 0.8;
+				n.emblemSpin = 0;
+				HaloConfig.set(n);
+			});
+
+			// pause menu with the halo button next to Friends
+			ctx.runOnClient(mc -> mc.options.fov().set(70));
+			ctx.getInput().pressKey(o -> o.keyToggleGui);
+			ctx.getInput().pressKey(org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE);
+			ctx.waitTicks(4);
+			ctx.takeScreenshot("pause_menu");
+			ctx.setScreen(() -> null);
+			ctx.getInput().pressKey(o -> o.keyToggleGui);
+			ctx.waitTicks(2);
+
 			// 7) the settings screen, every tab (screens render on top of the live world)
 			ctx.runOnClient(mc -> {
 				mc.options.fov().set(70);

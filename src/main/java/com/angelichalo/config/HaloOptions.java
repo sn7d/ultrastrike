@@ -99,4 +99,24 @@ public final class HaloOptions {
 		/** Both. */
 		BOTH
 	}
+
+	/** How custom text is placed. */
+	public enum TextMode {
+		/** Letters orbit the ring, always turned towards you. */
+		ORBIT,
+		/** Letters lie flat on the ground along the ring, like an engraving. */
+		ENGRAVED,
+		/** The whole text floats above your head as a banner. */
+		BANNER
+	}
+
+	/** Where the emblem image is projected. */
+	public enum EmblemMode {
+		/** Flat on the ground under you, inside the ring. */
+		FLOOR,
+		/** Floating above your head, always facing the camera. */
+		ABOVE,
+		/** Upright behind your back, turning with your body. */
+		BACK
+	}
 }

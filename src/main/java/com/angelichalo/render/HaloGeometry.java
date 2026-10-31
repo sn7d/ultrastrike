@@ -180,7 +180,7 @@ public final class HaloGeometry {
 	private static void drawStyle(HaloConfig c, Frame f, int n, double y, QuadSink core, QuadSink glow) {
 		switch (c.style) {
 			case GLOW_LINE -> {
-				ribbon(n, c.glowWidth, f.pixelScale(), glow, c.glowStrength, false, 0, 0);
+				bloom(n, c.glowWidth, f.pixelScale(), glow, c.glowStrength);
 				ribbon(n, c.lineWidth, f.pixelScale(), core, 1.0, false, 0, 0);
 			}
 			case AURA -> {
@@ -208,7 +208,7 @@ public final class HaloGeometry {
 			case GALAXY -> galaxy(c, f, y, core, glow);
 			case LIGHTNING -> {
 				lightning(c, f, n);
-				ribbon(n, c.glowWidth, f.pixelScale(), glow, c.glowStrength, false, 0, 0);
+				bloom(n, c.glowWidth, f.pixelScale(), glow, c.glowStrength);
 				ribbon(n, c.lineWidth, f.pixelScale(), core, 1.0, false, 0, 0);
 			}
 			default -> ribbon(n, c.lineWidth, f.pixelScale(), core, 1.0, false, 0, 0);
@@ -255,7 +255,7 @@ public final class HaloGeometry {
 			int base = COL[ic];
 			int tip = HaloColors.withAlpha(base, 0.35);
 			core.quad(PX[i0], PY[i0], PZ[i0], base, PX[i1], PY[i1], PZ[i1], base, tx, ty, tz, tip, tx, ty, tz, tip);
-			orb(tx, ty, tz, 0.045, base, c.glowStrength, core, glow);
+			orb(tx, ty, tz, 0.03, base, c.glowStrength * 0.7, core, glow);
 		}
 	}
 
@@ -273,7 +273,7 @@ public final class HaloGeometry {
 				float x = (float) (f.cx() + Math.cos(ang) * r);
 				float yy = (float) (f.cy() + y);
 				float z = (float) (f.cz() + Math.sin(ang) * r);
-				orb(x, yy, z, 0.03 + 0.05 * t, col, c.glowStrength * 0.8, core, glow);
+				orb(x, yy, z, 0.025 + 0.035 * t, col, c.glowStrength * 0.6, core, glow);
 			}
 		}
 	}
@@ -309,7 +309,7 @@ public final class HaloGeometry {
 			COL[i] = col;
 		}
 
-		ribbon(n, Math.max(8.0, c.glowWidth), f.pixelScale(), glow, 0.6, false, 0, 0);
+		bloom(n, Math.max(8.0, c.glowWidth), f.pixelScale(), glow, 0.6);
 		ribbon(n, width, f.pixelScale(), core, 1.0, false, 0, 0);
 	}
 
@@ -322,13 +322,13 @@ public final class HaloGeometry {
 		int n = Math.min(c.segments, 96);
 
 		HaloMotion.Scan s0 = HaloMotion.scan(c, f.time(), f.playerHeight());
-		sample(c, f, n, s0.y(), s0.radius() * radiusScale, 0, spin, spec, s0.frac(), 1.0, 0, 0);
+		sample(c, f, n, s0.y(), s0.radius() * radiusScale, 0, spin, spec, s0.frac(), 0.8, 0, 0);
 		copyToQ(n, 1.0);
 
 		for (int k = 1; k <= steps; k++) {
 			double age = (double) k / steps;
 			HaloMotion.Scan s = HaloMotion.scan(c, f.time() - c.trailLength * age, f.playerHeight());
-			double fade = Math.pow(1.0 - age, 1.6);
+			double fade = Math.pow(1.0 - age, 2.2) * 0.8;
 			sample(c, f, n, s.y(), s.radius() * radiusScale, 0, spin, spec, s.frac(), fade, 0, 0);
 
 			for (int i = 0; i < n; i++) {
@@ -392,6 +392,9 @@ public final class HaloGeometry {
 			OZ[i] = (float) (sz / len * half);
 		}
 
+		// anti-aliasing feather, ~1 screen pixel wide, as a fraction of the half width
+		double featherRatio = soft ? 0 : Math.min(1.5, 1.6 / Math.max(widthPx, 0.5));
+
 		for (int i = 0; i < n; i++) {
 			if (dashed) {
 				double mid = (i + 0.5) / n * dashCount;
@@ -418,8 +421,28 @@ public final class HaloGeometry {
 						PX[i] + OX[i], PY[i] + OY[i], PZ[i] + OZ[i], COL[i],
 						PX[j] + OX[j], PY[j] + OY[j], PZ[j] + OZ[j], COL[j],
 						PX[j] - OX[j], PY[j] - OY[j], PZ[j] - OZ[j], COL[j]);
+
+				// soft outer edges so thin lines look smooth instead of jagged
+				float k = (float) (1.0 + featherRatio);
+				int ei = COL[i] & 0x00FFFFFF;
+				int ej = COL[j] & 0x00FFFFFF;
+				sink.quad(PX[i] + OX[i], PY[i] + OY[i], PZ[i] + OZ[i], COL[i],
+						PX[i] + OX[i] * k, PY[i] + OY[i] * k, PZ[i] + OZ[i] * k, ei,
+						PX[j] + OX[j] * k, PY[j] + OY[j] * k, PZ[j] + OZ[j] * k, ej,
+						PX[j] + OX[j], PY[j] + OY[j], PZ[j] + OZ[j], COL[j]);
+				sink.quad(PX[i] - OX[i], PY[i] - OY[i], PZ[i] - OZ[i], COL[i],
+						PX[j] - OX[j], PY[j] - OY[j], PZ[j] - OZ[j], COL[j],
+						PX[j] - OX[j] * k, PY[j] - OY[j] * k, PZ[j] - OZ[j] * k, ej,
+						PX[i] - OX[i] * k, PY[i] - OY[i] * k, PZ[i] - OZ[i] * k, ei);
 			}
 		}
+	}
+
+	/** Two-layer bloom: a wide faint halo plus a tighter, brighter one. */
+	private static void bloom(int n, double widthPx, double pixelScale, QuadSink glow, double strength) {
+		if (strength <= 0.01) return;
+		ribbon(n, widthPx, pixelScale, glow, strength * 0.45, false, 0, 0);
+		ribbon(n, widthPx * 0.4, pixelScale, glow, Math.min(0.95, strength * 0.9), false, 0, 0);
 	}
 
 	/** Vertical wall that fades out upwards. */
@@ -485,28 +508,41 @@ public final class HaloGeometry {
 		uy /= ul;
 		uz /= ul;
 
-		softDisc(core, x, y, z, rx, rz, ux, uy, uz, size, color, 0.15);
+		softDisc(core, x, y, z, rx, rz, ux, uy, uz, size, color);
 		if (glowStrength > 0.01) {
-			softDisc(glow, x, y, z, rx, rz, ux, uy, uz, size * 2.6, HaloColors.withAlpha(color, glowStrength), 0.0);
+			softDisc(glow, x, y, z, rx, rz, ux, uy, uz, size * 1.9, HaloColors.withAlpha(color, glowStrength * 0.55));
 		}
 	}
 
+	/** Round billboard: bright core, smooth falloff to a transparent rim. */
 	private static void softDisc(QuadSink sink, float x, float y, float z,
-			double rx, double rz, double ux, double uy, double uz,
-			double size, int color, double rimAlpha) {
-		final int seg = 12;
-		int rim = HaloColors.withAlpha(color, rimAlpha);
+			double rx, double rz, double ux, double uy, double uz, double size, int color) {
+		final int seg = 16;
+		final double midR = 0.45;
+		int mid = HaloColors.withAlpha(color, 0.7);
+		int rim = color & 0x00FFFFFF;
 
 		for (int k = 0; k < seg; k++) {
 			double a0 = Math.PI * 2 * k / seg;
 			double a1 = Math.PI * 2 * (k + 1) / seg;
-			double c0 = Math.cos(a0) * size;
-			double s0 = Math.sin(a0) * size;
-			double c1 = Math.cos(a1) * size;
-			double s1 = Math.sin(a1) * size;
-			sink.quad(x, y, z, color, x, y, z, color,
-					(float) (x + c1 * rx + s1 * ux), (float) (y + s1 * uy), (float) (z + c1 * rz + s1 * uz), rim,
-					(float) (x + c0 * rx + s0 * ux), (float) (y + s0 * uy), (float) (z + c0 * rz + s0 * uz), rim);
+			double c0 = Math.cos(a0);
+			double s0 = Math.sin(a0);
+			double c1 = Math.cos(a1);
+			double s1 = Math.sin(a1);
+			float mx0 = (float) (x + (c0 * rx + s0 * ux) * size * midR);
+			float my0 = (float) (y + s0 * uy * size * midR);
+			float mz0 = (float) (z + (c0 * rz + s0 * uz) * size * midR);
+			float mx1 = (float) (x + (c1 * rx + s1 * ux) * size * midR);
+			float my1 = (float) (y + s1 * uy * size * midR);
+			float mz1 = (float) (z + (c1 * rz + s1 * uz) * size * midR);
+			float ox0 = (float) (x + (c0 * rx + s0 * ux) * size);
+			float oy0 = (float) (y + s0 * uy * size);
+			float oz0 = (float) (z + (c0 * rz + s0 * uz) * size);
+			float ox1 = (float) (x + (c1 * rx + s1 * ux) * size);
+			float oy1 = (float) (y + s1 * uy * size);
+			float oz1 = (float) (z + (c1 * rz + s1 * uz) * size);
+			sink.quad(x, y, z, color, x, y, z, color, mx1, my1, mz1, mid, mx0, my0, mz0, mid);
+			sink.quad(mx0, my0, mz0, mid, mx1, my1, mz1, mid, ox1, oy1, oz1, rim, ox0, oy0, oz0, rim);
 		}
 	}
 
@@ -525,12 +561,13 @@ public final class HaloGeometry {
 			double ang = h2 * Math.PI * 2 + spin + phase * 0.8;
 			double r = radius * (0.85 + 0.25 * h3);
 			double y = baseY + phase * riseHeight;
-			double a = Math.sin(Math.PI * phase);
+			double twinkle = 0.75 + 0.25 * Math.sin(f.time() * (5.0 + 4.0 * h2) + k);
+			double a = Math.sin(Math.PI * phase) * twinkle;
 			int col = HaloColors.color(c.extrasColor, h1, phase, f.time(), f.health(), a);
 			float x = (float) (f.cx() + Math.cos(ang) * r);
 			float yy = (float) (f.cy() + y);
 			float z = (float) (f.cz() + Math.sin(ang) * r);
-			orb(x, yy, z, c.emberSize * (1.0 - 0.5 * phase), col, 0.5, core, glow);
+			orb(x, yy, z, c.emberSize * (1.0 - 0.5 * phase), col, 0.35, core, glow);
 		}
 	}
 
@@ -551,7 +588,7 @@ public final class HaloGeometry {
 				float x = (float) (f.cx() + Math.cos(ang) * c.helixRadius);
 				float y = (float) (f.cy() + 0.1 + vert * (h - 0.1));
 				float z = (float) (f.cz() + Math.sin(ang) * c.helixRadius);
-				orb(x, y, z, 0.07 * (1.0 - 0.6 * age), col, k == 0 ? 0.7 : 0.25, core, glow);
+				orb(x, y, z, 0.045 * (1.0 - 0.55 * age), col, k == 0 ? 0.5 : 0.12, core, glow);
 			}
 		}
 	}

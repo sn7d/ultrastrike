@@ -16,7 +16,9 @@ import org.slf4j.LoggerFactory;
 import net.fabricmc.loader.api.FabricLoader;
 
 import com.angelichalo.config.HaloOptions.ColorMode;
+import com.angelichalo.config.HaloOptions.EmblemMode;
 import com.angelichalo.config.HaloOptions.Easing;
+import com.angelichalo.config.HaloOptions.TextMode;
 import com.angelichalo.config.HaloOptions.Motion;
 import com.angelichalo.config.HaloOptions.ScanDirection;
 import com.angelichalo.config.HaloOptions.Style;
@@ -44,8 +46,6 @@ public final class HaloConfig {
 	 * 1.0 draws everything on top (the reference video); lower values make effects read as 3D.
 	 */
 	public double hiddenOpacity = 1.0;
-	/** Switch to third person while the settings screen is open so you can watch edits live. */
-	public boolean previewInThirdPerson = true;
 
 	// ---- Shape ----
 	public Style style = Style.LINE;
@@ -145,6 +145,36 @@ public final class HaloConfig {
 	public double speedReactiveAmount = 0.35;
 	public ColorSpec extrasColor = new ColorSpec(ColorMode.PULSE, 0xFFE7A0, 0xFF4B55, 0.85);
 
+	// ---- Custom text ----
+	public boolean textEnabled = false;
+	public String text = "ANGELIC HALO";
+	public TextMode textMode = TextMode.ORBIT;
+	public double textSize = 1.0;
+	/** Extra distance from the ring (orbit/engraved) or above the head (banner), blocks. */
+	public double textOffset = 0.25;
+	public double textHeight = 0.4;
+	/** Degrees per second the text travels around the ring. */
+	public double textSpeed = 20.0;
+	/** Copies of the text around the ring. */
+	public int textRepeat = 2;
+	public double textSpacing = 1.0;
+	public boolean textShadow = true;
+	/** Use the bundled smooth typeface instead of the blocky Minecraft font. */
+	public boolean textSmoothFont = true;
+	public ColorSpec textColor = new ColorSpec(ColorMode.GRADIENT, 0xFFFFFF, 0xFFD27A, 1.0);
+
+	// ---- Emblem image ----
+	public boolean emblemEnabled = false;
+	/** "builtin:<name>" or "file:<name>.png" from config/angelichalo/images. */
+	public String emblem = "builtin:sigil";
+	public EmblemMode emblemMode = EmblemMode.FLOOR;
+	public double emblemSize = 2.2;
+	public double emblemSpin = 15.0;
+	public double emblemHeight = 0.02;
+	/** Gentle opacity pulse, 0 = steady. */
+	public double emblemPulse = 0.25;
+	public ColorSpec emblemColor = new ColorSpec(ColorMode.SOLID, 0xFFD27A, 0xFF4B55, 0.8);
+
 	public static HaloConfig get() {
 		return instance;
 	}
@@ -220,6 +250,25 @@ public final class HaloConfig {
 		if (ringColor == null) ringColor = new ColorSpec();
 		if (trailColor == null) trailColor = new ColorSpec(ColorMode.GRADIENT, 0xFF4B55, 0x7C4DFF, 0.55);
 		if (extrasColor == null) extrasColor = new ColorSpec(ColorMode.PULSE, 0xFFE7A0, 0xFF4B55, 0.85);
+		if (textMode == null) textMode = TextMode.ORBIT;
+		if (emblemMode == null) emblemMode = EmblemMode.FLOOR;
+		if (text == null) text = "";
+		if (text.length() > 48) text = text.substring(0, 48);
+		if (emblem == null || emblem.isBlank()) emblem = "builtin:sigil";
+		if (textColor == null) textColor = new ColorSpec(ColorMode.GRADIENT, 0xFFFFFF, 0xFFD27A, 1.0);
+		if (emblemColor == null) emblemColor = new ColorSpec(ColorMode.SOLID, 0xFFD27A, 0xFF4B55, 0.8);
+		textColor.sanitize();
+		emblemColor.sanitize();
+		textSize = clamp(textSize, 0.2, 4.0);
+		textOffset = clamp(textOffset, -2.0, 4.0);
+		textHeight = clamp(textHeight, -1.0, 4.0);
+		textSpeed = clamp(textSpeed, -360.0, 360.0);
+		textRepeat = clamp(textRepeat, 1, 8);
+		textSpacing = clamp(textSpacing, 0.5, 3.0);
+		emblemSize = clamp(emblemSize, 0.2, 12.0);
+		emblemSpin = clamp(emblemSpin, -360.0, 360.0);
+		emblemHeight = clamp(emblemHeight, -1.0, 4.0);
+		emblemPulse = clamp(emblemPulse, 0.0, 1.0);
 		ringColor.sanitize();
 		trailColor.sanitize();
 		extrasColor.sanitize();

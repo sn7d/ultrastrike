@@ -23,7 +23,6 @@ public final class HaloPresets {
 			c.hideWhenSneaking = current.hideWhenSneaking;
 			c.hideWhenInvisible = current.hideWhenInvisible;
 			c.throughWalls = current.throughWalls;
-			c.previewInThirdPerson = current.previewInThirdPerson;
 			// effects wrap around you, so let your body/blocks partly hide the far side
 			c.hiddenOpacity = id.equals("classic") ? 1.0 : 0.3;
 			apply.accept(c);

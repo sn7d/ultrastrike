@@ -21,6 +21,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents;
 import com.angelichalo.config.HaloConfig;
 import com.angelichalo.config.HaloPresets;
 import com.angelichalo.gui.HaloConfigScreen;
+import com.angelichalo.gui.PauseMenuButton;
 import com.angelichalo.render.HaloRenderer;
 import com.angelichalo.render.HaloState;
 
@@ -53,6 +54,7 @@ public final class AngelicHalo implements ClientModInitializer {
 				"key.angelichalo.cycle_preset", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, category));
 
 		ClientTickEvents.END_CLIENT_TICK.register(AngelicHalo::onTick);
+		PauseMenuButton.register();
 		LevelRenderEvents.COLLECT_SUBMITS.register(HaloRenderer::render);
 		ClientCommandRegistrationCallback.EVENT.register((dispatcher, buildContext) -> dispatcher.register(
 				ClientCommands.literal("angelichalo")
