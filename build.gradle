@@ -1,0 +1,75 @@
+plugins {
+	id 'net.fabricmc.fabric-loom' version "${loom_version}"
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+	archivesName = project.archives_base_name
+}
+
+repositories {
+	// Mod Menu (optional integration, compile-only) is published here by TerraformersMC.
+	maven {
+		name = 'Terraformers'
+		url = 'https://maven.terraformersmc.com/'
+	}
+}
+
+fabricApi {
+	// Real in-game client tests (Fabric client gametest API). These boot an actual
+	// 26.2 client, create a test world, and take screenshots of the halo.
+	configureTests {
+		createSourceSet = true
+		modId = 'angelichalo-gametest'
+		enableGameTests = false
+		enableClientGameTests = true
+		eula = true
+	}
+}
+
+dependencies {
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+
+	if (project.hasProperty('modmenu_version')) {
+		compileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
+	}
+}
+
+processResources {
+	def version = project.version
+	inputs.property "version", version
+
+	filesMatching("fabric.mod.json") {
+		expand "version": version
+	}
+}
+
+tasks.withType(JavaCompile).configureEach {
+	it.options.release = 25
+	it.options.encoding = 'UTF-8'
+}
+
+java {
+	sourceCompatibility = JavaVersion.VERSION_25
+	targetCompatibility = JavaVersion.VERSION_25
+}
+
+jar {
+	def projectName = project.name
+	inputs.property "projectName", projectName
+	from("LICENSE") {
+		rename { "${it}_$projectName" }
+	}
+}
+
+// Dev helper used by CI: prints the compile classpath so API signatures can be inspected with javap.
+tasks.register('printCompileClasspath') {
+	def files = sourceSets.main.compileClasspath
+	doLast {
+		files.each { println "CP: ${it}" }
+	}
+}

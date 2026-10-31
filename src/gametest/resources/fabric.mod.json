@@ -1,0 +1,11 @@
+{
+	"schemaVersion": 1,
+	"id": "angelichalo-gametest",
+	"version": "1.0.0",
+	"name": "Angelic Halo Client Tests",
+	"environment": "client",
+	"entrypoints": {
+		"fabric-client-gametest": ["com.angelichalo.gametest.HaloScreenshotTest"]
+	},
+	"depends": { "angelichalo": "*" }
+}

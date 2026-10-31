@@ -1,2 +1,3 @@
-# ultrastrike
-a mashup mod between cs2+ultrakill
+# Angelic Halo
+
+Work in progress.

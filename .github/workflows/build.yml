@@ -1,0 +1,70 @@
+name: build
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: gradle/actions/wrapper-validation@v6
+      - uses: actions/setup-java@v5
+        with:
+          java-version: '25'
+          distribution: 'microsoft'
+      - run: chmod +x ./gradlew
+
+      - name: API probe (dev aid)
+        if: github.event_name != 'pull_request'
+        continue-on-error: true
+        run: |
+          ./scripts/probe.sh out/probe
+          ./gradlew --no-configuration-cache -q tasks --all | grep -i -E 'game|run' > out/probe/tasks.txt || true
+
+      - name: Build
+        id: build
+        continue-on-error: true
+        run: ./gradlew build --stacktrace 2>&1 | tee build.log; exit ${PIPESTATUS[0]}
+
+      - name: In-game client test + screenshots
+        id: gametest
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
+        run: |
+          sudo apt-get update -q && sudo apt-get install -y -q xvfb mesa-utils libgl1-mesa-dri
+          xvfb-run -a -s "-screen 0 1920x1080x24" ./gradlew runClientGameTest --stacktrace 2>&1 | tee gametest.log; exit ${PIPESTATUS[0]}
+
+      - name: Collect outputs
+        if: always()
+        run: |
+          mkdir -p out/screenshots out/libs
+          cp build.log gametest.log out/ 2>/dev/null || true
+          cp build/libs/*.jar out/libs/ 2>/dev/null || true
+          find . -path ./out -prune -o -type f -path '*screenshots*' -name '*.png' -print -exec cp {} out/screenshots/ \; || true
+          find . -path ./out -prune -o -type f -name 'latest.log' -path '*logs*' -print -exec cp {} out/latest.log \; || true
+          echo "build=${{ steps.build.outcome }} gametest=${{ steps.gametest.outcome }} sha=${{ github.sha }}" > out/STATUS.txt
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: angelic-halo
+          path: out/
+
+      - name: Publish outputs to ci-output branch
+        if: always() && github.event_name != 'pull_request'
+        run: |
+          cd out
+          git init -q -b ci-output
+          git config user.name "ci"
+          git config user.email "ci@users.noreply.github.com"
+          git add -A && git commit -q -m "CI output for ${{ github.sha }}"
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}" ci-output
+
+      - name: Fail if build failed
+        if: steps.build.outcome != 'success'
+        run: exit 1
