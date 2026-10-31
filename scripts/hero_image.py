@@ -68,20 +68,32 @@ def polish(src: Path, aspect: float, zoom: float, dy: float, out_w: int, warmth:
     return img
 
 
+def crop_box(img: Image.Image, box, out_w: int) -> Image.Image:
+    w, h = img.size
+    c = img.crop((int(box[0] * w), int(box[1] * h), int(box[2] * w), int(box[3] * h)))
+    return c.resize((out_w, int(out_w * c.size[1] / c.size[0])), Image.LANCZOS)
+
+
 def main() -> None:
     shots, out = Path(sys.argv[1]), Path(sys.argv[2])
     out.mkdir(parents=True, exist_ok=True)
 
-    polish(find(shots, "hero_selfie"), 2.0, 1.25, 0.02, 1600).save(out / "hero.png", optimize=True)
-    polish(find(shots, "hero_scan"), 16 / 9, 1.2, 0.02, 1280, warmth=-0.5).save(out / "scan.png", optimize=True)
+    polish(find(shots, "hero_selfie"), 2.0, 1.0, 0.0, 1600).save(out / "hero.png", optimize=True)
+    polish(find(shots, "scan_trail_1"), 16 / 9, 1.45, 0.05, 1280, warmth=-0.5).save(out / "scan.png", optimize=True)
     polish(find(shots, "classic_first_person"), 16 / 9, 1.0, 0.0, 1280).save(out / "classic.png", optimize=True)
+    polish(find(shots, "feature_text_orbit"), 16 / 9, 1.35, 0.1, 1280).save(out / "text.png", optimize=True)
+    polish(find(shots, "feature_text_engraved"), 16 / 9, 1.35, 0.12, 1280).save(out / "text_engraved.png", optimize=True)
+    polish(find(shots, "feature_emblem_floor"), 16 / 9, 1.3, 0.12, 1280).save(out / "emblem.png", optimize=True)
+    Image.open(find(shots, "gui_tab_0")).convert("RGB").resize((1280, 720), Image.LANCZOS).save(out / "menu.png", optimize=True)
+    Image.open(find(shots, "gui_trail_colors")).convert("RGB").resize((1280, 720), Image.LANCZOS).save(out / "menu_colours.png", optimize=True)
+    Image.open(find(shots, "gui_tab_6")).convert("RGB").resize((1280, 720), Image.LANCZOS).save(out / "menu_emblem.png", optimize=True)
+    crop_box(Image.open(find(shots, "pause_menu")).convert("RGB"), (0.38, 0.36, 0.62, 0.62), 720).save(out / "pause.png", optimize=True)
 
-    # gallery tiles
     tiles = out / "gallery"
     tiles.mkdir(exist_ok=True)
     for src in sorted(shots.glob("*.png")):
         name = src.stem.split("_", 1)[1]
-        if name.startswith(("preset_", "style_", "scan_trail_", "extras_")):
+        if name.startswith(("preset_", "style_", "scan_trail_", "extras_", "feature_")):
             polish(src, 4 / 3, 1.55, 0.03, 480).save(tiles / f"{name}.jpg", quality=88)
         elif name.startswith("gui_"):
             Image.open(src).convert("RGB").resize((960, 540), Image.LANCZOS).save(tiles / f"{name}.jpg", quality=90)
