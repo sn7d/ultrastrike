@@ -151,8 +151,8 @@ public class HaloScreenshotTest implements FabricClientGameTest {
 				n.textColor.mode = HaloOptions.ColorMode.RAINBOW;
 				HaloConfig.set(n);
 			});
-			pose(server, 0, 30);
-			shot(ctx, "feature_emblem_floor", CameraType.THIRD_PERSON_FRONT, c -> {
+			pose(server, 0, 38);
+			shot(ctx, "feature_emblem_floor", CameraType.THIRD_PERSON_BACK, c -> {
 				HaloConfig n = new HaloConfig();
 				n.style = HaloOptions.Style.GLOW_LINE;
 				n.radius = 1.5;

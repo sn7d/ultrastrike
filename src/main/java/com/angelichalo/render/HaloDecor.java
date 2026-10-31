@@ -171,7 +171,8 @@ final class HaloDecor {
 
 		double radius = Math.max(0.3, c.radius + c.textOffset);
 		double base = Math.toRadians(c.textSpeed * time);
-		double y = fy + c.heightOffset + (c.textMode == TextMode.ENGRAVED ? 0.02 : c.textHeight);
+		boolean engraved = c.textMode == TextMode.ENGRAVED;
+		double y = fy + c.heightOffset + (engraved ? 0.03 : c.textHeight);
 
 		for (int copy = 0; copy < c.textRepeat; copy++) {
 			double start = base + copy * Math.PI * 2 / c.textRepeat;
@@ -180,23 +181,36 @@ final class HaloDecor {
 			for (int i = 0; i < len; i++) {
 				FormattedCharSequence g = glyph(c, text.charAt(i));
 				double w = font.width(g) * scale * c.textSpacing;
-				double a = start + (arc + w / 2) / radius;
+				double mid = (arc + w / 2) / radius;
 				arc += w;
-				double px = fx + Math.cos(a) * radius;
-				double pz = fz + Math.sin(a) * radius;
-				int col = HaloColors.color(c.textColor, len <= 1 ? 0 : (double) i / (len - 1), 0, time, health, 1.0);
+				// orbit text reads left-to-right from outside (clockwise), engraved text reads around from above
+				double a = engraved ? start + mid : start - mid;
+				double ca = Math.cos(a);
+				double sa = Math.sin(a);
+				double px = fx + ca * radius;
+				double pz = fz + sa * radius;
+				double alpha = 1.0;
+
+				if (!engraved) {
+					// fade letters on the far side so the band reads cleanly
+					double dist = Math.sqrt(px * px + (y * y) + pz * pz);
+					double facing = -(ca * px + sa * pz) / Math.max(dist, 1e-4);
+					double k = Math.max(0, Math.min(1, (facing + 0.15) / 0.45));
+					alpha = 0.12 + 0.88 * k * k * (3 - 2 * k);
+				}
+
+				int col = HaloColors.color(c.textColor, len <= 1 ? 0 : (double) i / (len - 1), 0, time, health, alpha);
+				if ((col >>> 24) < 4) continue;
 
 				ps.pushPose();
 				ps.translate(px, y, pz);
-				if (c.textMode == TextMode.ENGRAVED) {
-					// lie flat, baseline along the circle, reading clockwise from above
-					ps.mulPose(new Quaternionf().rotateY((float) (-a - Math.PI / 2)).rotateX((float) (Math.PI / 2)));
-					ps.scale(scale, -scale, scale);
+				if (engraved) {
+					ps.mulPose(new Quaternionf().rotateY((float) (-a - Math.PI / 2)).rotateX((float) (-Math.PI / 2)));
 				} else {
-					ps.mulPose(camera.orientation);
-					ps.scale(scale, -scale, scale);
+					ps.mulPose(new Quaternionf().rotateY((float) (Math.PI / 2 - a)));
 				}
-				ctx.submitNodeCollector().submitText(ps, -font.width(g) / 2.0f, -4, g, c.textShadow, mode, FULL_BRIGHT, col, 0, 0);
+				ps.scale(scale, -scale, scale);
+				ctx.submitNodeCollector().submitText(ps, -font.width(g) / 2.0f, -4, g, c.textShadow && !engraved, mode, FULL_BRIGHT, col, 0, 0);
 				ps.popPose();
 			}
 		}

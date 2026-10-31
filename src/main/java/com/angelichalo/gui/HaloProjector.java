@@ -98,7 +98,7 @@ public final class HaloProjector {
 		double extent = Math.max(c.radius * 1.15, 1.2);
 		if (c.motion == HaloOptions.Motion.RIPPLE) extent = Math.max(extent, c.radius);
 		if (c.jumpRings) extent = Math.max(extent, c.jumpRingSize * 0.6);
-		double dist = (2.6 + extent * 1.9) / zoom;
+		double dist = (3.6 + extent * 2.2) / zoom;
 		double fov = Math.toRadians(40);
 		double targetY = 0.95;
 		double yr = Math.toRadians(yaw);
@@ -276,16 +276,26 @@ public final class HaloProjector {
 
 		double radius = Math.max(0.3, c.radius + c.textOffset);
 		double base = Math.toRadians(c.textSpeed * time);
-		double y = c.heightOffset + (c.textMode == HaloOptions.TextMode.ENGRAVED ? 0.02 : c.textHeight);
+		boolean engraved = c.textMode == HaloOptions.TextMode.ENGRAVED;
+		double y = c.heightOffset + (engraved ? 0.03 : c.textHeight);
 		double charW = 0.16 * c.textSize * c.textSpacing;
 		for (int copy = 0; copy < c.textRepeat; copy++) {
 			double start = base + copy * Math.PI * 2 / c.textRepeat;
 			for (int i = 0; i < len; i++) {
-				double a = start + (i + 0.5) * charW / radius;
-				double[] p = proj.project(Math.cos(a) * radius, y, Math.sin(a) * radius);
+				double mid = (i + 0.5) * charW / radius;
+				double a = engraved ? start + mid : start - mid;
+				double wx = Math.cos(a) * radius;
+				double wz = Math.sin(a) * radius;
+				double[] p = proj.project(wx, y, wz);
 				if (p == null) continue;
+				// fade the far side (outward normal pointing away from the camera)
+				double tx = proj.camX - wx;
+				double tz = proj.camZ - wz;
+				double facing = (Math.cos(a) * tx + Math.sin(a) * tz) / Math.max(1e-4, Math.sqrt(tx * tx + tz * tz));
+				double k = Math.max(0, Math.min(1, (facing + 0.15) / 0.45));
+				double alpha = engraved ? 1.0 : 0.12 + 0.88 * k * k * (3 - 2 * k);
 				String ch = String.valueOf(t.charAt(i));
-				int col = HaloColors.color(c.textColor, len <= 1 ? 0 : (double) i / (len - 1), 0, time, 1, 1);
+				int col = HaloColors.color(c.textColor, len <= 1 ? 0 : (double) i / (len - 1), 0, time, 1, alpha);
 				Ui.text(g, ch, (int) p[0] - Ui.width(ch) / 2, (int) p[1] - 4, col, Ui.FONT_BOLD);
 			}
 		}

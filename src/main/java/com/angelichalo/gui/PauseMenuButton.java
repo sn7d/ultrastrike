@@ -51,9 +51,17 @@ public final class PauseMenuButton extends AbstractWidget {
 		int y;
 
 		if (anchor != null) {
-			// directly to the left of Friends, same row
+			// insert directly left of Friends and re-centre the icon row so nothing overlaps
+			int fx = anchor.getX();
+			int fy = anchor.getY();
+			int shift = (size + 4) / 2;
+			for (AbstractWidget wdg : widgets) {
+				if (wdg.getY() == fy && wdg.getWidth() <= 24) {
+					wdg.setX(wdg.getX() < fx ? wdg.getX() - shift : wdg.getX() + shift);
+				}
+			}
 			x = anchor.getX() - size - 4;
-			y = anchor.getY() + (anchor.getHeight() - size) / 2;
+			y = fy + (anchor.getHeight() - size) / 2;
 		} else {
 			// fallback: left of the topmost wide button (Back to Game)
 			AbstractWidget top = null;

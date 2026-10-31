@@ -285,7 +285,7 @@
 	"angelichalo.option.text": "Text",
 	"angelichalo.option.text.tip": "Up to 48 characters. Paste with Ctrl+V.",
 	"angelichalo.option.text_mode": "Placement",
-	"angelichalo.option.text_mode.tip": "Orbit: letters circle you facing the camera. Engraved: lying on the ground along the ring. Banner: floating above your head.",
+	"angelichalo.option.text_mode.tip": "Orbit: letters wrap around the ring like a glowing band. Engraved: lying flat on the ground along the ring. Banner: floating above your head, always facing you.",
 	"angelichalo.option.text_size": "Text Size",
 	"angelichalo.option.text_size.tip": "Size of the letters.",
 	"angelichalo.option.text_offset": "Distance",

@@ -102,7 +102,7 @@ public final class HaloOptions {
 
 	/** How custom text is placed. */
 	public enum TextMode {
-		/** Letters orbit the ring, always turned towards you. */
+		/** Letters wrap around the ring like a band; the far side fades out. */
 		ORBIT,
 		/** Letters lie flat on the ground along the ring, like an engraving. */
 		ENGRAVED,
