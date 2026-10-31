@@ -20,6 +20,7 @@ import com.angelichalo.config.HaloOptions.Easing;
 import com.angelichalo.config.HaloOptions.Motion;
 import com.angelichalo.config.HaloOptions.ScanDirection;
 import com.angelichalo.config.HaloOptions.Style;
+import com.angelichalo.config.HaloOptions.TrailStyle;
 
 /**
  * Plain data holder, serialised to {@code config/angelichalo.json}. Defaults reproduce the reference video:
@@ -28,7 +29,6 @@ import com.angelichalo.config.HaloOptions.Style;
 public final class HaloConfig {
 	private static final Logger LOGGER = LoggerFactory.getLogger("AngelicHalo");
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-	private static final Path FILE = FabricLoader.getInstance().getConfigDir().resolve("angelichalo.json");
 
 	private static HaloConfig instance = new HaloConfig();
 
@@ -39,13 +39,13 @@ public final class HaloConfig {
 	public boolean hideWhenSneaking = false;
 	public boolean hideWhenInvisible = true;
 	public boolean throughWalls = true;
-	/** Switch to third person while the settings screen is open so you can watch your edits live. */
+	/** Switch to third person while the settings screen is open so you can watch edits live. */
 	public boolean previewInThirdPerson = true;
 
 	// ---- Shape ----
 	public Style style = Style.LINE;
 	public double radius = 3.0;
-	/** Line thickness in screen pixels (constant regardless of distance, like the video). */
+	/** Line thickness in pixels (measured at 1080p, constant regardless of distance — like the video). */
 	public double lineWidth = 2.0;
 	/** Height above the feet, in blocks. */
 	public double heightOffset = 0.05;
@@ -54,7 +54,7 @@ public final class HaloConfig {
 	public double spinSpeed = 0.0;
 	/** Tilt of the ring plane in degrees. */
 	public double tilt = 0.0;
-	/** Extra concentric copies stacked vertically. */
+	/** Extra copies stacked vertically. */
 	public int ringCount = 1;
 	public double ringSpacing = 0.25;
 	public double auraHeight = 0.7;
@@ -64,6 +64,12 @@ public final class HaloConfig {
 	public double orbSize = 0.12;
 	public double glowWidth = 10.0;
 	public double glowStrength = 0.45;
+	/** Sonar sweeps per second. */
+	public double sonarSpeed = 0.5;
+	public int crownSpikes = 8;
+	public double crownHeight = 0.35;
+	public int galaxyArms = 3;
+	public double lightningIntensity = 0.5;
 
 	// ---- Motion ----
 	public Motion motion = Motion.STATIC;
@@ -77,10 +83,7 @@ public final class HaloConfig {
 	public double scanMax = 1.0;
 	/** Seconds to rest at each end of the sweep. */
 	public double scanPause = 0.0;
-	/** Number of fading after-images that trail the scanning ring. */
-	public int scanTrail = 0;
-	public double scanTrailSpacing = 0.06;
-	/** Scan ring shrinks towards the head to hug the body shape. */
+	/** Scan ring narrows around the head to hug the body shape. */
 	public boolean scanContour = false;
 	public double breatheAmount = 0.15;
 	public double breatheSpeed = 0.5;
@@ -92,18 +95,50 @@ public final class HaloConfig {
 	public double waveAmplitude = 0.12;
 	public int waveFrequency = 4;
 	public double waveSpeed = 1.0;
+	/** Maximum wobble angle for GYRO, degrees. */
+	public double gyroAngle = 18.0;
+	public double gyroSpeed = 0.6;
+	/** Beats per minute for HEARTBEAT (amplitude uses breatheAmount). */
+	public double heartRate = 72.0;
 
-	// ---- Colour ----
-	public ColorMode colorMode = ColorMode.SOLID;
-	public int primaryColor = 0xFF4B55;
-	public int secondaryColor = 0xFFD54F;
-	public double opacity = 0.9;
-	/** Speed multiplier shared by animated colour modes. */
-	public double colorSpeed = 0.3;
-	public double saturation = 0.85;
-	public double brightness = 1.0;
-	/** How many times the gradient/rainbow repeats around the ring. */
-	public int colorRepeats = 1;
+	// ---- Scan trail (fading effect that follows the scanning ring) ----
+	public boolean trailEnabled = true;
+	public TrailStyle trailStyle = TrailStyle.SMEAR;
+	/** How far back in time the trail reaches, seconds. */
+	public double trailLength = 0.35;
+	/** Number of echo rings (ECHOES / BOTH). */
+	public int trailEchoes = 4;
+	/** Use the ring colours for the trail instead of its own colour settings. */
+	public boolean trailMatchRing = false;
+	public ColorSpec trailColor = new ColorSpec(ColorMode.GRADIENT, 0xFF4B55, 0x7C4DFF, 0.55);
+
+	// ---- Ring colour ----
+	public ColorSpec ringColor = new ColorSpec(ColorMode.SOLID, 0xFF4B55, 0xFFD54F, 0.9);
+
+	// ---- Extras ----
+	/** Glowing embers that drift upwards off the ring. */
+	public boolean embers = false;
+	public int emberCount = 24;
+	public double emberRise = 1.2;
+	public double emberSize = 0.05;
+	/** Two orbs spiralling up and down your body in a double helix. */
+	public boolean helix = false;
+	public double helixSpeed = 0.6;
+	public double helixRadius = 0.55;
+	public int helixStrands = 2;
+	/** An expanding ring at your feet every time you jump/land. */
+	public boolean jumpRings = false;
+	public double jumpRingSize = 2.0;
+	/**
+	 * Opt-in: ring flashes and shockwaves outward when you take damage (reads only your own health bar).
+	 * Off by default — the ring is otherwise completely unaffected by being hurt or dying.
+	 */
+	public boolean damageFlash = false;
+	public int damageColor = 0xFF1A1A;
+	/** Ring expands and brightens with your movement speed. */
+	public boolean speedReactive = false;
+	public double speedReactiveAmount = 0.35;
+	public ColorSpec extrasColor = new ColorSpec(ColorMode.PULSE, 0xFFE7A0, 0xFF4B55, 0.85);
 
 	public static HaloConfig get() {
 		return instance;
@@ -114,14 +149,20 @@ public final class HaloConfig {
 		instance = config;
 	}
 
+	private static Path file() {
+		return FabricLoader.getInstance().getConfigDir().resolve("angelichalo.json");
+	}
+
 	public static void load() {
-		if (!Files.exists(FILE)) {
+		Path file = file();
+
+		if (!Files.exists(file)) {
 			instance = new HaloConfig();
 			save();
 			return;
 		}
 
-		try (Reader reader = Files.newBufferedReader(FILE)) {
+		try (Reader reader = Files.newBufferedReader(file)) {
 			HaloConfig loaded = GSON.fromJson(reader, HaloConfig.class);
 			instance = loaded != null ? loaded : new HaloConfig();
 		} catch (IOException | JsonParseException e) {
@@ -134,23 +175,34 @@ public final class HaloConfig {
 
 	public static void save() {
 		instance.sanitize();
+		Path file = file();
 
 		try {
-			Files.createDirectories(FILE.getParent());
-			Path tmp = FILE.resolveSibling(FILE.getFileName() + ".tmp");
+			Files.createDirectories(file.getParent());
+			Path tmp = file.resolveSibling(file.getFileName() + ".tmp");
 
 			try (Writer writer = Files.newBufferedWriter(tmp)) {
 				GSON.toJson(instance, writer);
 			}
 
-			Files.move(tmp, FILE, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+			try {
+				Files.move(tmp, file, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+			} catch (IOException atomicFailed) {
+				Files.move(tmp, file, StandardCopyOption.REPLACE_EXISTING);
+			}
 		} catch (IOException e) {
 			LOGGER.warn("Could not save Angelic Halo config", e);
 		}
 	}
 
 	public HaloConfig copy() {
-		return GSON.fromJson(GSON.toJson(this), HaloConfig.class);
+		HaloConfig c = GSON.fromJson(GSON.toJson(this), HaloConfig.class);
+		c.sanitize();
+		return c;
+	}
+
+	public String toJson() {
+		return GSON.toJson(this);
 	}
 
 	/** Clamp everything into safe ranges so hand-edited or old files can never crash rendering. */
@@ -159,7 +211,13 @@ public final class HaloConfig {
 		if (motion == null) motion = Motion.STATIC;
 		if (scanEasing == null) scanEasing = Easing.SINE;
 		if (scanDirection == null) scanDirection = ScanDirection.BOTH;
-		if (colorMode == null) colorMode = ColorMode.SOLID;
+		if (trailStyle == null) trailStyle = TrailStyle.SMEAR;
+		if (ringColor == null) ringColor = new ColorSpec();
+		if (trailColor == null) trailColor = new ColorSpec(ColorMode.GRADIENT, 0xFF4B55, 0x7C4DFF, 0.55);
+		if (extrasColor == null) extrasColor = new ColorSpec(ColorMode.PULSE, 0xFFE7A0, 0xFF4B55, 0.85);
+		ringColor.sanitize();
+		trailColor.sanitize();
+		extrasColor.sanitize();
 
 		radius = clamp(radius, 0.2, 16.0);
 		lineWidth = clamp(lineWidth, 0.5, 12.0);
@@ -176,6 +234,11 @@ public final class HaloConfig {
 		orbSize = clamp(orbSize, 0.02, 0.6);
 		glowWidth = clamp(glowWidth, 2.0, 40.0);
 		glowStrength = clamp(glowStrength, 0.0, 1.0);
+		sonarSpeed = clamp(sonarSpeed, 0.05, 3.0);
+		crownSpikes = clamp(crownSpikes, 3, 32);
+		crownHeight = clamp(crownHeight, 0.05, 1.5);
+		galaxyArms = clamp(galaxyArms, 1, 8);
+		lightningIntensity = clamp(lightningIntensity, 0.0, 1.0);
 
 		scanSpeed = clamp(scanSpeed, 0.02, 4.0);
 		scanMin = clamp(scanMin, 0.0, 1.2);
@@ -186,8 +249,6 @@ public final class HaloConfig {
 			scanMin = t;
 		}
 		scanPause = clamp(scanPause, 0.0, 3.0);
-		scanTrail = clamp(scanTrail, 0, 12);
-		scanTrailSpacing = clamp(scanTrailSpacing, 0.01, 0.3);
 		breatheAmount = clamp(breatheAmount, 0.0, 0.8);
 		breatheSpeed = clamp(breatheSpeed, 0.05, 4.0);
 		haloRadius = clamp(haloRadius, 0.1, 2.0);
@@ -198,22 +259,30 @@ public final class HaloConfig {
 		waveAmplitude = clamp(waveAmplitude, 0.0, 1.0);
 		waveFrequency = clamp(waveFrequency, 1, 16);
 		waveSpeed = clamp(waveSpeed, -6.0, 6.0);
+		gyroAngle = clamp(gyroAngle, 0.0, 60.0);
+		gyroSpeed = clamp(gyroSpeed, 0.05, 4.0);
+		heartRate = clamp(heartRate, 30.0, 200.0);
 
-		primaryColor &= 0xFFFFFF;
-		secondaryColor &= 0xFFFFFF;
-		opacity = clamp(opacity, 0.05, 1.0);
-		colorSpeed = clamp(colorSpeed, 0.0, 4.0);
-		saturation = clamp(saturation, 0.0, 1.0);
-		brightness = clamp(brightness, 0.1, 1.0);
-		colorRepeats = clamp(colorRepeats, 1, 12);
+		trailLength = clamp(trailLength, 0.05, 2.0);
+		trailEchoes = clamp(trailEchoes, 1, 12);
+
+		emberCount = clamp(emberCount, 1, 128);
+		emberRise = clamp(emberRise, 0.1, 4.0);
+		emberSize = clamp(emberSize, 0.01, 0.3);
+		helixSpeed = clamp(helixSpeed, 0.05, 4.0);
+		helixRadius = clamp(helixRadius, 0.1, 3.0);
+		helixStrands = clamp(helixStrands, 1, 6);
+		jumpRingSize = clamp(jumpRingSize, 0.5, 8.0);
+		damageColor &= 0xFFFFFF;
+		speedReactiveAmount = clamp(speedReactiveAmount, 0.0, 1.5);
 	}
 
-	private static double clamp(double v, double min, double max) {
+	static double clamp(double v, double min, double max) {
 		if (Double.isNaN(v)) return min;
 		return Math.max(min, Math.min(max, v));
 	}
 
-	private static int clamp(int v, int min, int max) {
+	static int clamp(int v, int min, int max) {
 		return Math.max(min, Math.min(max, v));
 	}
 }

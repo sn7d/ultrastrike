@@ -19,7 +19,15 @@ public final class HaloOptions {
 		/** Dashed line; pairs well with spin. */
 		DASHED,
 		/** Orbs evenly spaced around the circle. */
-		ORBS
+		ORBS,
+		/** Radar disc with a rotating sweep beam. */
+		SONAR,
+		/** Ring with upward spikes — a crown of light. */
+		CROWN,
+		/** Spiral arms of stars swirling around you. */
+		GALAXY,
+		/** Crackling, jittering electric ring. */
+		LIGHTNING
 	}
 
 	/** Movement of the ring over time. */
@@ -35,7 +43,11 @@ public final class HaloOptions {
 		/** Rings spawn at the feet and expand outwards like sonar. */
 		RIPPLE,
 		/** Ring surface undulates in a travelling wave. */
-		WAVE
+		WAVE,
+		/** Ring wobbles like a spinning gyroscope. */
+		GYRO,
+		/** Double "lub-dub" pulse at a set BPM. */
+		HEARTBEAT
 	}
 
 	/** Easing applied to the scan sweep. */
@@ -71,6 +83,20 @@ public final class HaloOptions {
 		/** Green when healthy, red when hurt (your own health only). */
 		HEALTH,
 		/** Random twinkling between primary and secondary. */
-		SPARKLE
+		SPARKLE,
+		/** Slow, drifting northern-lights blend of primary, secondary and a hue-shifted third colour. */
+		AURORA,
+		/** Flickering flame noise between primary and secondary. */
+		FIRE
+	}
+
+	/** Look of the fading trail that follows the scanning ring. */
+	public enum TrailStyle {
+		/** Smooth gradient curtain from the ring back along its path. */
+		SMEAR,
+		/** Discrete fading copies of the ring. */
+		ECHOES,
+		/** Both. */
+		BOTH
 	}
 }

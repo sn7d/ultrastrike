@@ -28,18 +28,8 @@ public final class HaloMotion {
 
 		switch (c.motion) {
 			case SCAN -> {
-				for (int i = 0; i <= c.scanTrail; i++) {
-					double t = time - i * c.scanTrailSpacing / Math.max(c.scanSpeed, 0.02);
-					double f = scanFraction(c, t);
-					double frac = c.scanMin + (c.scanMax - c.scanMin) * f;
-					double y = baseY + frac * playerHeight;
-					double r = baseR;
-					if (c.scanContour) {
-						r = baseR * contour(frac);
-					}
-					double a = i == 0 ? 1.0 : Math.pow(1.0 - (double) i / (c.scanTrail + 1), 1.6) * 0.7;
-					addStack(out, c, y, r, a, frac, 0);
-				}
+				Scan sc = scan(c, time, playerHeight);
+				addStack(out, c, sc.y(), sc.radius(), 1.0, sc.frac(), 0);
 			}
 			case BREATHE -> {
 				double s = 1.0 + c.breatheAmount * Math.sin(time * c.breatheSpeed * Math.PI * 2);
@@ -60,11 +50,26 @@ public final class HaloMotion {
 					addStack(out, c, baseY, r, a, p, 0);
 				}
 			}
+			case HEARTBEAT -> {
+				double beat = frac(time * c.heartRate / 60.0);
+				double k = Math.exp(-Math.pow(beat / 0.06, 2)) + 0.6 * Math.exp(-Math.pow((beat - 0.22) / 0.06, 2));
+				addStack(out, c, baseY, baseR * (1.0 + c.breatheAmount * k), 0.75 + 0.25 * Math.min(1.0, k), 0, 0);
+			}
 			case WAVE -> addStack(out, c, baseY + c.waveAmplitude, baseR, 1.0, 0, c.waveAmplitude);
 			default -> addStack(out, c, baseY, baseR, 1.0, 0, 0);
 		}
 
 		return out;
+	}
+
+	/** Scan ring position at an arbitrary time (used by the main ring and the trail). */
+	public record Scan(double y, double radius, double frac) { }
+
+	public static Scan scan(HaloConfig c, double time, double playerHeight) {
+		double f = scanFraction(c, time);
+		double frac = c.scanMin + (c.scanMax - c.scanMin) * f;
+		double r = c.scanContour ? c.radius * contour(frac) : c.radius;
+		return new Scan(c.heightOffset + frac * playerHeight, r, frac);
 	}
 
 	private static void addStack(List<Ring> out, HaloConfig c, double y, double r, double a, double hf, double wave) {

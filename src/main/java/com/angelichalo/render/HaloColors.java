@@ -1,6 +1,6 @@
 package com.angelichalo.render;
 
-import com.angelichalo.config.HaloConfig;
+import com.angelichalo.config.ColorSpec;
 
 /** Pure colour maths (no Minecraft classes) so it is trivially testable. Colours are 0xAARRGGBB. */
 public final class HaloColors {
@@ -13,22 +13,22 @@ public final class HaloColors {
 	 * @param health own health fraction 0..1
 	 * @param alpha  extra alpha multiplier 0..1
 	 */
-	public static int color(HaloConfig c, double u, double height, double time, double health, double alpha) {
+	public static int color(ColorSpec c, double u, double height, double time, double health, double alpha) {
 		int rgb;
-		double speed = c.colorSpeed;
-		double reps = c.colorRepeats;
+		double speed = c.speed;
+		double reps = c.repeats;
 
-		switch (c.colorMode) {
-			case GRADIENT -> rgb = lerpRgb(c.primaryColor, c.secondaryColor, triangle(u * reps + time * speed));
+		switch (c.mode) {
+			case GRADIENT -> rgb = lerpRgb(c.primary, c.secondary, triangle(u * reps + time * speed));
 			case RAINBOW -> rgb = hsv(frac(u * reps - time * speed), c.saturation, c.brightness);
 			case CHROMA -> rgb = hsv(frac(time * speed), c.saturation, c.brightness);
-			case PULSE -> rgb = lerpRgb(c.primaryColor, c.secondaryColor, 0.5 - 0.5 * Math.cos(time * speed * Math.PI * 2));
-			case HEIGHT -> rgb = lerpRgb(c.primaryColor, c.secondaryColor, clamp01(height));
+			case PULSE -> rgb = lerpRgb(c.primary, c.secondary, 0.5 - 0.5 * Math.cos(time * speed * Math.PI * 2));
+			case HEIGHT -> rgb = lerpRgb(c.primary, c.secondary, clamp01(height));
 			case COMET -> {
 				// bright head travelling around the ring with an exponential tail
 				double d = frac(time * speed - u * reps);
 				double k = Math.exp(-d * 6.0);
-				rgb = lerpRgb(c.secondaryColor, c.primaryColor, k);
+				rgb = lerpRgb(c.secondary, c.primary, k);
 				alpha *= 0.25 + 0.75 * k;
 			}
 			case HEALTH -> {
@@ -40,13 +40,78 @@ public final class HaloColors {
 				double cell = Math.floor(u * 64.0);
 				double phase = hash(cell) * 6.2831853;
 				double s = 0.5 + 0.5 * Math.sin(time * (2.0 + 6.0 * speed) + phase);
-				rgb = lerpRgb(c.primaryColor, c.secondaryColor, s * s * s);
+				rgb = lerpRgb(c.primary, c.secondary, s * s * s);
 			}
-			default -> rgb = c.primaryColor;
+			case AURORA -> {
+				// three slowly drifting bands: primary, secondary and a hue-rotated blend
+				double x = u * reps * 2.0;
+				double n1 = 0.5 + 0.5 * Math.sin(x * 3.1 + time * speed * 2.3);
+				double n2 = 0.5 + 0.5 * Math.sin(x * 1.7 - time * speed * 1.6 + 1.3);
+				int third = hueShift(lerpRgb(c.primary, c.secondary, 0.5), 0.33);
+				rgb = lerpRgb(lerpRgb(c.primary, c.secondary, n1), third, n2 * 0.6);
+				alpha *= 0.55 + 0.45 * (0.5 + 0.5 * Math.sin(x * 2.3 + time * speed * 3.0));
+			}
+			case FIRE -> {
+				double cell = Math.floor(u * 48.0 * reps);
+				double flick = valueNoise(cell * 0.37 + time * (3.0 + 8.0 * speed)) * 0.7
+						+ valueNoise(cell * 1.31 - time * (5.0 + 10.0 * speed)) * 0.3;
+				rgb = lerpRgb(c.primary, c.secondary, flick);
+				alpha *= 0.6 + 0.4 * flick;
+			}
+			default -> rgb = c.primary;
+		}
+
+		switch (c.mode) {
+			case RAINBOW, CHROMA, HEALTH -> { } // HSV modes already include brightness
+			default -> rgb = shade(rgb, c.brightness);
 		}
 
 		int a = (int) Math.round(clamp01(c.opacity * alpha) * 255.0);
 		return (a << 24) | (rgb & 0xFFFFFF);
+	}
+
+	/** Scales RGB by brightness (HSV modes already apply it, so only use for the RGB-based modes). */
+	private static int shade(int rgb, double b) {
+		if (b >= 0.999) return rgb;
+		int r = (int) Math.round(((rgb >> 16) & 0xFF) * b);
+		int g = (int) Math.round(((rgb >> 8) & 0xFF) * b);
+		int bl = (int) Math.round((rgb & 0xFF) * b);
+		return (r << 16) | (g << 8) | bl;
+	}
+
+	public static int hueShift(int rgb, double shift) {
+		float[] hsv = rgbToHsv(rgb);
+		return hsv(hsv[0] + shift, hsv[1], hsv[2]);
+	}
+
+	static float[] rgbToHsv(int rgb) {
+		double r = ((rgb >> 16) & 0xFF) / 255.0;
+		double g = ((rgb >> 8) & 0xFF) / 255.0;
+		double b = (rgb & 0xFF) / 255.0;
+		double max = Math.max(r, Math.max(g, b));
+		double min = Math.min(r, Math.min(g, b));
+		double d = max - min;
+		double h;
+
+		if (d < 1e-9) {
+			h = 0;
+		} else if (max == r) {
+			h = ((g - b) / d) / 6.0;
+		} else if (max == g) {
+			h = ((b - r) / d + 2) / 6.0;
+		} else {
+			h = ((r - g) / d + 4) / 6.0;
+		}
+
+		return new float[] {(float) frac(h), (float) (max <= 0 ? 0 : d / max), (float) max};
+	}
+
+	/** Smooth 1D value noise in 0..1. */
+	static double valueNoise(double x) {
+		double i = Math.floor(x);
+		double f = x - i;
+		double s = f * f * (3 - 2 * f);
+		return hash(i) * (1 - s) + hash(i + 1) * s;
 	}
 
 	public static int withAlpha(int argb, double alphaMul) {

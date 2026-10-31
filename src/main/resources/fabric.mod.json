@@ -4,7 +4,9 @@
 	"version": "${version}",
 	"name": "Angelic Halo",
 	"description": "A purely client-side, cosmetic ring around your player with scan, pulse, halo and ripple effects and a full colour studio. Sends nothing to the server.",
-	"authors": ["sn7d"],
+	"authors": [
+		"sn7d"
+	],
 	"contact": {
 		"sources": "https://github.com/sn7d/ultrastrike"
 	},
@@ -12,8 +14,12 @@
 	"icon": "assets/angelichalo/icon.png",
 	"environment": "client",
 	"entrypoints": {
-		"client": ["com.angelichalo.AngelicHalo"]
-		
+		"client": [
+			"com.angelichalo.AngelicHalo"
+		],
+		"modmenu": [
+			"com.angelichalo.compat.ModMenuCompat"
+		]
 	},
 	"depends": {
 		"fabricloader": ">=0.20.1",
@@ -23,5 +29,12 @@
 	},
 	"suggests": {
 		"modmenu": "*"
+	},
+	"custom": {
+		"modmenu": {
+			"links": {
+				"modmenu.github_releases": "https://github.com/sn7d/ultrastrike"
+			}
+		}
 	}
 }
