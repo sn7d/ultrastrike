@@ -68,6 +68,7 @@ class HaloLogicTest {
 					c.jumpRings = true;
 					c.damageFlash = true;
 					c.speedReactive = true;
+					c.bloom = true;
 					c.sanitize();
 
 					for (double t : new double[] {0, 0.37, 1.9, 12345.678}) {

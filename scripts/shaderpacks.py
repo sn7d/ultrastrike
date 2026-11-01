@@ -48,7 +48,7 @@ def main():
     with urllib.request.urlopen(urllib.request.Request(f["url"], headers=UA), timeout=300) as r:
         dest.write_bytes(r.read())
     (out / "PACK.txt").write_text(f"{slug} {v['version_number']} {f['filename']}\n")
-    print(dest)
+    print(dest.resolve())
 
 
 if __name__ == "__main__":
