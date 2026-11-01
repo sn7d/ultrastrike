@@ -812,6 +812,63 @@ public final class Controls {
 		}
 	}
 
+	/** Grid of special characters; clicking one inserts it. */
+	public static final class SymbolGrid extends Control {
+		private final String[] symbols;
+		private final Consumer<String> insert;
+		private float[] hovers;
+		private int flashIndex = -1;
+		private float flash;
+
+		public SymbolGrid(String[] symbols, Consumer<String> insert) {
+			this.symbols = symbols;
+			this.insert = insert;
+			this.hovers = new float[symbols.length];
+		}
+
+		private int cols() {
+			return Math.max(1, (w + 3) / 19);
+		}
+
+		@Override
+		public int height() {
+			int rows = (symbols.length + cols() - 1) / cols();
+			return rows * 19;
+		}
+
+		@Override
+		public void draw(GuiGraphicsExtractor g, int mx, int my, float dt) {
+			int cols = cols();
+			flash = Ui.approach(flash, 0f, dt, 5f);
+			for (int i = 0; i < symbols.length; i++) {
+				int cx = x + (i % cols) * 19;
+				int cy = y + (i / cols) * 19;
+				boolean over = mx >= cx && mx < cx + 16 && my >= cy && my < cy + 16;
+				hovers[i] = Ui.approach(hovers[i], over ? 1f : 0f, dt, 16f);
+				int bg = Ui.mix(Ui.BG_FIELD, Ui.BG_FIELD_HOVER, hovers[i]);
+				if (i == flashIndex) bg = Ui.mix(bg, Ui.ACCENT, flash * 0.6f);
+				Ui.round(g, cx, cy, cx + 16, cy + 16, 3, bg);
+				Ui.textCentered(g, symbols[i], cx + 8, cy + 4, Ui.mix(Ui.TEXT_MUTED, Ui.ACCENT, hovers[i]), Ui.FONT);
+			}
+		}
+
+		@Override
+		public boolean mouseDown(double mx, double my, int button) {
+			if (button != 0 || !contains(mx, my)) return false;
+			int cols = cols();
+			int col = (int) ((mx - x) / 19);
+			int row = (int) ((my - y) / 19);
+			int i = row * cols + col;
+			if (col < cols && i >= 0 && i < symbols.length) {
+				insert.accept(symbols[i]);
+				flashIndex = i;
+				flash = 1f;
+				return true;
+			}
+			return false;
+		}
+	}
+
 	/** Draws a texture scaled into a square (used for emblem thumbnails). */
 	public static void image(GuiGraphicsExtractor g, Identifier tex, int x, int y, int size, int argb) {
 		g.blit(RenderPipelines.GUI_TEXTURED, tex, x, y, 0, 0, size, size, size, size, Ui.a(argb));

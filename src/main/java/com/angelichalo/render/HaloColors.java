@@ -47,7 +47,7 @@ public final class HaloColors {
 				double x = u * reps * 2.0;
 				double n1 = 0.5 + 0.5 * Math.sin(x * 3.1 + time * speed * 2.3);
 				double n2 = 0.5 + 0.5 * Math.sin(x * 1.7 - time * speed * 1.6 + 1.3);
-				int third = hueShift(lerpRgb(c.primary, c.secondary, 0.5), 0.33);
+				int third = auroraThird(c.primary, c.secondary);
 				rgb = lerpRgb(lerpRgb(c.primary, c.secondary, n1), third, n2 * 0.6);
 				alpha *= 0.55 + 0.45 * (0.5 + 0.5 * Math.sin(x * 2.3 + time * speed * 3.0));
 			}
@@ -77,6 +77,20 @@ public final class HaloColors {
 		int g = (int) Math.round(((rgb >> 8) & 0xFF) * b);
 		int bl = (int) Math.round((rgb & 0xFF) * b);
 		return (r << 16) | (g << 8) | bl;
+	}
+
+	private static int auroraKeyA = -1;
+	private static int auroraKeyB = -1;
+	private static int auroraThird;
+
+	/** The aurora's third colour only changes when the two picked colours do: compute it once, not per vertex. */
+	private static int auroraThird(int a, int b) {
+		if (a != auroraKeyA || b != auroraKeyB) {
+			auroraKeyA = a;
+			auroraKeyB = b;
+			auroraThird = hueShift(lerpRgb(a, b, 0.5), 0.33);
+		}
+		return auroraThird;
 	}
 
 	public static int hueShift(int rgb, double shift) {

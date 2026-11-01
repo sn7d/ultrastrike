@@ -24,6 +24,7 @@ import com.angelichalo.gui.ui.Ui;
 import com.angelichalo.render.HaloColors;
 import com.angelichalo.render.HaloGeometry;
 import com.angelichalo.render.HaloImages;
+import com.angelichalo.render.HaloNametag;
 import com.angelichalo.render.HaloState;
 
 /**
@@ -36,6 +37,14 @@ public final class HaloProjector {
 	private float zoom = 1f;
 	private float autoSpin = 1f;
 	private boolean dragging;
+	private float headFocus;
+	private boolean focusHead;
+
+	/** Zoom the camera towards the head (used while editing the nametag). */
+	public void setFocusHead(boolean focus) {
+		this.focusHead = focus;
+	}
+
 	private double lastX;
 	private double lastY;
 
@@ -98,9 +107,10 @@ public final class HaloProjector {
 		double extent = Math.max(c.radius * 1.15, 1.2);
 		if (c.motion == HaloOptions.Motion.RIPPLE) extent = Math.max(extent, c.radius);
 		if (c.jumpRings) extent = Math.max(extent, c.jumpRingSize * 0.6);
-		double dist = (3.6 + extent * 2.2) / zoom;
+		headFocus = Ui.approach(headFocus, focusHead ? 1f : 0f, dt, 6f);
+		double dist = ((3.6 + extent * 2.2) * (1 - headFocus) + 2.4 * headFocus) / zoom;
 		double fov = Math.toRadians(40);
-		double targetY = 0.95;
+		double targetY = 0.95 + 1.15 * headFocus + (c.tagEnabled ? 0.2 * headFocus : 0);
 		double yr = Math.toRadians(yaw);
 		double pr = Math.toRadians(pitch);
 		double camX = Math.sin(yr) * Math.cos(pr) * dist;
@@ -160,6 +170,20 @@ public final class HaloProjector {
 
 		if (c.textEnabled && !c.text.isBlank()) {
 			text(g, c, proj, time);
+		}
+
+		if (c.tagEnabled || focusHead) {
+			double[] tp = proj.project(0, 1.8 + 0.5 + c.tagHeight, 0);
+			if (tp != null) {
+				float k = (float) (0.025 * c.tagScale * proj.focal / tp[2]);
+				LocalPlayer self = Minecraft.getInstance().player;
+				String fallback = self != null ? self.getName().getString() : "Player";
+				g.pose().pushMatrix();
+				g.pose().translate((float) tp[0], (float) tp[1]);
+				g.pose().scale(k, k);
+				HaloNametag.drawPreview(g, c, fallback, time, c.tagEnabled ? Ui.alpha : Ui.alpha * 0.45f);
+				g.pose().popMatrix();
+			}
 		}
 
 		if (c.emblemEnabled && c.emblemMode != HaloOptions.EmblemMode.FLOOR) {

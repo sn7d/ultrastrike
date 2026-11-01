@@ -196,6 +196,29 @@ public final class HaloConfig {
 		return bloom ? bloomStrength * layer : 0.0;
 	}
 
+	// ---- Nametag (your own, client-side only) ----
+	public boolean tagEnabled = false;
+	/** Your displayed name; blank = your username. Supports &-codes (&a, &l, &o, &r ...). */
+	public String tagText = "";
+	/** Optional title line above the name. */
+	public String tagTitle = "";
+	public double tagScale = 1.0;
+	public double tagHeight = 0.0;
+	public boolean tagBackground = true;
+	public double tagBackgroundOpacity = 0.3;
+	public boolean tagShadow = true;
+	public boolean tagSmoothFont = true;
+	public boolean tagBold = false;
+	public boolean tagThroughWalls = true;
+	/** "" for none, "builtin:x" or "file:y.png" from config/angelichalo/icons. */
+	public String tagIconLeft = "builtin:crown";
+	public String tagIconRight = "";
+	public double tagIconSize = 1.0;
+	public double tagGlow = 0.6;
+	public ColorSpec tagColor = new ColorSpec(ColorMode.GRADIENT, 0xFFE7A0, 0xFFFFFF, 1.0);
+	public ColorSpec tagTitleColor = new ColorSpec(ColorMode.SOLID, 0xC9A7FF, 0xFFFFFF, 1.0);
+	public ColorSpec tagIconColor = new ColorSpec(ColorMode.SOLID, 0xFFD27A, 0xFFFFFF, 1.0);
+
 	public static HaloConfig get() {
 		return instance;
 	}
@@ -290,6 +313,23 @@ public final class HaloConfig {
 		emblemSpin = clamp(emblemSpin, -360.0, 360.0);
 		emblemHeight = clamp(emblemHeight, -1.0, 4.0);
 		emblemPulse = clamp(emblemPulse, 0.0, 1.0);
+		if (tagText == null) tagText = "";
+		if (tagTitle == null) tagTitle = "";
+		if (tagText.length() > 64) tagText = tagText.substring(0, 64);
+		if (tagTitle.length() > 64) tagTitle = tagTitle.substring(0, 64);
+		if (tagIconLeft == null) tagIconLeft = "";
+		if (tagIconRight == null) tagIconRight = "";
+		if (tagColor == null) tagColor = new ColorSpec(ColorMode.GRADIENT, 0xFFE7A0, 0xFFFFFF, 1.0);
+		if (tagTitleColor == null) tagTitleColor = new ColorSpec(ColorMode.SOLID, 0xC9A7FF, 0xFFFFFF, 1.0);
+		if (tagIconColor == null) tagIconColor = new ColorSpec(ColorMode.SOLID, 0xFFD27A, 0xFFFFFF, 1.0);
+		tagColor.sanitize();
+		tagTitleColor.sanitize();
+		tagIconColor.sanitize();
+		tagScale = clamp(tagScale, 0.3, 4.0);
+		tagHeight = clamp(tagHeight, -1.0, 3.0);
+		tagBackgroundOpacity = clamp(tagBackgroundOpacity, 0.0, 1.0);
+		tagIconSize = clamp(tagIconSize, 0.5, 3.0);
+		tagGlow = clamp(tagGlow, 0.0, 2.0);
 		ringColor.sanitize();
 		trailColor.sanitize();
 		extrasColor.sanitize();

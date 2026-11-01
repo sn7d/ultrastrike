@@ -237,11 +237,19 @@ final class HaloDecor {
 		}
 	}
 
+	private static final java.util.Map<Integer, FormattedCharSequence> GLYPHS = new java.util.HashMap<>();
+
+	/** Per-letter sequences are cached: building components every frame is wasted work. */
 	private static FormattedCharSequence glyph(HaloConfig c, char ch) {
-		Component comp = Component.literal(String.valueOf(ch));
-		if (c.textSmoothFont) {
-			comp = Component.literal(String.valueOf(ch)).withStyle(s -> s.withFont(SMOOTH_FONT));
-		}
-		return comp.getVisualOrderText();
+		int key = (ch << 1) | (c.textSmoothFont ? 1 : 0);
+		FormattedCharSequence cached = GLYPHS.get(key);
+		if (cached != null) return cached;
+		if (GLYPHS.size() > 512) GLYPHS.clear();
+		Component comp = c.textSmoothFont
+				? Component.literal(String.valueOf(ch)).withStyle(s -> s.withFont(SMOOTH_FONT))
+				: Component.literal(String.valueOf(ch));
+		FormattedCharSequence seq = comp.getVisualOrderText();
+		GLYPHS.put(key, seq);
+		return seq;
 	}
 }

@@ -22,36 +22,53 @@ import net.fabricmc.loader.api.FabricLoader;
 import com.angelichalo.AngelicHalo;
 
 /**
- * Emblem images: built-in ones shipped in the jar, plus any PNG the player drops into
- * {@code config/angelichalo/images}. Everything is loaded locally.
+ * Image libraries: built-in images shipped in the jar plus any PNG the player drops into a config folder.
+ * Two libraries exist: emblems ({@code config/angelichalo/images}) and nametag icons ({@code config/angelichalo/icons}).
+ * Everything is loaded locally; file checks are throttled so nothing touches the disk every frame.
  */
 public final class HaloImages {
-	private HaloImages() { }
+	public static final HaloImages EMBLEMS = new HaloImages("images", "emblem",
+			List.of("sigil", "sunburst", "compass", "lotus", "snowflake", "crescent"));
+	public static final HaloImages ICONS = new HaloImages("icons", "icon",
+			List.of("crown", "star", "heart", "sword", "shield", "gem", "flame", "moon", "bolt", "sparkle", "leaf", "skull"));
 
-	public static final List<String> BUILTIN = List.of("sigil", "sunburst", "compass", "lotus", "snowflake", "crescent");
+	/** Built-in emblem names (kept for compatibility). */
+	public static final List<String> BUILTIN = EMBLEMS.builtins;
+
 	private static final long MAX_BYTES = 8L * 1024 * 1024;
+	private static final long RECHECK_MS = 1500;
 
-	private record Loaded(Identifier id, long modified, int width, int height) { }
+	private record Loaded(Identifier id, long modified, long checkedAt) { }
 
-	private static final Map<String, Loaded> USER = new HashMap<>();
-	private static final Map<String, String> FAILED = new HashMap<>();
-	private static List<String> cachedList = List.of();
-	private static long listTime;
+	private final String folderName;
+	private final String textureDir;
+	private final List<String> builtins;
+	private final Map<String, Loaded> user = new HashMap<>();
+	private final Map<String, String> failed = new HashMap<>();
+	private final Map<String, Long> failedAt = new HashMap<>();
+	private List<String> cachedList = List.of();
+	private long listTime;
 
-	public static Path folder() {
-		return FabricLoader.getInstance().getConfigDir().resolve("angelichalo").resolve("images");
+	private HaloImages(String folderName, String textureDir, List<String> builtins) {
+		this.folderName = folderName;
+		this.textureDir = textureDir;
+		this.builtins = builtins;
+	}
+
+	public Path folderPath() {
+		return FabricLoader.getInstance().getConfigDir().resolve("angelichalo").resolve(folderName);
 	}
 
 	/** "builtin:x" and "file:y.png" keys, refreshed at most every two seconds. */
-	public static List<String> available() {
+	public List<String> list() {
 		long now = System.currentTimeMillis();
 		if (now - listTime < 2000 && !cachedList.isEmpty()) return cachedList;
 		listTime = now;
 
 		List<String> out = new ArrayList<>();
-		for (String b : BUILTIN) out.add("builtin:" + b);
+		for (String b : builtins) out.add("builtin:" + b);
 
-		Path dir = folder();
+		Path dir = folderPath();
 		try {
 			Files.createDirectories(dir);
 			try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir, "*.{png,PNG}")) {
@@ -68,27 +85,20 @@ public final class HaloImages {
 		return cachedList;
 	}
 
-	public static String displayName(String key) {
-		int colon = key.indexOf(':');
-		String name = colon >= 0 ? key.substring(colon + 1) : key;
-		if (name.toLowerCase(Locale.ROOT).endsWith(".png")) name = name.substring(0, name.length() - 4);
-		return name.isEmpty() ? key : Character.toUpperCase(name.charAt(0)) + name.substring(1);
-	}
-
-	public static Identifier builtin(String name) {
-		return Identifier.fromNamespaceAndPath(AngelicHalo.MOD_ID, "textures/emblem/" + name + ".png");
+	public Identifier builtinId(String name) {
+		return Identifier.fromNamespaceAndPath(AngelicHalo.MOD_ID, "textures/" + textureDir + "/" + name + ".png");
 	}
 
 	/** Error for the last attempt at loading this key, or null. */
-	public static String error(String key) {
-		return FAILED.get(key);
+	public String errorFor(String key) {
+		return failed.get(key);
 	}
 
-	/** Texture for a key; falls back to the sigil when a file is missing or broken. */
-	public static Identifier texture(String key) {
+	/** Texture for a key; falls back to the first built-in when a file is missing or broken. */
+	public Identifier textureFor(String key) {
 		if (key.startsWith("builtin:")) {
 			String name = key.substring("builtin:".length());
-			return BUILTIN.contains(name) ? builtin(name) : builtin("sigil");
+			return builtinId(builtins.contains(name) ? name : builtins.get(0));
 		}
 
 		if (key.startsWith("file:")) {
@@ -96,24 +106,35 @@ public final class HaloImages {
 			if (id != null) return id;
 		}
 
-		return builtin("sigil");
+		return builtinId(builtins.get(0));
 	}
 
-	private static Identifier loadUser(String fileName) {
+	private Identifier loadUser(String fileName) {
 		if (fileName.contains("/") || fileName.contains("\\") || fileName.contains("..")) return null;
-		Path path = folder().resolve(fileName);
+		long now = System.currentTimeMillis();
+		Loaded existing = user.get(fileName);
+
+		// throttle disk checks: reuse what we have for a moment
+		if (existing != null && now - existing.checkedAt() < RECHECK_MS) return existing.id();
+		Long lastFail = failedAt.get(fileName);
+		if (existing == null && lastFail != null && now - lastFail < RECHECK_MS) return null;
+
+		Path path = folderPath().resolve(fileName);
+		String key = "file:" + fileName;
 
 		try {
 			if (!Files.isRegularFile(path)) {
-				FAILED.put("file:" + fileName, "not found");
+				fail(fileName, key, "not found");
 				return null;
 			}
 
 			long modified = Files.getLastModifiedTime(path).toMillis();
-			Loaded existing = USER.get(fileName);
-			if (existing != null && existing.modified() == modified) return existing.id();
+			if (existing != null && existing.modified() == modified) {
+				user.put(fileName, new Loaded(existing.id(), modified, now));
+				return existing.id();
+			}
 			if (Files.size(path) > MAX_BYTES) {
-				FAILED.put("file:" + fileName, "file larger than 8 MB");
+				fail(fileName, key, "file larger than 8 MB");
 				return null;
 			}
 
@@ -122,20 +143,48 @@ public final class HaloImages {
 				image = NativeImage.read(in);
 			}
 
-			Identifier id = Identifier.fromNamespaceAndPath(AngelicHalo.MOD_ID, "user/" + sanitize(fileName));
-			Minecraft mc = Minecraft.getInstance();
-			int w = image.getWidth();
-			int h = image.getHeight();
+			Identifier id = Identifier.fromNamespaceAndPath(AngelicHalo.MOD_ID, "user/" + textureDir + "/" + sanitize(fileName));
 			DynamicTexture texture = new DynamicTexture(() -> "Angelic Halo image " + fileName, image);
-			mc.getTextureManager().register(id, texture);
-			USER.put(fileName, new Loaded(id, modified, w, h));
-			FAILED.remove("file:" + fileName);
+			Minecraft.getInstance().getTextureManager().register(id, texture);
+			user.put(fileName, new Loaded(id, modified, now));
+			failed.remove(key);
+			failedAt.remove(fileName);
 			return id;
 		} catch (IOException | RuntimeException e) {
-			FAILED.put("file:" + fileName, e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage());
-			AngelicHalo.LOGGER.warn("Could not load emblem image {}", fileName, e);
+			fail(fileName, key, e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage());
+			AngelicHalo.LOGGER.warn("Could not load image {}", fileName, e);
 			return null;
 		}
+	}
+
+	private void fail(String fileName, String key, String why) {
+		failed.put(key, why);
+		failedAt.put(fileName, System.currentTimeMillis());
+	}
+
+	// ---- emblem facade (existing call sites) ----
+
+	public static List<String> available() {
+		return EMBLEMS.list();
+	}
+
+	public static Identifier texture(String key) {
+		return EMBLEMS.textureFor(key);
+	}
+
+	public static String error(String key) {
+		return EMBLEMS.errorFor(key);
+	}
+
+	public static Path folder() {
+		return EMBLEMS.folderPath();
+	}
+
+	public static String displayName(String key) {
+		int colon = key.indexOf(':');
+		String name = colon >= 0 ? key.substring(colon + 1) : key;
+		if (name.toLowerCase(Locale.ROOT).endsWith(".png")) name = name.substring(0, name.length() - 4);
+		return name.isEmpty() ? key : Character.toUpperCase(name.charAt(0)) + name.substring(1);
 	}
 
 	private static String sanitize(String name) {

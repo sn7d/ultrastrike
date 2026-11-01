@@ -184,6 +184,30 @@ public class HaloScreenshotTest implements FabricClientGameTest {
 				HaloConfig.set(n);
 			});
 
+			// custom nametag
+			pose(server, 0, 4);
+			shot(ctx, "feature_nametag", CameraType.THIRD_PERSON_FRONT, c -> {
+				HaloConfig n = HaloPresets.ALL.stream().filter(x -> x.id().equals("angelic")).findFirst().orElseThrow().build(c);
+				n.tagEnabled = true;
+				n.tagText = "&lD7 ✦ Angelic";
+				n.tagTitle = "&#C9A7FF☾ SkyBlock Wizard ☽";
+				n.tagIconLeft = "builtin:crown";
+				n.tagIconRight = "builtin:star";
+				HaloConfig.set(n);
+			});
+			shot(ctx, "feature_nametag_rainbow", CameraType.THIRD_PERSON_FRONT, c -> {
+				HaloConfig n = c.copy();
+				n.tagText = "★ itsd7 ★";
+				n.tagTitle = "&aMVP&6+ &7| &bLevel 300";
+				n.tagColor.mode = HaloOptions.ColorMode.RAINBOW;
+				n.tagColor.speed = 0.4;
+				n.tagIconLeft = "builtin:bolt";
+				n.tagIconRight = "builtin:gem";
+				n.tagIconColor.mode = HaloOptions.ColorMode.RAINBOW;
+				n.tagScale = 1.4;
+				HaloConfig.set(n);
+			});
+
 			// pause menu with the halo button next to Friends
 			ctx.runOnClient(mc -> mc.options.fov().set(70));
 			ctx.getInput().pressKey(o -> o.keyToggleGui);
@@ -214,6 +238,21 @@ public class HaloScreenshotTest implements FabricClientGameTest {
 				ctx.setScreen(() -> null);
 				ctx.waitTicks(1);
 			}
+
+			// nametag tab with the projector zoomed on the head
+			ctx.runOnClient(mc -> {
+				HaloConfig n = HaloConfig.get().copy();
+				n.tagEnabled = true;
+				n.tagText = "&lD7 ✦ Angelic";
+				n.tagTitle = "☾ SkyBlock Wizard ☽";
+				n.tagIconLeft = "builtin:crown";
+				HaloConfig.set(n);
+			});
+			ctx.runOnClient(mc -> HaloConfigScreen.setStartTab(8));
+			ctx.setScreen(() -> new HaloConfigScreen(null));
+			ctx.waitTicks(12);
+			ctx.takeScreenshot("gui_nametag");
+			ctx.setScreen(() -> null);
 
 			ctx.runOnClient(mc -> HaloConfigScreen.setStartColorTarget(1));
 			ctx.runOnClient(mc -> HaloConfigScreen.setStartTab(4));

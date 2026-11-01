@@ -42,6 +42,7 @@ public class HaloConfigScreen extends Screen {
 		GLOW("Glow", "Soft bloom around every effect"),
 		TEXT("Text", "Your own words around the ring"),
 		EMBLEM("Emblem", "Project an image under or above you"),
+		NAMETAG("Nametag", "Your own name above your head"),
 		EXTRAS("Extras", "Particles and reactive effects"),
 		GENERAL("General", "Visibility and behaviour"),
 		SHARE("Share", "Codes, saved looks and import/export");
@@ -55,6 +56,15 @@ public class HaloConfigScreen extends Screen {
 		}
 	}
 
+	private static final String[] SYMBOLS = {
+			"★", "☆", "✦", "✧", "✪", "✯", "✰", "⭑", "❖", "◆", "◇", "♦", "●", "○", "◉", "♛", "♚", "♔", "♕", "⚔",
+			"⚒", "⛏", "⚚", "❤", "♥", "♡", "❣", "☀", "☼", "☾", "☽", "☁", "⚡", "❄", "☃", "✿", "❀", "❁", "☘", "♣",
+			"♠", "♪", "♫", "☯", "☠", "⚜", "✞", "✝", "☩", "∞", "✓", "✔", "✗", "✘", "➤", "➜", "»", "«", "⟡", "✺",
+			"❂", "✹", "✵", "⁂", "※", "†", "‡", "§", "¶", "™", "©", "®", "✎", "✉", "⌛", "⚑", "⚐", "☂", "☕", "⚓",
+			"♨", "⚛", "☢", "☣", "Ω", "Σ", "λ", "π", "µ", "α", "β", "δ", "∆", "√", "≈", "≠", "≤", "≥", "÷", "×",
+			"⇧", "⇩", "⇦", "⇨", "↑", "↓", "←", "→", "▲", "▼", "◀", "▶", "■", "□", "▪", "▫", "░", "▒", "▓", "█"
+	};
+
 	private static final int[] PALETTE = {
 			0xFF4B55, 0xFF2A00, 0xFF8A00, 0xFFD54F, 0xFFF4D6, 0x7CFF2B, 0x00FF88, 0x3DFFB5,
 			0x38E8FF, 0x2F7BFF, 0x7C4DFF, 0xC77DFF, 0xFF9EC7, 0xFF00AA, 0xFFFFFF, 0x101010
@@ -67,7 +77,8 @@ public class HaloConfigScreen extends Screen {
 	private final HaloConfig backup;
 	private final HaloProjector projector = new HaloProjector();
 	private Tab tab = lastTab;
-	private int colorTarget = lastColorTarget; // 0 ring, 1 trail, 2 extras, 3 text, 4 emblem
+	private int colorTarget = lastColorTarget; // 0 ring, 1 trail, 2 extras, 3 text, 4 emblem, 5 name, 6 title, 7 icons
+	private int symbolTarget; // 0 name, 1 title
 	private List<Control> controls = new ArrayList<>();
 	private final List<Control> footer = new ArrayList<>();
 	private @Nullable Control active;
@@ -111,7 +122,7 @@ public class HaloConfigScreen extends Screen {
 
 	/** Choose which colour layer the Colours tab edits (0 ring, 1 trail, 2 extras, 3 text, 4 emblem). */
 	public static void setStartColorTarget(int target) {
-		lastColorTarget = Math.floorMod(target, 5);
+		lastColorTarget = Math.floorMod(target, 8);
 	}
 
 	public HaloConfigScreen(@Nullable Screen parent) {
@@ -354,6 +365,7 @@ public class HaloConfigScreen extends Screen {
 		drawContent(g, mx, my, dt);
 
 		if (px0 < wx1 - 40 && cx1 < px0) {
+			projector.setFocusHead(tab == Tab.NAMETAG);
 			projector.draw(g, px0, wy0 + 12, wx1 - 10, wy1 - 12, dt, mx, my);
 		}
 
@@ -542,6 +554,27 @@ public class HaloConfigScreen extends Screen {
 		return new Controls.Note(() -> text, Ui.TEXT_MUTED);
 	}
 
+	/** Icon grid with a "None" card first. */
+	private Control iconPicker(Supplier<String> get, Consumer<String> set) {
+		return new Controls.CardGrid<String>(() -> {
+			List<String> items = new ArrayList<>();
+			items.add("");
+			items.addAll(HaloImages.ICONS.list());
+			return items;
+		}, k -> k.equals(get.get()), set,
+				(g, k, x, y, w, h, hover, sel) -> {
+					Ui.round(g, x, y, x + w, y + h, 5, Ui.mix(Ui.BG_FIELD, Ui.BG_FIELD_HOVER, Math.max(hover, sel ? 1 : 0)));
+					if (k.isEmpty()) {
+						Ui.textCentered(g, "None", x + w / 2, y + h / 2 - 4, sel ? Ui.ACCENT : Ui.TEXT_MUTED, Ui.FONT);
+					} else {
+						int s = h - 8;
+						Controls.image(g, HaloImages.ICONS.textureFor(k), x + (w - s) / 2, y + 4, s,
+								sel ? 0xFFFFD27A : Ui.mix(0xFFB8BBC8, 0xFFFFFFFF, hover));
+					}
+					if (sel) Ui.roundOutline(g, x, y, x + w, y + h, 5, Ui.withAlpha(Ui.ACCENT, 0.7f));
+				}, 26, 26);
+	}
+
 	private ColorSpec spec() {
 		HaloConfig c = cfg();
 		return switch (colorTarget) {
@@ -549,6 +582,9 @@ public class HaloConfigScreen extends Screen {
 			case 2 -> c.extrasColor;
 			case 3 -> c.textColor;
 			case 4 -> c.emblemColor;
+			case 5 -> c.tagColor;
+			case 6 -> c.tagTitleColor;
+			case 7 -> c.tagIconColor;
 			default -> c.ringColor;
 		};
 	}
@@ -710,8 +746,8 @@ public class HaloConfigScreen extends Screen {
 				}
 			}
 			case COLOURS -> {
-				List<Integer> targets = List.of(0, 1, 2, 3, 4);
-				String[] names = {"Ring", "Scan trail", "Extras", "Text", "Emblem"};
+				List<Integer> targets = List.of(0, 1, 2, 3, 4, 5, 6, 7);
+				String[] names = {"Ring", "Scan trail", "Extras", "Text", "Emblem", "Nametag", "Nametag title", "Nametag icons"};
 				e.add(new Controls.Choice<Integer>("Editing", targets, () -> colorTarget, v -> {
 					colorTarget = v;
 					lastColorTarget = v;
@@ -773,6 +809,49 @@ public class HaloConfigScreen extends Screen {
 				e.add(slider("emblem_pulse", 0, 1, 0.01, () -> cfg().emblemPulse, v -> cfg().emblemPulse = v, "%.2f"));
 				e.add(header("Emblem colours"));
 				colorStudio(e, () -> cfg().emblemColor);
+			}
+			case NAMETAG -> {
+				e.add(toggle("tag_enabled", () -> cfg().tagEnabled, v -> cfg().tagEnabled = v));
+				e.add(new Controls.TextField(opt("tag_text"), () -> cfg().tagText, v -> cfg().tagText = v, 64, cp -> cp >= 32 && cp != 127)
+						.tip(tip("tag_text")));
+				e.add(new Controls.TextField(opt("tag_title"), () -> cfg().tagTitle, v -> cfg().tagTitle = v, 64, cp -> cp >= 32 && cp != 127)
+						.tip(tip("tag_title")));
+				e.add(note("Leave the name empty to show your username. Formatting codes work too: &a…&f colours, &#FF77AA any colour, &l bold, &o italic, &n underline, &m strikethrough, &k magic, &r reset."));
+				e.add(header("Symbols"));
+				e.add(new Controls.Choice<Integer>("Insert into", List.of(0, 1), () -> symbolTarget, v -> symbolTarget = v,
+						v -> v == 0 ? "Name" : "Title"));
+				e.add(new Controls.SymbolGrid(SYMBOLS, sym -> {
+					HaloConfig c = cfg();
+					if (symbolTarget == 0) {
+						if (c.tagText.codePointCount(0, c.tagText.length()) < 64) c.tagText = c.tagText + sym;
+					} else if (c.tagTitle.codePointCount(0, c.tagTitle.length()) < 64) {
+						c.tagTitle = c.tagTitle + sym;
+					}
+				}));
+				e.add(header("Icons"));
+				e.add(new Controls.Note(() -> "Left of your name", Ui.TEXT));
+				e.add(iconPicker(() -> cfg().tagIconLeft, v -> cfg().tagIconLeft = v));
+				e.add(new Controls.Note(() -> "Right of your name", Ui.TEXT));
+				e.add(iconPicker(() -> cfg().tagIconRight, v -> cfg().tagIconRight = v));
+				e.add(new Controls.Note(() -> "Add your own: drop PNG files into config/angelichalo/icons and they appear here automatically.", Ui.TEXT_MUTED));
+				e.add(header("Look"));
+				e.add(slider("tag_scale", 0.3, 4, 0.05, () -> cfg().tagScale, v -> cfg().tagScale = v, "%.2f×"));
+				e.add(slider("tag_height", -1, 3, 0.05, () -> cfg().tagHeight, v -> cfg().tagHeight = v, "%.2f"));
+				e.add(slider("tag_icon_size", 0.5, 3, 0.05, () -> cfg().tagIconSize, v -> cfg().tagIconSize = v, "%.2f×"));
+				e.add(slider("tag_glow", 0, 2, 0.01, () -> cfg().tagGlow, v -> cfg().tagGlow = v, "%.2f"));
+				e.add(toggle("tag_background", () -> cfg().tagBackground, v -> cfg().tagBackground = v));
+				e.add(slider("tag_background_opacity", 0, 1, 0.01, () -> cfg().tagBackgroundOpacity, v -> cfg().tagBackgroundOpacity = v, "%.2f"));
+				e.add(toggle("tag_shadow", () -> cfg().tagShadow, v -> cfg().tagShadow = v));
+				e.add(toggle("tag_bold", () -> cfg().tagBold, v -> cfg().tagBold = v));
+				e.add(toggle("tag_smooth_font", () -> cfg().tagSmoothFont, v -> cfg().tagSmoothFont = v));
+				e.add(toggle("tag_through_walls", () -> cfg().tagThroughWalls, v -> cfg().tagThroughWalls = v));
+				e.add(header("Name colours"));
+				colorStudio(e, () -> cfg().tagColor);
+				e.add(header("Title colours"));
+				colorStudio(e, () -> cfg().tagTitleColor);
+				e.add(header("Icon colours"));
+				colorStudio(e, () -> cfg().tagIconColor);
+				e.add(new Controls.Note(() -> "Only you see this nametag. It doesn't change your real name, and nothing is sent to the server.", Ui.SUCCESS));
 			}
 			case EXTRAS -> {
 				e.add(header(tr("angelichalo.section.embers")));

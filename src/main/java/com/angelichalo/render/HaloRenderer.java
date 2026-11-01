@@ -162,41 +162,32 @@ public final class HaloRenderer {
 
 	private static void renderUnsafe(LevelRenderContext context) {
 		HaloConfig c = HaloConfig.get();
-		if (!c.enabled) return;
+		if (!c.enabled && !c.tagEnabled) return;
 
 		Minecraft mc = Minecraft.getInstance();
 		LocalPlayer player = mc.player;
-		if (player == null || mc.level == null) return;
+		if (player == null || mc.level == null || player.isSpectator()) return;
 
 		CameraType cam = mc.options.getCameraType();
-		if (cam.isFirstPerson() ? !c.showInFirstPerson : !c.showInThirdPerson) return;
-		if (c.hideWhenSneaking && player.isCrouching()) return;
-		if (c.hideWhenInvisible && player.isInvisible()) return;
-		if (player.isSpectator()) return;
+		boolean haloOn = c.enabled
+				&& (cam.isFirstPerson() ? c.showInFirstPerson : c.showInThirdPerson)
+				&& !(c.hideWhenSneaking && player.isCrouching())
+				&& !(c.hideWhenInvisible && player.isInvisible());
+		// your own nametag only makes sense when you can see yourself
+		boolean tagOn = c.tagEnabled && !cam.isFirstPerson() && !player.isInvisible();
+		if (!haloOn && !tagOn) return;
 
 		CameraRenderState camera = context.levelState().cameraRenderState;
 		Vec3 camPos = camera.pos;
 		float partial = mc.getDeltaTracker().getGameTimeDeltaPartialTick(true);
 		Vec3 feet = player.getPosition(partial);
-
-		// world size of one 1080p pixel at distance 1: 2 * tan(fov/2) / 1080 = 2 / (proj.m11 * 1080)
-		Matrix4f proj = camera.projectionMatrix;
-		double m11 = proj != null && proj.m11() > 1e-4f ? proj.m11() : 1.0 / Math.tan(Math.toRadians(35));
-		double pixelScale = 2.0 / (m11 * 1080.0);
+		double fx = feet.x - camPos.x;
+		double fy = feet.y - camPos.y;
+		double fz = feet.z - camPos.z;
+		double time = HaloState.now();
 
 		float maxHealth = player.getMaxHealth();
 		double health = maxHealth > 0 ? player.getHealth() / maxHealth : 1.0;
-
-		HaloGeometry.Frame frame = new HaloGeometry.Frame(
-				feet.x - camPos.x, feet.y - camPos.y, feet.z - camPos.z,
-				camPos.x, camPos.y, camPos.z,
-				player.getBbHeight(),
-				HaloState.now(),
-				health,
-				pixelScale,
-				HaloState.speedFactor(),
-				HaloState.damageFlash(),
-				HaloState.jumpRings());
 
 		CORE_QUADS.clear();
 		GLOW_QUADS.clear();
@@ -205,29 +196,44 @@ public final class HaloRenderer {
 		boolean shaders = shadersActive();
 		HaloGeometry.setShaderMode(shaders);
 		boolean ownGlow = !shaders || c.bloomWithShaders;
-		HaloGeometry.build(c, frame, CORE_QUADS, ownGlow ? GLOW_QUADS : HaloGeometry.DISCARD);
-
-		PoseStack poseStack = context.poseStack();
-		HaloDecor.render(context, c, player, frame.cx(), frame.cy(), frame.cz(), frame.time(), health,
-				c.throughWalls && c.hiddenOpacity >= 0.995, partial, ownGlow ? GLOW_QUADS : HaloGeometry.DISCARD);
+		HaloGeometry.QuadSink glowSink = ownGlow ? GLOW_QUADS : HaloGeometry.DISCARD;
 		boolean allOnTop = c.throughWalls && c.hiddenOpacity >= 0.995;
-		boolean hiddenPass = c.throughWalls && !allOnTop && c.hiddenOpacity > 0.005;
+
+		if (haloOn) {
+			// world size of one 1080p pixel at distance 1: 2 * tan(fov/2) / 1080 = 2 / (proj.m11 * 1080)
+			Matrix4f proj = camera.projectionMatrix;
+			double m11 = proj != null && proj.m11() > 1e-4f ? proj.m11() : 1.0 / Math.tan(Math.toRadians(35));
+			double pixelScale = 2.0 / (m11 * 1080.0);
+
+			HaloGeometry.Frame frame = new HaloGeometry.Frame(fx, fy, fz, camPos.x, camPos.y, camPos.z,
+					player.getBbHeight(), time, health, pixelScale, HaloState.speedFactor(),
+					HaloState.damageFlash(), HaloState.jumpRings());
+			HaloGeometry.build(c, frame, CORE_QUADS, glowSink);
+			HaloDecor.render(context, c, player, fx, fy, fz, time, health, allOnTop, partial, glowSink);
+		}
+
+		if (tagOn) {
+			HaloNametag.render(context, c, player, fx, fy, fz, time, health, glowSink);
+		}
 
 		if (shaders && c.shaderColorBoost > 1.001) {
 			CORE_QUADS.saturate((float) c.shaderColorBoost);
 			GLOW_QUADS.saturate((float) c.shaderColorBoost);
 		}
 
+		// The buffers are consumed when the frame's submits are drawn, before the next frame refills them,
+		// so they can be handed over directly without per-frame copies.
+		PoseStack poseStack = context.poseStack();
+		boolean hiddenPass = c.throughWalls && !allOnTop && c.hiddenOpacity > 0.005;
+
 		if (!GLOW_QUADS.isEmpty()) {
-			QuadBuffer glow = GLOW_QUADS.snapshot();
-			submit(context, poseStack, allOnTop ? GLOW_XRAY : GLOW, glow, 1.0);
-			if (hiddenPass) submit(context, poseStack, GLOW_HIDDEN, glow, c.hiddenOpacity);
+			submit(context, poseStack, allOnTop ? GLOW_XRAY : GLOW, GLOW_QUADS, 1.0);
+			if (hiddenPass) submit(context, poseStack, GLOW_HIDDEN, GLOW_QUADS, c.hiddenOpacity);
 		}
 
 		if (!CORE_QUADS.isEmpty()) {
-			QuadBuffer core = CORE_QUADS.snapshot();
-			submit(context, poseStack, allOnTop ? CORE_XRAY : CORE, core, 1.0);
-			if (hiddenPass) submit(context, poseStack, CORE_HIDDEN, core, c.hiddenOpacity);
+			submit(context, poseStack, allOnTop ? CORE_XRAY : CORE, CORE_QUADS, 1.0);
+			if (hiddenPass) submit(context, poseStack, CORE_HIDDEN, CORE_QUADS, c.hiddenOpacity);
 		}
 	}
 

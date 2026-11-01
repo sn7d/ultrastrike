@@ -140,6 +140,21 @@ class HaloLogicTest {
 	}
 
 	@Test
+	void nametagFormattingCodes() {
+		java.util.List<com.angelichalo.render.NametagText.Glyph> g = com.angelichalo.render.NametagText.parse("&6&lD7&r ★ &#FF77AAx&&");
+		assertEquals("D7 ★ x&", com.angelichalo.render.NametagText.plain("&6&lD7&r ★ &#FF77AAx&&"));
+		assertEquals(0xFFAA00, g.get(0).rgb());
+		assertTrue(g.get(0).bold());
+		assertEquals(-1, g.get(2).rgb(), "reset returns to the colour effect");
+		assertFalse(g.get(2).bold());
+		assertEquals(0xFF77AA, g.get(5).rgb());
+		assertEquals("&", g.get(6).text());
+		assertEquals(7, g.size());
+		// a lone & or unknown code stays visible
+		assertEquals("a & b &z", com.angelichalo.render.NametagText.plain("a & b &z"));
+	}
+
+	@Test
 	void colourAlphaAndOpacity() {
 		ColorSpec s = new ColorSpec(HaloOptions.ColorMode.SOLID, 0x123456, 0, 0.5);
 		int argb = HaloColors.color(s, 0, 0, 0, 1, 1);
