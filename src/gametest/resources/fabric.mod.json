@@ -9,6 +9,9 @@
 			"com.angelichalo.gametest.HaloScreenshotTest",
 			"com.angelichalo.gametest.NametagFunctionTest",
 			"com.angelichalo.gametest.ShaderCompatTest"
+		],
+		"client": [
+			"com.angelichalo.gametest.TestWatchdog"
 		]
 	},
 	"depends": {

@@ -48,6 +48,7 @@ jobs:
       - run: python3 scripts/compat_mods.py "$(grep '^minecraft_version=' gradle.properties | cut -d= -f2)" compat-mods essential | tee mods.txt
       - id: test
         continue-on-error: true
+        timeout-minutes: 20
         run: |
           sudo apt-get update -q && sudo apt-get install -y -q xvfb mesa-utils libgl1-mesa-dri
           for i in 1 2 3; do ./gradlew jar gametestJar -PcompatMods=compat-mods && break; sleep $((i * 30)); done
