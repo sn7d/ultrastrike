@@ -44,7 +44,7 @@ public final class HaloNametag {
 		Font font = mc.font;
 		String nameText = c.tagText.isBlank() ? player.getName().getString() : c.tagText;
 		nameLine = layout(nameLine, font, nameText, c, true);
-		titleLine = c.tagTitle.isBlank() ? null : layout(titleLine, font, c.tagTitle, c, false);
+		titleLine = !c.tagTitleEnabled || c.tagTitle.isBlank() ? null : layout(titleLine, font, c.tagTitle, c, false);
 
 		boolean leftIcon = !c.tagIconLeft.isBlank();
 		boolean rightIcon = !c.tagIconRight.isBlank();
@@ -154,7 +154,7 @@ public final class HaloNametag {
 			double time, float alpha) {
 		Font font = Minecraft.getInstance().font;
 		nameLine = layout(nameLine, font, c.tagText.isBlank() ? fallbackName : c.tagText, c, true);
-		titleLine = c.tagTitle.isBlank() ? null : layout(titleLine, font, c.tagTitle, c, false);
+		titleLine = !c.tagTitleEnabled || c.tagTitle.isBlank() ? null : layout(titleLine, font, c.tagTitle, c, false);
 		int iconPx = (int) Math.round(9 * c.tagIconSize);
 		int nameLeft = -nameLine.width() / 2;
 		int nameRight = nameLeft + nameLine.width();

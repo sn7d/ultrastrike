@@ -365,5 +365,7 @@
 	"angelichalo.option.tag_smooth_font": "Smooth Font",
 	"angelichalo.option.tag_smooth_font.tip": "Use the smooth typeface instead of the Minecraft font.",
 	"angelichalo.option.tag_through_walls": "Through Blocks",
-	"angelichalo.option.tag_through_walls.tip": "Faintly visible through blocks, like vanilla nametags."
+	"angelichalo.option.tag_through_walls.tip": "Faintly visible through blocks, like vanilla nametags.",
+	"angelichalo.option.tag_title_enabled": "Show Title",
+	"angelichalo.option.tag_title_enabled.tip": "Show or hide the title line without deleting it."
 }

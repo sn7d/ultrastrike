@@ -202,6 +202,7 @@ public final class HaloConfig {
 	public String tagText = "";
 	/** Optional title line above the name. */
 	public String tagTitle = "";
+	public boolean tagTitleEnabled = true;
 	public double tagScale = 1.0;
 	public double tagHeight = 0.0;
 	public boolean tagBackground = true;

@@ -23,8 +23,9 @@ public class NametagFunctionTest implements FabricClientGameTest {
 	private static final int TOGGLE = 0;
 	private static final int NAME_FIELD = 1;
 	private static final int TITLE_FIELD = 2;
-	private static final int INSERT_INTO = 5;
-	private static final int SYMBOLS = 6;
+	private static final int TITLE_TOGGLE = 3;
+	private static final int INSERT_INTO = 6;
+	private static final int SYMBOLS = 7;
 
 	@Override
 	public void runTest(ClientGameTestContext ctx) {
@@ -82,7 +83,14 @@ public class NametagFunctionTest implements FabricClientGameTest {
 			check(ctx, c -> c.tagTitle.equals("✦ &aGuardian"), "title with &-codes is saved");
 			ctx.takeScreenshot("func_nametag_menu");
 
-			// 6) close and look at it in third person
+			// 6) the title toggle hides and shows the title without deleting it
+			click(ctx, TITLE_TOGGLE, 0.95, 0.5);
+			check(ctx, c -> !c.tagTitleEnabled && c.tagTitle.equals("✦ &aGuardian"), "title toggle hides the title and keeps its text");
+			ctx.takeScreenshot("func_nametag_title_off");
+			click(ctx, TITLE_TOGGLE, 0.95, 0.5);
+			check(ctx, c -> c.tagTitleEnabled, "title toggle shows the title again");
+
+			// 7) close and look at it in third person
 			ctx.setScreen(() -> null);
 			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT));
 			ctx.waitTicks(10);

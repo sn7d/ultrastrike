@@ -90,3 +90,33 @@ tasks.register('printCompileClasspath') {
 		files.each { println "CP: ${it}" }
 	}
 }
+
+// Launcher-like ("production") client run of the in-game tests, with real mod jars in a mods folder.
+// Needed for mods such as Essential that refuse to start in a development environment.
+configurations {
+	prodMods {
+		transitive = false
+	}
+}
+
+dependencies {
+	prodMods "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+}
+
+def gametestJar = tasks.register('gametestJar', Jar) {
+	from sourceSets.gametest.output
+	archiveClassifier = 'gametest'
+	destinationDirectory = layout.buildDirectory.dir('gametest-libs')
+}
+
+tasks.register('prodClientGameTest', net.fabricmc.loom.task.prod.ClientProductionRunTask) {
+	mods.from(tasks.named('jar'))
+	mods.from(gametestJar)
+	mods.from(configurations.prodMods)
+	if (project.hasProperty('compatMods')) {
+		mods.from(fileTree(dir: project.property('compatMods'), include: '*.jar'))
+	}
+	jvmArgs.add('-Dfabric.client.gametest')
+	runDir = layout.projectDirectory.dir('run/prod')
+	useXVFB = true
+}

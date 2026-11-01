@@ -50,8 +50,8 @@ jobs:
         continue-on-error: true
         run: |
           sudo apt-get update -q && sudo apt-get install -y -q xvfb mesa-utils libgl1-mesa-dri
-          for i in 1 2 3; do ./gradlew gametestClasses -PcompatMods=compat-mods && break; sleep $((i * 30)); done
-          xvfb-run -a -s "-screen 0 1920x1080x24" ./gradlew runClientGameTest -PcompatMods=compat-mods --stacktrace 2>&1 | tee gametest.log; exit ${PIPESTATUS[0]}
+          for i in 1 2 3; do ./gradlew jar gametestJar -PcompatMods=compat-mods && break; sleep $((i * 30)); done
+          ./gradlew prodClientGameTest -PcompatMods=compat-mods --stacktrace 2>&1 | tee gametest.log; exit ${PIPESTATUS[0]}
       - if: always()
         run: |
           mkdir -p out/screenshots

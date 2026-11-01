@@ -822,6 +822,7 @@ public class HaloConfigScreen extends Screen {
 						.tip(tip("tag_text")));
 				e.add(new Controls.TextField(opt("tag_title"), () -> cfg().tagTitle, v -> cfg().tagTitle = v, 64, cp -> cp >= 32 && cp != 127)
 						.tip(tip("tag_title")));
+				e.add(toggle("tag_title_enabled", () -> cfg().tagTitleEnabled, v -> cfg().tagTitleEnabled = v));
 				e.add(note("Leave the name empty to show your username. Formatting codes work too: &a…&f colours, &#FF77AA any colour, &l bold, &o italic, &n underline, &m strikethrough, &k magic, &r reset."));
 				e.add(header("Symbols"));
 				e.add(new Controls.Choice<Integer>("Insert into", List.of(0, 1), () -> symbolTarget, v -> symbolTarget = v,
