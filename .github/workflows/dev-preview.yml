@@ -52,6 +52,8 @@ jobs:
         run: |
           sudo apt-get update -q && sudo apt-get install -y -q xvfb mesa-utils libgl1-mesa-dri
           for i in 1 2 3; do ./gradlew jar gametestJar -PcompatMods=compat-mods && break; sleep $((i * 30)); done
+          # a fresh launcher-style install shows the one-time accessibility welcome screen: pre-answer it
+          mkdir -p run/prod && printf 'onboardAccessibility:false\nskipMultiplayerWarning:true\ntutorialStep:none\n' > run/prod/options.txt
           ./gradlew prodClientGameTest -PcompatMods=compat-mods --stacktrace 2>&1 | tee gametest.log; exit ${PIPESTATUS[0]}
       - if: always()
         run: |
