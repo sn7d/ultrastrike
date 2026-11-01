@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
+import net.fabricmc.loader.api.FabricLoader;
 
 /** Small differences in Fabric's client gametest API between Minecraft lines. */
 final class TestCompat {
@@ -38,36 +39,46 @@ final class TestCompat {
 	}
 
 	private static int skipped;
+	private static Boolean offLoopFramesUnsafe;
 
-	/** Screenshots that could not be taken (see {@link #screenshot}); reported at the end of a run. */
+	/** Screenshots that could not be taken (see {@link #screenshot}). */
 	static int skippedScreenshots() {
 		return skipped;
 	}
 
 	/**
-	 * {@code ctx.takeScreenshot(name)}, tolerant of one known incompatibility: Fabric's screenshot helper renders an
-	 * extra frame outside the game loop, which Sodium's 26.1 builds reject ("Global terrain uniforms have not been
-	 * updated"). That frame is Sodium's terrain, not Aureole; the game keeps running normally, so the image is skipped
-	 * and the test goes on (renderer errors from Aureole are still checked via HaloRenderer.hasFailed()).
+	 * Fabric's screenshot helper renders one extra frame outside the game loop. Sodium's 26.1 builds reject such frames
+	 * ("Global terrain uniforms have not been updated"), and each rejected frame leaves render state behind, so with
+	 * Sodium on 26.1 we never ask for one: the scenes still run through the normal game loop (exercising Aureole's
+	 * renderer every frame, checked via HaloRenderer.hasFailed()), only the image files are skipped.
 	 */
+	static boolean offLoopFramesUnsafe() {
+		if (offLoopFramesUnsafe == null) {
+			FabricLoader loader = FabricLoader.getInstance();
+			String mc = loader.getModContainer("minecraft").map(m -> m.getMetadata().getVersion().getFriendlyString()).orElse("");
+			offLoopFramesUnsafe = loader.isModLoaded("sodium") && mc.startsWith("26.1");
+			if (offLoopFramesUnsafe) System.out.println("[aureole-test] Sodium on Minecraft " + mc + ": screenshots are skipped, scenes still run");
+		}
+		return offLoopFramesUnsafe;
+	}
+
+	/** {@code ctx.takeScreenshot(name)}, except where off-loop frames are unsafe (see above). */
 	static void screenshot(ClientGameTestContext ctx, String name) {
-		for (int attempt = 1; ; attempt++) {
-			try {
-				ctx.takeScreenshot(name);
-				return;
-			} catch (RuntimeException e) {
-				Throwable root = e;
-				while (root.getCause() != null) root = root.getCause();
-				String msg = String.valueOf(e.getMessage()) + " / " + root.getMessage();
-				if (!msg.contains("terrain uniforms")) throw e;
-				if (attempt >= 2) {
-					skipped++;
-					System.out.println("[aureole-test] screenshot " + name + " skipped (Sodium rejects off-loop frames): " + root.getMessage());
-					ctx.waitTicks(5);
-					return;
-				}
-				ctx.waitTicks(20);
-			}
+		if (offLoopFramesUnsafe()) {
+			skipped++;
+			ctx.waitTick();
+			return;
+		}
+		try {
+			ctx.takeScreenshot(name);
+		} catch (RuntimeException e) {
+			Throwable root = e;
+			while (root.getCause() != null) root = root.getCause();
+			if (!String.valueOf(root.getMessage()).contains("terrain uniforms")) throw e;
+			// another Sodium build with the same limitation: stop asking after the first rejected frame
+			offLoopFramesUnsafe = true;
+			skipped++;
+			System.out.println("[aureole-test] screenshots disabled after " + name + ": " + root.getMessage());
 		}
 	}
 }
