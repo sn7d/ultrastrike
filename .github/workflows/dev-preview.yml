@@ -22,9 +22,9 @@ jobs:
       - id: test
         continue-on-error: true
         run: |
-          sudo apt-get update -q && sudo apt-get install -y -q xvfb mesa-utils libgl1-mesa-dri
+          sudo apt-get update -q && sudo apt-get install -y -q xvfb mesa-utils libgl1-mesa-dri mesa-vulkan-drivers libvulkan1
           for i in 1 2 3; do ./gradlew gametestClasses && break; sleep $((i * 30)); done
-          xvfb-run -a -s "-screen 0 1920x1080x24" ./gradlew runClientGameTest --stacktrace
+          xvfb-run -a -s "-screen 0 1920x1080x24 +extension GLX" ./gradlew runClientGameTest --stacktrace
       - if: always()
         run: |
           mkdir -p out/screenshots
@@ -52,7 +52,7 @@ jobs:
         continue-on-error: true
         timeout-minutes: 20
         run: |
-          sudo apt-get update -q && sudo apt-get install -y -q xvfb mesa-utils libgl1-mesa-dri
+          sudo apt-get update -q && sudo apt-get install -y -q xvfb mesa-utils libgl1-mesa-dri mesa-vulkan-drivers libvulkan1
           for i in 1 2 3; do ./gradlew jar gametestJar -PcompatMods=compat-mods && break; sleep $((i * 30)); done
           # a fresh launcher-style install shows the one-time accessibility welcome screen: pre-answer it
           mkdir -p run/prod && printf 'onboardAccessibility:false\nskipMultiplayerWarning:true\ntutorialStep:none\n' > run/prod/options.txt

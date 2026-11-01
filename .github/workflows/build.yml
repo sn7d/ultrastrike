@@ -15,6 +15,7 @@ jobs:
     # A "line" is one jar (versions/<line>.properties); each patch release of the line is tested with it.
     name: build (${{ matrix.mc }})
     runs-on: ubuntu-24.04
+    timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
@@ -42,8 +43,10 @@ jobs:
 
       - name: In-game test (singleplayer, screenshots)
         run: |
-          sudo apt-get update -q && sudo apt-get install -y -q xvfb mesa-utils libgl1-mesa-dri
-          xvfb-run -a -s "-screen 0 1920x1080x24" ./gradlew runClientGameTest -Pmc=${{ matrix.line }} -Pminecraft_version=${{ matrix.mc }} --stacktrace
+          sudo apt-get update -q && sudo apt-get install -y -q xvfb mesa-utils libgl1-mesa-dri mesa-vulkan-drivers libvulkan1 vulkan-tools
+          # what the virtual display offers (26.3+ picks OpenGL or Vulkan itself)
+          xvfb-run -a -s "-screen 0 1920x1080x24 +extension GLX" sh -c 'glxinfo -B | head -12; vulkaninfo --summary 2>&1 | grep -E "deviceName|apiVersion|driverName" | head -6' || true
+          xvfb-run -a -s "-screen 0 1920x1080x24 +extension GLX" ./gradlew runClientGameTest -Pmc=${{ matrix.line }} -Pminecraft_version=${{ matrix.mc }} --stacktrace
 
       - name: Collect screenshots
         if: always()
@@ -71,6 +74,7 @@ jobs:
     # The oldest supported Fabric Loader (loader_min in gradle.properties) on the default line.
     needs: build
     runs-on: ubuntu-24.04
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-java@v5
@@ -83,9 +87,9 @@ jobs:
         run: |
           MIN="$(grep '^loader_min=' gradle.properties | cut -d= -f2)"
           echo "Fabric Loader $MIN"
-          sudo apt-get update -q && sudo apt-get install -y -q xvfb mesa-utils libgl1-mesa-dri
+          sudo apt-get update -q && sudo apt-get install -y -q xvfb mesa-utils libgl1-mesa-dri mesa-vulkan-drivers libvulkan1
           for i in 1 2 3; do ./gradlew gametestClasses -Ploader_version=$MIN && break; sleep $((i * 30)); done
-          xvfb-run -a -s "-screen 0 1920x1080x24" ./gradlew runClientGameTest -Ploader_version=$MIN --stacktrace
+          xvfb-run -a -s "-screen 0 1920x1080x24 +extension GLX" ./gradlew runClientGameTest -Ploader_version=$MIN --stacktrace
 
   skyblock-compat:
     # Same in-game test, but with a typical Hypixel Skyblock mod set (Sodium, Iris, Skyblocker, Firmament, ...)
@@ -93,6 +97,7 @@ jobs:
     name: skyblock-compat (${{ matrix.line }})
     needs: build
     runs-on: ubuntu-24.04
+    timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
@@ -109,9 +114,9 @@ jobs:
         run: python3 scripts/compat_mods.py "$(grep '^minecraft_version=' versions/${{ matrix.line }}.properties | cut -d= -f2)" compat-mods
       - name: In-game test with the mod set
         run: |
-          sudo apt-get update -q && sudo apt-get install -y -q xvfb mesa-utils libgl1-mesa-dri
+          sudo apt-get update -q && sudo apt-get install -y -q xvfb mesa-utils libgl1-mesa-dri mesa-vulkan-drivers libvulkan1
           for i in 1 2 3; do ./gradlew gametestClasses -Pmc=${{ matrix.line }} -PcompatMods=compat-mods && break; sleep $((i * 30)); done
-          xvfb-run -a -s "-screen 0 1920x1080x24" ./gradlew runClientGameTest -Pmc=${{ matrix.line }} -PcompatMods=compat-mods --stacktrace
+          xvfb-run -a -s "-screen 0 1920x1080x24 +extension GLX" ./gradlew runClientGameTest -Pmc=${{ matrix.line }} -PcompatMods=compat-mods --stacktrace
       - name: Collect results
         if: always()
         run: |
@@ -130,6 +135,7 @@ jobs:
     name: shaders (${{ matrix.line }}, ${{ matrix.pack }})
     needs: build
     runs-on: ubuntu-24.04
+    timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
@@ -151,9 +157,9 @@ jobs:
       - name: In-game test with the shaderpack (singleplayer)
         id: test
         run: |
-          sudo apt-get update -q && sudo apt-get install -y -q xvfb mesa-utils libgl1-mesa-dri
+          sudo apt-get update -q && sudo apt-get install -y -q xvfb mesa-utils libgl1-mesa-dri mesa-vulkan-drivers libvulkan1
           for i in 1 2 3; do ./gradlew gametestClasses -Pmc=${{ matrix.line }} -PcompatMods=compat-mods && break; sleep $((i * 30)); done
-          xvfb-run -a -s "-screen 0 1920x1080x24" ./gradlew runClientGameTest -Pmc=${{ matrix.line }} -PcompatMods=compat-mods --stacktrace
+          xvfb-run -a -s "-screen 0 1920x1080x24 +extension GLX" ./gradlew runClientGameTest -Pmc=${{ matrix.line }} -PcompatMods=compat-mods --stacktrace
       - name: Collect results
         if: always()
         run: |
@@ -192,7 +198,7 @@ jobs:
       - name: In-game test with Essential (singleplayer)
         if: steps.mods.outputs.found == 'true'
         run: |
-          sudo apt-get update -q && sudo apt-get install -y -q xvfb mesa-utils libgl1-mesa-dri
+          sudo apt-get update -q && sudo apt-get install -y -q xvfb mesa-utils libgl1-mesa-dri mesa-vulkan-drivers libvulkan1
           for i in 1 2 3; do ./gradlew jar gametestJar -Pmc=${{ matrix.line }} -PcompatMods=compat-mods && break; sleep $((i * 30)); done
           mkdir -p run/prod && printf 'onboardAccessibility:false\nskipMultiplayerWarning:true\ntutorialStep:none\n' > run/prod/options.txt
           ./gradlew prodClientGameTest -Pmc=${{ matrix.line }} -PcompatMods=compat-mods --stacktrace
