@@ -32,3 +32,32 @@ jobs:
           echo "showcase=${{ steps.test.outcome }} sha=${{ github.sha }}" > out/STATUS.txt
           cd out && git init -q -b ci-output && git config user.name ci && git config user.email ci@users.noreply.github.com
           git add -A && git commit -q -m "showcase ${{ github.sha }}" && git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}" ci-output
+
+  essential:
+    # Same tests with Essential (and its dependencies) installed, published to the ci-essential branch.
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v5
+        with:
+          java-version: '25'
+          distribution: 'microsoft'
+          cache: 'gradle'
+      - run: chmod +x ./gradlew
+      - run: python3 scripts/fetch_skin.py itsd7 src/gametest/resources
+      - run: python3 scripts/compat_mods.py "$(grep '^minecraft_version=' gradle.properties | cut -d= -f2)" compat-mods essential | tee mods.txt
+      - id: test
+        continue-on-error: true
+        run: |
+          sudo apt-get update -q && sudo apt-get install -y -q xvfb mesa-utils libgl1-mesa-dri
+          for i in 1 2 3; do ./gradlew gametestClasses -PcompatMods=compat-mods && break; sleep $((i * 30)); done
+          xvfb-run -a -s "-screen 0 1920x1080x24" ./gradlew runClientGameTest -PcompatMods=compat-mods --stacktrace 2>&1 | tee gametest.log; exit ${PIPESTATUS[0]}
+      - if: always()
+        run: |
+          mkdir -p out/screenshots
+          cp mods.txt gametest.log out/ || true
+          find . -path ./out -prune -o -type f -path '*screenshots*' -name '*.png' -exec cp {} out/screenshots/ \; || true
+          find . -path ./out -prune -o -type f -name 'latest.log' -path '*logs*' -exec cp {} out/latest.log \; || true
+          echo "essential=${{ steps.test.outcome }} sha=${{ github.sha }}" > out/STATUS.txt
+          cd out && git init -q -b ci-essential && git config user.name ci && git config user.email ci@users.noreply.github.com
+          git add -A && git commit -q -m "essential ${{ github.sha }}" && git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}" ci-essential

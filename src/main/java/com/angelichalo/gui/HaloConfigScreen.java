@@ -110,6 +110,12 @@ public class HaloConfigScreen extends Screen {
 	private int px0;
 	private int contentHeight;
 
+	/** Position of a control in the current tab as {x, y, w, h} in GUI pixels (used by the in-game tests). */
+	public int[] debugControlRect(int index) {
+		Control c = controls.get(index);
+		return new int[] {c.x, c.y, c.w, c.height()};
+	}
+
 	/** Number of tabs (used by the in-game screenshot test). */
 	public static int tabCount() {
 		return Tab.values().length;

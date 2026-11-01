@@ -29,7 +29,7 @@ public final class HaloNametag {
 	private HaloNametag() { }
 
 	private static final int FULL_BRIGHT = 0xF000F0;
-	private static final int LINE_GAP = 10;
+	private static final int LINE_GAP = 12;
 
 	/** A laid-out line: one sequence per glyph plus widths, cached until the text or style changes. */
 	private record Line(String key, List<NametagText.Glyph> glyphs, FormattedCharSequence[] seq, int[] widths,
