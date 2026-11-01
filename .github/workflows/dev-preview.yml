@@ -3,7 +3,7 @@ name: dev-preview
 on:
   push:
     branches: [angelic-halo]
-    paths-ignore: ['scripts/versions_probe.py', 'scripts/api_probe.sh', '.github/workflows/probe.yml', 'probe.trigger']
+    paths-ignore: ['scripts/versions_probe.py', 'scripts/api_probe.sh', '.github/workflows/probe.yml', 'probe.trigger', 'namecheck.txt', '.github/workflows/namecheck.yml']
 permissions:
   contents: write
 jobs:

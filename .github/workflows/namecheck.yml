@@ -1,0 +1,33 @@
+# Scratch-repo only: is a project name / slug free on Modrinth?
+name: namecheck
+on:
+  push:
+    branches: [angelic-halo]
+    paths: ['namecheck.txt', '.github/workflows/namecheck.yml']
+permissions:
+  contents: write
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - run: |
+          python3 - <<'PY' | tee result.txt
+          import json, time, urllib.parse, urllib.request, urllib.error
+          UA = {"User-Agent": "angelic-halo-ci (github.com/sn7d/angelic-halo)"}
+          def get(url):
+              try:
+                  with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=30) as r:
+                      return json.load(r)
+              except urllib.error.HTTPError as e:
+                  return None if e.code == 404 else {"error": e.code}
+          for name in [l.strip() for l in open("namecheck.txt") if l.strip()]:
+              slug = get(f"https://api.modrinth.com/v2/project/{name}")
+              q = urllib.parse.urlencode({"query": name, "limit": 5})
+              hits = (get(f"https://api.modrinth.com/v2/search?{q}") or {}).get("hits", [])
+              close = [f"{h['title']} ({h['slug']}, {h['downloads']} dl)" for h in hits if name.replace("-", "") in (h["title"] + h["slug"]).lower().replace(" ", "").replace("-", "")]
+              print(f"{name}: slug {'TAKEN by ' + slug.get('title', '?') if slug else 'FREE'} | similar: {'; '.join(close) or 'none'}")
+              time.sleep(0.5)
+          PY
+          mkdir o && cp result.txt o/ && cd o && git init -q -b ci-namecheck && git config user.name ci && git config user.email ci@users.noreply.github.com
+          git add -A && git commit -q -m "namecheck ${{ github.sha }}" && git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}" ci-namecheck
