@@ -85,7 +85,7 @@ jar {
 
 // Dev helper used by CI: prints the compile classpath so API signatures can be inspected with javap.
 tasks.register('printCompileClasspath') {
-	def files = sourceSets.main.compileClasspath
+	def files = sourceSets.main.compileClasspath + sourceSets.gametest.compileClasspath
 	doLast {
 		files.each { println "CP: ${it}" }
 	}

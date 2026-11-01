@@ -3,7 +3,7 @@ name: versions-probe
 on:
   push:
     branches: [angelic-halo]
-    paths: ['scripts/versions_probe.py', '.github/workflows/probe.yml', 'probe.trigger']
+    paths: ['scripts/versions_probe.py', 'scripts/api_probe.sh', '.github/workflows/probe.yml', 'probe.trigger']
 permissions:
   contents: write
 jobs:
@@ -44,8 +44,11 @@ jobs:
           done
           [ -f result.txt ] || echo FAIL > result.txt
       - if: always()
+        continue-on-error: true
+        run: scripts/api_probe.sh ${{ matrix.v.mc }} ${{ matrix.v.fabric_api }} ${{ matrix.v.modmenu || '20.0.3' }} > api.txt 2>&1
+      - if: always()
         run: |
-          mkdir -p o && cp build.log result.txt o/ || true
+          mkdir -p o && cp build.log result.txt api.txt o/ || true
           grep -E "error:|warning: \[removal\]|FAILED" build.log | head -200 > o/errors.txt || true
       - uses: actions/upload-artifact@v7
         if: always()
