@@ -10,10 +10,10 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parent.parent
 
-# . transparent   b background   R ring   C sparkle core   S sparkle arm   s faint sparkle tip
+# b background   R ring   C sparkle core   S sparkle arm   s faint sparkle tip
 GRID = [
-    "..bbbbbbbbbbbb..",
-    ".bbbbbbbbbbbsbbb",
+    "bbbbbbbbbbbbbbbb",
+    "bbbbbbbbbbbbsbbb",
     "bbbbbbbbbbbbSbbb",
     "bbbbbbbbbbbSCSbb",
     "bbbbbbbbbbbbSbbb",
@@ -26,8 +26,8 @@ GRID = [
     "bbbbSbbbbbbbbbbb",
     "bbbSCSbbbbbbbbbb",
     "bbbbSbbbbbbsbbbb",
-    ".bbbbbbbbbbbbbb.",
-    "..bbbbbbbbbbbb..",
+    "bbbbbbbbbbbbbbbb",
+    "bbbbbbbbbbbbbbbb",
 ]
 
 BG_TOP = (36, 33, 72)
