@@ -41,7 +41,7 @@ public class HaloScreenshotTest implements FabricClientGameTest {
 			sx = p.getX();
 			sy = p.getY();
 			sz = p.getZ();
-			HubScene.build(server, sx, sy, sz);
+			buildStage(server);
 			server.runCommand("weather clear");
 			waitForChunks(ctx, sp);
 			ctx.getInput().pressKey(o -> o.keyToggleGui); // clean shots: hide HUD
@@ -50,7 +50,7 @@ public class HaloScreenshotTest implements FabricClientGameTest {
 			// 1) the reference video: classic thin red ring in a dungeon-like corridor, first person
 			buildCorridor(server);
 			server.runCommand("time set 18000");
-			server.runCommand(String.format(java.util.Locale.ROOT, "tp @a %d.5 %d %d.5 180 12", sx + 70, sy, sz));
+			server.runCommand(String.format(java.util.Locale.ROOT, "tp @a %d.5 %d %d.5 180 12", sx + 40, sy, sz));
 			waitForChunks(ctx, sp);
 			shot(ctx, "classic_first_person", CameraType.FIRST_PERSON, c -> HaloConfig.set(new HaloConfig()));
 			shot(ctx, "classic_third_person", CameraType.THIRD_PERSON_BACK, c -> { });
@@ -254,7 +254,7 @@ public class HaloScreenshotTest implements FabricClientGameTest {
 
 	/** A narrow stone corridor, like a dungeon hallway, to recreate the reference clip. */
 	private void buildCorridor(TestServerContext s) {
-		int x = sx + 70;
+		int x = sx + 40;
 		int y = sy - 1;
 		int z = sz;
 		s.runCommand(fill(x - 6, y, z - 20, x + 6, y + 6, z + 4, "minecraft:air"));
