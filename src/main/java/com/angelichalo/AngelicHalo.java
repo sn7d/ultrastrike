@@ -44,6 +44,7 @@ public final class AngelicHalo implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		HaloConfig.load();
+		HaloRenderer.registerWithIris();
 
 		KeyMapping.Category category = KeyMapping.Category.register(Identifier.fromNamespaceAndPath(MOD_ID, "main"));
 		openSettings = KeyMappingHelper.registerKeyMapping(new KeyMapping(

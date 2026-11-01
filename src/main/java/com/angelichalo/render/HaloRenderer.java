@@ -83,6 +83,33 @@ public final class HaloRenderer {
 
 	private static boolean loggedError;
 
+	/**
+	 * Shader support: Iris only draws render pipelines it knows. Register ours through Iris's public API
+	 * ({@code IrisApi.assignPipeline}, API v0.3) as basic coloured geometry, so the halo stays visible with
+	 * shaderpacks. Reflection keeps Iris an optional companion rather than a dependency.
+	 */
+	public static void registerWithIris() {
+		try {
+			Class<?> apiClass = Class.forName("net.irisshaders.iris.api.v0.IrisApi");
+			Class<?> programClass = Class.forName("net.irisshaders.iris.api.v0.IrisProgram");
+			Object api = apiClass.getMethod("getInstance").invoke(null);
+			@SuppressWarnings({"unchecked", "rawtypes"})
+			Object basic = Enum.valueOf((Class) programClass, "BASIC");
+			java.lang.reflect.Method assign = apiClass.getMethod("assignPipeline", RenderPipeline.class, programClass);
+			int count = 0;
+			for (RenderPipeline p : new RenderPipeline[] {DEPTH_PIPELINE, XRAY_PIPELINE, GLOW_PIPELINE, GLOW_XRAY_PIPELINE,
+					HIDDEN_PIPELINE, GLOW_HIDDEN_PIPELINE}) {
+				assign.invoke(api, p, basic);
+				count++;
+			}
+			AngelicHalo.LOGGER.info("Registered {} halo render pipelines with Iris for shaderpack support", count);
+		} catch (ClassNotFoundException e) {
+			// Iris not installed: nothing to do
+		} catch (ReflectiveOperationException | RuntimeException | LinkageError e) {
+			AngelicHalo.LOGGER.warn("Could not register halo pipelines with Iris; the halo may be hidden while shaders are on", e);
+		}
+	}
+
 	/** True if a render error was ever caught (checked by the in-game test). */
 	public static boolean hasFailed() {
 		return loggedError;
