@@ -105,7 +105,7 @@ Optional keys, unbound by default: **Toggle halo** and **Next preset**.
 A dark glass window drawn entirely by the mod in the **Poppins** typeface (no vanilla buttons):
 
 - **Sidebar** with a sliding selection indicator: *Presets · Ring · Motion · Scan Trail · Colours · Glow · Text · Emblem · Extras · General · Share*.
-- **Animated controls**: sliders that glide to their value, pill toggles that slide, `‹ value ›` selectors (left or right-click to step), hue and brightness pickers, palettes and preset cards that lift on hover.
+- **Animated controls**: sliders, switches, selectors and colour pickers that respond smoothly as you use them.
 - **Smooth motion**: the window eases in, tabs cross-fade and slide, lists scroll with inertia, and tooltips fade in after a moment.
 - **Live 3D projector** on the right: the same geometry code as in-game, rendered around a mannequin with perspective and depth sorting. It turns slowly on its own; **drag to orbit**, **scroll to zoom**.
 - **Save**, **Cancel** (restores what you had) or **Reset** (back to the classic look). **Esc** saves.
@@ -132,32 +132,28 @@ A dark glass window drawn entirely by the mod in the **Poppins** typeface (no va
 | <img src="docs/images/gallery/style_galaxy.jpg" width="190"> | **Galaxy** | Spiral arms of stars turning at your feet. |
 | <img src="docs/images/gallery/style_lightning.jpg" width="190"> | **Lightning** | A crackling electric ring with sparks. |
 
-Shape options: radius (0.2–16 blocks), line width, height, smoothness, spin, tilt, stacked ring count and spacing. Each style also has its own settings.
+You can reshape any style (its size, thickness, height, spin and tilt) and stack several rings. Each style also has a few settings of its own.
 
 ## Motion
 
-| Motion | What it does | Settings |
-|---|---|---|
-| **Static** | Stays at the chosen height. | — |
-| **Scan** | Sweeps between feet and head. | speed, easing (sine / linear / smooth / bounce / elastic), direction (up & down / up / down), pause at ends, lowest & highest point, body contour |
-| **Breathe** | Radius gently grows and shrinks. | amount, speed |
-| **Halo** | A small ring floats above your head and bobs. | radius, height, bob |
-| **Ripple** | Rings spread out from your feet like sonar pings. | speed, count |
-| **Wave** | The ring undulates in a travelling wave. | height, crest count, speed |
-| **Gyro** | Wobbles like a spinning gyroscope. | angle, speed |
-| **Heartbeat** | A double "lub-dub" pulse at the BPM you set. | heart rate, amount |
+| Motion | What it does |
+|---|---|
+| **Static** | Stays where you put it. |
+| **Scan** | Sweeps between your feet and head, with adjustable speed, rhythm and range. |
+| **Breathe** | Gently grows and shrinks. |
+| **Halo** | A small ring floats above your head. |
+| **Ripple** | Rings spread out from your feet like sonar pings. |
+| **Wave** | The ring undulates in a travelling wave. |
+| **Gyro** | Wobbles like a spinning gyroscope. |
+| **Heartbeat** | A double "lub-dub" pulse. |
+
+Every motion has its own settings for pace and size.
 
 ## Scan trail
 
 <img src="docs/images/gallery/scan_trail_0.jpg" width="24%"> <img src="docs/images/gallery/scan_trail_1.jpg" width="24%"> <img src="docs/images/gallery/scan_trail_2.jpg" width="24%"> <img src="docs/images/gallery/scan_trail_3.jpg" width="24%">
 
-While the ring scans, a trail follows its path and fades with age:
-
-- **Smear**: a smooth gradient curtain between where the ring is and where it just was.
-- **Echoes**: fading copies of the ring along its path.
-- **Smear + Echoes**: both.
-- **Length** (how far back in time it reaches) and **echo count** are adjustable.
-- The trail has **its own colour studio**, so every effect below works on it. Or tick *Match Ring Colours*.
+While the ring scans, a trail follows its path and fades away behind it, either as a smooth smear, as echo copies of the ring, or both. You choose how long it lingers, and it has **its own colours**, so the trail can look completely different from the ring.
 
 ## Colour studio
 
@@ -175,7 +171,7 @@ While the ring scans, a trail follows its path and fades with age:
 | **Aurora** | Drifting northern-lights bands with a hue-shifted third colour. |
 | **Fire** | Flickering flame noise. |
 
-Each studio has hex input, a draggable **hue strip** and **shade strip** (black → colour → white), a 16-colour palette (left-click = primary, right-click = secondary), *swap*, *randomise*, opacity, effect speed, repeats, saturation, brightness and a live animated preview strip.
+Pick colours by hex code, hue and shade sliders or a quick palette, then tune opacity, speed and intensity while a live strip previews the result.
 
 ## Custom text
 
@@ -187,7 +183,7 @@ Up to 48 characters of your own text (Ctrl+V works):
 - **Engraved**: lies flat on the ground along the ring.
 - **Banner**: floats above your head, facing you.
 
-You also control size, distance, height, orbit speed, number of copies, letter spacing, shadow, the smooth **Poppins** font or the classic Minecraft font, and a full colour studio (rainbow and gradient run letter by letter).
+Size, spacing, speed and placement are all adjustable. You can use a smooth modern font or the classic Minecraft one, and colour the text with any colour effect, applied letter by letter.
 
 ## Emblems & your own images
 
@@ -196,24 +192,18 @@ You also control size, distance, height, orbit speed, number of copies, letter s
 - **Built-in emblems**: *Sigil, Sunburst, Compass, Lotus, Snowflake, Crescent*. They are drawn in white so the colour studio can tint them any colour or effect.
 - **Your own images**: drop any `.png` into `config/angelichalo/images/` and it shows up in the Emblem tab within seconds, no restart. Transparent PNGs look best.
 - **Placement**: on the **floor**, **above your head** (facing you) or **on your back** (turns with your body).
-- Size, spin, height and a gentle opacity pulse.
+- Adjustable size, spin and height, with an optional gentle pulse.
 
 ## Glow
 
-One switch adds a soft, additive **bloom** to every visual element, with a global strength and radius plus a separate amount for each layer: **ring, scan trail, text, emblem and particles**.
-
-- The ring and trail get a two-layer halo of light, so the trail glows as it fades.
-- Text gets a soft glow behind each letter, and emblems get a glow in the image's own shape.
-- Embers, helix orbs, jump rings and shockwaves get glowing cores.
-
-All presets except *Classic* turn bloom on. Classic stays off to match the reference.
+One switch adds a soft bloom of light around **everything**: the ring, the trail, your text, your emblem and the particles. Turn the overall strength up or down, or make one layer glow more than the others. Every preset except *Classic* turns it on.
 
 ## Extras
 
 | Extra | |
 |---|---|
 | **Embers** | Tiny glowing motes that rise off the ring, twinkle and fade. |
-| **Helix** | 1–6 small orbs spiralling around you with comet tails. |
+| **Helix** | Small orbs spiralling around you with comet tails. |
 | **Jump rings** | A ring bursts across the ground where you jump or land. |
 | **Speed reactive** | The ring widens and brightens as you move faster. |
 | **Damage flash** *(off by default)* | A flash and shockwave when you take damage, in any colour. |
@@ -280,7 +270,7 @@ Iris only draws render pipelines it knows about, so many mods' custom effects va
 
 - the pack's own bloom takes over (stacking both washes colours to white). You can force the halo's glow back on with *Glow → Bloom With Shaders*;
 - soft feathered edges are skipped, because packs dither them into jagged teeth;
-- a **shader colour boost** (default 1.4×) restores saturation that some packs grade away.
+- a **shader colour boost** restores saturation that some packs grade away.
 
 <img src="docs/images/shaders.png" alt="The rainbow scanning ring photographed without shaders and with nine shaderpacks; the colours stay intact in every pack">
 
