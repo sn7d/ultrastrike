@@ -37,7 +37,7 @@ public class NametagFunctionTest implements FabricClientGameTest {
 				.adjustSettings(s -> s.setGameMode(WorldCreationUiState.SelectedGameMode.CREATIVE))
 				.create()) {
 			try {
-				sp.getConnection().waitForChunksRender();
+				TestCompat.waitForChunksRender(sp);
 			} catch (RuntimeException | AssertionError e) {
 				ctx.waitTicks(100);
 			}

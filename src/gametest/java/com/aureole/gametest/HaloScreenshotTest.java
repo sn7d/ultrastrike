@@ -272,7 +272,7 @@ public class HaloScreenshotTest implements FabricClientGameTest {
 	/** Chunk-render waiting relies on vanilla's renderer; with renderer mods (Sodium) fall back to a fixed wait. */
 	private static void waitForChunks(ClientGameTestContext ctx, TestSingleplayerContext sp) {
 		try {
-			sp.getConnection().waitForChunksRender();
+			TestCompat.waitForChunksRender(sp);
 		} catch (RuntimeException | AssertionError e) {
 			ctx.waitTicks(100);
 		}

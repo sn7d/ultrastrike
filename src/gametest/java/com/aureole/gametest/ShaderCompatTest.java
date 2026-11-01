@@ -51,7 +51,7 @@ public class ShaderCompatTest implements FabricClientGameTest {
 			stage(server);
 			server.runCommand("weather clear");
 			try {
-				sp.getConnection().waitForChunksRender();
+				TestCompat.waitForChunksRender(sp);
 			} catch (RuntimeException | AssertionError e) {
 				ctx.waitTicks(100);
 			}

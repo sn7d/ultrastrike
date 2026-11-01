@@ -20,3 +20,6 @@ jp net.minecraft.client.renderer.RenderPipelines 400 | grep -iE "DEBUG|class "
 jp net.minecraft.client.input.KeyEvent
 jp net.minecraft.client.input.MouseButtonEvent
 jp net.fabricmc.fabric.api.client.gametest.v1.TestInput 80
+jp net.minecraft.client.KeyMapping 60 | grep -E "KeyMapping\\(|class "
+jp 'com.mojang.blaze3d.platform.InputConstants$Type' 30
+jp net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext 30

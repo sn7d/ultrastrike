@@ -49,11 +49,11 @@ public final class Aureole implements ClientModInitializer {
 
 		KeyMapping.Category category = KeyMapping.Category.register(Identifier.fromNamespaceAndPath(MOD_ID, "main"));
 		openSettings = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-				"key.aureole.settings", InputConstants.Type.KEYSYM, InputConstants.KEY_H, category));
+				"key.aureole.settings", InputConstants.KEY_H, category));
 		toggleHalo = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-				"key.aureole.toggle", InputConstants.Type.KEYSYM, InputConstants.UNKNOWN.getValue(), category));
+				"key.aureole.toggle", InputConstants.UNKNOWN.getValue(), category));
 		cyclePreset = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-				"key.aureole.cycle_preset", InputConstants.Type.KEYSYM, InputConstants.UNKNOWN.getValue(), category));
+				"key.aureole.cycle_preset", InputConstants.UNKNOWN.getValue(), category));
 
 		ClientTickEvents.END_CLIENT_TICK.register(Aureole::onTick);
 		PauseMenuButton.register();
