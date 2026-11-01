@@ -6,7 +6,19 @@ on:
 
 jobs:
   build:
+    # Every supported Minecraft 26.x release: build, unit tests and the in-game test (singleplayer, screenshots).
+    # A "line" is one jar (versions/<line>.properties); each patch release of the line is tested with it.
+    name: build (${{ matrix.mc }})
     runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {line: '26.1', mc: '26.1'}
+          - {line: '26.1', mc: '26.1.1'}
+          - {line: '26.1', mc: '26.1.2', release: true}
+          - {line: '26.2', mc: '26.2', release: true}
+          - {line: '26.3', mc: '26.3', release: true}
     steps:
       - uses: actions/checkout@v6
       - uses: gradle/actions/wrapper-validation@v6
@@ -18,12 +30,15 @@ jobs:
       - run: chmod +x ./gradlew
 
       - name: Build and unit tests
-        run: ./gradlew build --stacktrace
+        run: |
+          # dependency downloads can hit Maven Central rate limits when many jobs run at once: retry them first
+          for i in 1 2 3; do ./gradlew gametestClasses -Pmc=${{ matrix.line }} -Pminecraft_version=${{ matrix.mc }} && break; sleep $((i * 30)); done
+          ./gradlew build -Pmc=${{ matrix.line }} -Pminecraft_version=${{ matrix.mc }} --stacktrace
 
       - name: In-game test (singleplayer, screenshots)
         run: |
           sudo apt-get update -q && sudo apt-get install -y -q xvfb mesa-utils libgl1-mesa-dri
-          xvfb-run -a -s "-screen 0 1920x1080x24" ./gradlew runClientGameTest --stacktrace
+          xvfb-run -a -s "-screen 0 1920x1080x24" ./gradlew runClientGameTest -Pmc=${{ matrix.line }} -Pminecraft_version=${{ matrix.mc }} --stacktrace
 
       - name: Collect screenshots
         if: always()
@@ -31,20 +46,24 @@ jobs:
           mkdir -p screenshots
           find . -path ./screenshots -prune -o -type f -path '*screenshots*' -name '*.png' -exec cp {} screenshots/ \; || true
 
+      - name: Release jar (built against the line's own versions)
+        if: matrix.release
+        run: rm -rf build/libs && ./gradlew jar -Pmc=${{ matrix.line }}
+
       - uses: actions/upload-artifact@v7
+        if: matrix.release
         with:
-          name: angelic-halo-jar
+          name: angelic-halo-${{ matrix.line }}
           path: build/libs/
 
       - uses: actions/upload-artifact@v7
         if: always()
         with:
-          name: in-game-screenshots
+          name: in-game-screenshots-${{ matrix.mc }}
           path: screenshots/
 
-  skyblock-compat:
-    # Same in-game test, but with a typical Hypixel Skyblock mod set (Sodium, Iris, Skyblocker, Firmament, ...)
-    # downloaded from Modrinth, to catch conflicts. Singleplayer only, never connects to a server.
+  loader-floor:
+    # The oldest supported Fabric Loader (loader_min in gradle.properties) on the default line.
     needs: build
     runs-on: ubuntu-24.04
     steps:
@@ -55,14 +74,39 @@ jobs:
           distribution: 'microsoft'
           cache: 'gradle'
       - run: chmod +x ./gradlew
+      - name: In-game test on the oldest supported loader
+        run: |
+          MIN="$(grep '^loader_min=' gradle.properties | cut -d= -f2)"
+          echo "Fabric Loader $MIN"
+          sudo apt-get update -q && sudo apt-get install -y -q xvfb mesa-utils libgl1-mesa-dri
+          for i in 1 2 3; do ./gradlew gametestClasses -Ploader_version=$MIN && break; sleep $((i * 30)); done
+          xvfb-run -a -s "-screen 0 1920x1080x24" ./gradlew runClientGameTest -Ploader_version=$MIN --stacktrace
+
+  skyblock-compat:
+    # Same in-game test, but with a typical Hypixel Skyblock mod set (Sodium, Iris, Skyblocker, Firmament, ...)
+    # downloaded from Modrinth, to catch conflicts. Singleplayer only, never connects to a server.
+    name: skyblock-compat (${{ matrix.line }})
+    needs: build
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        line: ['26.1', '26.2', '26.3']
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v5
+        with:
+          java-version: '25'
+          distribution: 'microsoft'
+          cache: 'gradle'
+      - run: chmod +x ./gradlew
       - name: Download Skyblock mod set from Modrinth
-        run: python3 scripts/compat_mods.py "$(grep '^minecraft_version=' gradle.properties | cut -d= -f2)" compat-mods
+        run: python3 scripts/compat_mods.py "$(grep '^minecraft_version=' versions/${{ matrix.line }}.properties | cut -d= -f2)" compat-mods
       - name: In-game test with the mod set
         run: |
           sudo apt-get update -q && sudo apt-get install -y -q xvfb mesa-utils libgl1-mesa-dri
-          # dependency downloads can hit Maven Central rate limits when many jobs run at once: retry them first
-          for i in 1 2 3; do ./gradlew gametestClasses -PcompatMods=compat-mods && break; sleep $((i * 30)); done
-          xvfb-run -a -s "-screen 0 1920x1080x24" ./gradlew runClientGameTest -PcompatMods=compat-mods --stacktrace
+          for i in 1 2 3; do ./gradlew gametestClasses -Pmc=${{ matrix.line }} -PcompatMods=compat-mods && break; sleep $((i * 30)); done
+          xvfb-run -a -s "-screen 0 1920x1080x24" ./gradlew runClientGameTest -Pmc=${{ matrix.line }} -PcompatMods=compat-mods --stacktrace
       - name: Collect results
         if: always()
         run: |
@@ -73,16 +117,18 @@ jobs:
       - uses: actions/upload-artifact@v7
         if: always()
         with:
-          name: skyblock-compat-results
+          name: skyblock-compat-results-${{ matrix.line }}
           path: results/
 
   shaders:
     # Same scenes with and without each popular shaderpack (Iris + Sodium), to make sure colours survive shaders.
+    name: shaders (${{ matrix.line }}, ${{ matrix.pack }})
     needs: build
     runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
+        line: ['26.1', '26.2', '26.3']
         pack: [complementary-reimagined, complementary-unbound, bsl-shaders, photon-shader, solas-shader, bliss-shader, makeup-ultra-fast-shaders, sildurs-vibrant-shaders, rethinking-voxels]
     steps:
       - uses: actions/checkout@v6
@@ -94,16 +140,15 @@ jobs:
       - run: chmod +x ./gradlew
       - name: Sodium + Iris and the shaderpack
         run: |
-          MC="$(grep '^minecraft_version=' gradle.properties | cut -d= -f2)"
+          MC="$(grep '^minecraft_version=' versions/${{ matrix.line }}.properties | cut -d= -f2)"
           python3 scripts/compat_mods.py "$MC" compat-mods sodium iris
           echo "HALO_SHADERPACK=$(python3 scripts/shaderpacks.py ${{ matrix.pack }} shaderpack | tail -1)" >> "$GITHUB_ENV"
       - name: In-game test with the shaderpack (singleplayer)
         id: test
         run: |
           sudo apt-get update -q && sudo apt-get install -y -q xvfb mesa-utils libgl1-mesa-dri
-          # dependency downloads can hit Maven Central rate limits when many jobs run at once: retry them first
-          for i in 1 2 3; do ./gradlew gametestClasses -PcompatMods=compat-mods && break; sleep $((i * 30)); done
-          xvfb-run -a -s "-screen 0 1920x1080x24" ./gradlew runClientGameTest -PcompatMods=compat-mods --stacktrace
+          for i in 1 2 3; do ./gradlew gametestClasses -Pmc=${{ matrix.line }} -PcompatMods=compat-mods && break; sleep $((i * 30)); done
+          xvfb-run -a -s "-screen 0 1920x1080x24" ./gradlew runClientGameTest -Pmc=${{ matrix.line }} -PcompatMods=compat-mods --stacktrace
       - name: Collect results
         if: always()
         run: |
@@ -114,14 +159,19 @@ jobs:
       - uses: actions/upload-artifact@v7
         if: always()
         with:
-          name: shader-${{ matrix.pack }}
+          name: shader-${{ matrix.line }}-${{ matrix.pack }}
           path: results/
 
   essential:
     # Launcher-style run with Essential (it refuses to start in a development environment).
+    name: essential (${{ matrix.line }})
     needs: build
     runs-on: ubuntu-24.04
     timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        line: ['26.1', '26.2', '26.3']
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-java@v5
@@ -130,13 +180,17 @@ jobs:
           distribution: 'microsoft'
           cache: 'gradle'
       - run: chmod +x ./gradlew
-      - run: python3 scripts/compat_mods.py "$(grep '^minecraft_version=' gradle.properties | cut -d= -f2)" compat-mods essential
+      - id: mods
+        run: |
+          python3 scripts/compat_mods.py "$(grep '^minecraft_version=' versions/${{ matrix.line }}.properties | cut -d= -f2)" compat-mods essential | tee mods.txt
+          if ls compat-mods | grep -qi essential; then echo "found=true" >> "$GITHUB_OUTPUT"; else echo "::notice::Essential has no build for ${{ matrix.line }} yet; skipped"; fi
       - name: In-game test with Essential (singleplayer)
+        if: steps.mods.outputs.found == 'true'
         run: |
           sudo apt-get update -q && sudo apt-get install -y -q xvfb mesa-utils libgl1-mesa-dri
-          for i in 1 2 3; do ./gradlew jar gametestJar -PcompatMods=compat-mods && break; sleep $((i * 30)); done
+          for i in 1 2 3; do ./gradlew jar gametestJar -Pmc=${{ matrix.line }} -PcompatMods=compat-mods && break; sleep $((i * 30)); done
           mkdir -p run/prod && printf 'onboardAccessibility:false\nskipMultiplayerWarning:true\ntutorialStep:none\n' > run/prod/options.txt
-          ./gradlew prodClientGameTest -PcompatMods=compat-mods --stacktrace
+          ./gradlew prodClientGameTest -Pmc=${{ matrix.line }} -PcompatMods=compat-mods --stacktrace
       - name: Collect results
         if: always()
         run: |
@@ -145,5 +199,5 @@ jobs:
       - uses: actions/upload-artifact@v7
         if: always()
         with:
-          name: essential-results
+          name: essential-results-${{ matrix.line }}
           path: results/

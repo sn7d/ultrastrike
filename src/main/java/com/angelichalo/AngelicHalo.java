@@ -2,7 +2,6 @@ package com.angelichalo;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.brigadier.arguments.StringArgumentType;
-import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +17,8 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents;
 
+import com.angelichalo.compat.HaloPipelines;
+import com.angelichalo.compat.McScreens;
 import com.angelichalo.config.HaloConfig;
 import com.angelichalo.config.HaloPresets;
 import com.angelichalo.gui.HaloConfigScreen;
@@ -44,15 +45,15 @@ public final class AngelicHalo implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		HaloConfig.load();
-		HaloRenderer.registerWithIris();
+		HaloPipelines.registerWithIris();
 
 		KeyMapping.Category category = KeyMapping.Category.register(Identifier.fromNamespaceAndPath(MOD_ID, "main"));
 		openSettings = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-				"key.angelichalo.settings", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_H, category));
+				"key.angelichalo.settings", InputConstants.Type.KEYSYM, InputConstants.KEY_H, category));
 		toggleHalo = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-				"key.angelichalo.toggle", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, category));
+				"key.angelichalo.toggle", InputConstants.Type.KEYSYM, InputConstants.UNKNOWN.getValue(), category));
 		cyclePreset = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-				"key.angelichalo.cycle_preset", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, category));
+				"key.angelichalo.cycle_preset", InputConstants.Type.KEYSYM, InputConstants.UNKNOWN.getValue(), category));
 
 		ClientTickEvents.END_CLIENT_TICK.register(AngelicHalo::onTick);
 		PauseMenuButton.register();
@@ -96,12 +97,12 @@ public final class AngelicHalo implements ClientModInitializer {
 
 		if (openScreenNextTick) {
 			openScreenNextTick = false;
-			mc.gui.setScreen(new HaloConfigScreen(mc.gui.screen()));
+			McScreens.open(mc, new HaloConfigScreen(McScreens.current(mc)));
 		}
 
 		while (openSettings.consumeClick()) {
-			if (mc.gui.screen() == null) {
-				mc.gui.setScreen(new HaloConfigScreen(null));
+			if (McScreens.current(mc) == null) {
+				McScreens.open(mc, new HaloConfigScreen(null));
 			}
 		}
 

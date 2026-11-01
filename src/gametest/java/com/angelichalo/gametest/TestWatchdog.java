@@ -18,7 +18,7 @@ public class TestWatchdog implements ClientModInitializer {
 
 	private void tick(Minecraft mc) {
 		if (++ticks % 100 != 0) return;
-		Screen screen = mc.gui.screen();
+		Screen screen = com.angelichalo.compat.McScreens.current(mc);
 		String now = screen == null ? "none (in world: " + (mc.level != null) + ")"
 				: screen.getClass().getName() + " \"" + screen.getTitle().getString() + "\"";
 		if (!now.equals(last) || ticks % 1200 == 0) {

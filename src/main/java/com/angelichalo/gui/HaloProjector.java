@@ -4,19 +4,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import org.joml.Matrix3x2f;
-import org.jspecify.annotations.Nullable;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
-import net.minecraft.client.gui.render.TextureSetup;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.state.gui.GuiElementRenderState;
 
+import com.angelichalo.compat.GuiQuads;
 import com.angelichalo.config.HaloConfig;
 import com.angelichalo.config.HaloOptions;
 import com.angelichalo.gui.ui.Controls;
@@ -477,7 +471,7 @@ public final class HaloProjector {
 			return (Math.round(a) << 24) | (c & 0xFFFFFF);
 		}
 
-		Element build(ScreenRectangle bounds) {
+		GuiQuads build(ScreenRectangle bounds) {
 			Integer[] order = new Integer[count];
 			for (int i = 0; i < count; i++) order[i] = i;
 			Arrays.sort(order, (a, b) -> Float.compare(depth[b], depth[a]));
@@ -488,39 +482,7 @@ public final class HaloProjector {
 				System.arraycopy(xy, src * 8, sxy, i * 8, 8);
 				System.arraycopy(col, src * 4, scol, i * 4, 4);
 			}
-			return new Element(sxy, scol, count, bounds);
-		}
-	}
-
-	/** One GUI element holding every projected quad, already sorted back to front. */
-	record Element(float[] xy, int[] col, int quads, ScreenRectangle bounds) implements GuiElementRenderState {
-		private static final Matrix3x2f IDENTITY = new Matrix3x2f();
-
-		@Override
-		public void buildVertices(VertexConsumer vertices) {
-			for (int q = 0; q < quads; q++) {
-				int b = q * 8;
-				int k = q * 4;
-				vertices.addVertexWith2DPose(IDENTITY, xy[b], xy[b + 1]).setColor(col[k]);
-				vertices.addVertexWith2DPose(IDENTITY, xy[b + 2], xy[b + 3]).setColor(col[k + 1]);
-				vertices.addVertexWith2DPose(IDENTITY, xy[b + 4], xy[b + 5]).setColor(col[k + 2]);
-				vertices.addVertexWith2DPose(IDENTITY, xy[b + 6], xy[b + 7]).setColor(col[k + 3]);
-			}
-		}
-
-		@Override
-		public RenderPipeline pipeline() {
-			return RenderPipelines.GUI;
-		}
-
-		@Override
-		public TextureSetup textureSetup() {
-			return TextureSetup.noTexture();
-		}
-
-		@Override
-		public @Nullable ScreenRectangle scissorArea() {
-			return bounds;
+			return new GuiQuads(sxy, scol, count, bounds);
 		}
 	}
 }

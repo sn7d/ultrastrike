@@ -16,6 +16,7 @@ import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 
+import com.angelichalo.compat.McScreens;
 import com.angelichalo.config.ColorSpec;
 import com.angelichalo.config.HaloConfig;
 import com.angelichalo.config.HaloOptions;
@@ -226,7 +227,7 @@ public class HaloConfigScreen extends Screen {
 
 	private void close() {
 		for (Control c : controls) c.unfocus();
-		minecraft.gui.setScreen(parent);
+		McScreens.open(minecraft, parent);
 	}
 
 	@Override

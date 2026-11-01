@@ -2,7 +2,9 @@ package com.angelichalo.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import org.joml.Matrix4f;
 import org.joml.Quaternionf;
+import org.joml.Quaternionfc;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -24,6 +26,13 @@ import com.angelichalo.config.HaloOptions.TextMode;
 /** Custom text and emblem images drawn around the player. Client-side drawing only. */
 final class HaloDecor {
 	private HaloDecor() { }
+
+	private static final Matrix4f ROTATION = new Matrix4f();
+
+	/** {@code ps.mulPose(q)} through the matrix overload, which every 26.x release has (26.3 dropped the quaternion one). */
+	static void rotate(PoseStack ps, Quaternionfc q) {
+		ps.mulPose(ROTATION.rotation(q));
+	}
 
 	private static final int FULL_BRIGHT = 0xF000F0;
 	static final FontDescription SMOOTH_FONT = new FontDescription.Resource(Identifier.fromNamespaceAndPath(AngelicHalo.MOD_ID, "world"));
@@ -167,7 +176,7 @@ final class HaloDecor {
 			double y = fy + player.getBbHeight() + 0.35 + c.textHeight;
 			ps.pushPose();
 			ps.translate(fx, y, fz);
-			ps.mulPose(camera.orientation);
+			HaloDecor.rotate(ps, camera.orientation);
 			ps.scale(scale, -scale, scale);
 			float x = -total / 2.0f;
 			double[] basis = billboard(fx, y, fz);
@@ -226,9 +235,9 @@ final class HaloDecor {
 				ps.pushPose();
 				ps.translate(px, y, pz);
 				if (engraved) {
-					ps.mulPose(new Quaternionf().rotateY((float) (-a - Math.PI / 2)).rotateX((float) (-Math.PI / 2)));
+					HaloDecor.rotate(ps, new Quaternionf().rotateY((float) (-a - Math.PI / 2)).rotateX((float) (-Math.PI / 2)));
 				} else {
-					ps.mulPose(new Quaternionf().rotateY((float) (Math.PI / 2 - a)));
+					HaloDecor.rotate(ps, new Quaternionf().rotateY((float) (Math.PI / 2 - a)));
 				}
 				ps.scale(scale, -scale, scale);
 				ctx.submitNodeCollector().submitText(ps, -font.width(g) / 2.0f, -4, g, c.textShadow && !engraved, mode, FULL_BRIGHT, col, 0, 0);

@@ -211,7 +211,7 @@ public class HaloScreenshotTest implements FabricClientGameTest {
 			// pause menu with the halo button next to Friends
 			ctx.runOnClient(mc -> mc.options.fov().set(70));
 			ctx.getInput().pressKey(o -> o.keyToggleGui);
-			ctx.getInput().pressKey(org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE);
+			ctx.getInput().pressKey(com.mojang.blaze3d.platform.InputConstants.KEY_ESCAPE);
 			ctx.waitTicks(4);
 			ctx.takeScreenshot("pause_menu");
 			ctx.setScreen(() -> null);

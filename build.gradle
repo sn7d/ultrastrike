@@ -2,7 +2,20 @@ plugins {
 	id 'net.fabricmc.fabric-loom' version "${loom_version}"
 }
 
-version = project.mod_version
+// Minecraft line to build: -Pmc=26.1 | 26.2 | 26.3 (see versions/README.md); defaults to mc_line.
+def mcLine = (project.findProperty('mc') ?: project.mc_line).toString()
+def lineProps = new Properties()
+file("versions/${mcLine}.properties").withInputStream { lineProps.load(it) }
+// a -P on the command line wins over the versions file (CI uses it to test each patch release)
+def lineProp = { String key -> gradle.startParameter.projectProperties[key] ?: lineProps.getProperty(key) }
+ext.mcLine = mcLine
+ext.minecraftVersion = lineProp('minecraft_version')
+ext.fabricApiVersion = lineProp('fabric_api_version')
+ext.modmenuVersion = lineProp('modmenu_version')
+ext.mcRange = lineProp('mc_range')
+ext.gameVersions = lineProp('game_versions')
+
+version = "${project.mod_version}+${mcLine}"
 group = project.maven_group
 
 base {
@@ -17,9 +30,17 @@ repositories {
 	}
 }
 
+sourceSets {
+	main {
+		java {
+			lineProp('compat').split(',').each { srcDir "src/compat/${it.trim()}/java" }
+		}
+	}
+}
+
 fabricApi {
 	// Real in-game client tests (Fabric client gametest API). These boot an actual
-	// 26.2 client, create a test world, and take screenshots of the halo.
+	// Minecraft client, create a test world, and take screenshots of the halo.
 	configureTests {
 		createSourceSet = true
 		modId = 'angelichalo-gametest'
@@ -30,9 +51,9 @@ fabricApi {
 }
 
 dependencies {
-	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	minecraft "com.mojang:minecraft:${minecraftVersion}"
 	implementation "net.fabricmc:fabric-loader:${project.loader_version}"
-	implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+	implementation "net.fabricmc.fabric-api:fabric-api:${fabricApiVersion}"
 
 	testImplementation platform("org.junit:junit-bom:5.11.4")
 	testImplementation "org.junit.jupiter:junit-jupiter"
@@ -43,9 +64,7 @@ dependencies {
 		runtimeOnly fileTree(dir: project.property('compatMods'), include: '*.jar')
 	}
 
-	if (project.hasProperty('modmenu_version')) {
-		compileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
-	}
+	compileOnly "com.terraformersmc:modmenu:${modmenuVersion}"
 }
 
 test {
@@ -57,11 +76,11 @@ test {
 }
 
 processResources {
-	def version = project.version
-	inputs.property "version", version
+	def props = [version: project.version, mc_range: mcRange, loader_min: project.loader_min]
+	inputs.properties props
 
 	filesMatching("fabric.mod.json") {
-		expand "version": version
+		expand props
 	}
 }
 
@@ -104,8 +123,8 @@ configurations {
 }
 
 dependencies {
-	prodMods "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
-	prodApiModules "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+	prodMods "net.fabricmc.fabric-api:fabric-api:${fabricApiVersion}"
+	prodApiModules "net.fabricmc.fabric-api:fabric-api:${fabricApiVersion}"
 }
 
 def gametestJar = tasks.register('gametestJar', Jar) {

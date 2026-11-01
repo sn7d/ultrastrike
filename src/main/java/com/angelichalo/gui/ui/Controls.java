@@ -12,7 +12,7 @@ import java.util.function.IntConsumer;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
-import org.lwjgl.glfw.GLFW;
+import com.mojang.blaze3d.platform.InputConstants;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -500,16 +500,16 @@ public final class Controls {
 		public boolean keyPressed(KeyEvent e) {
 			if (!focus) return false;
 			int key = e.key();
-			if (key == GLFW.GLFW_KEY_ENTER || key == GLFW.GLFW_KEY_KP_ENTER || key == GLFW.GLFW_KEY_ESCAPE) {
+			if (key == InputConstants.KEY_RETURN || key == InputConstants.KEY_NUMPADENTER || key == InputConstants.KEY_ESCAPE) {
 				unfocus();
 				return true;
 			}
-			if (key == GLFW.GLFW_KEY_BACKSPACE) {
+			if (key == InputConstants.KEY_BACKSPACE) {
 				if (!buffer.isEmpty()) buffer = buffer.substring(0, buffer.offsetByCodePoints(buffer.length(), -1));
 				set.accept(buffer);
 				return true;
 			}
-			if (key == GLFW.GLFW_KEY_V && (e.modifiers() & GLFW.GLFW_MOD_CONTROL) != 0) {
+			if (key == InputConstants.KEY_V && (e.modifiers() & InputConstants.MOD_CONTROL) != 0) {
 				String clip = Minecraft.getInstance().keyboardHandler.getClipboard();
 				clip.codePoints().filter(cp -> allowed.test(cp)).forEach(this::append);
 				set.accept(buffer);

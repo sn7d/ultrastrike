@@ -5,7 +5,6 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.components.FriendsButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.PauseScreen;
@@ -16,11 +15,12 @@ import net.minecraft.network.chat.Component;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.client.screen.v1.Screens;
 
+import com.angelichalo.compat.McScreens;
 import com.angelichalo.gui.ui.Ui;
 import com.angelichalo.render.HaloColors;
 import com.angelichalo.render.HaloState;
 
-/** Small animated halo button placed next to the Friends button on the Esc menu. */
+/** Small animated halo button placed next to the Friends button on the Esc menu (left of Back to Game where there is none). */
 public final class PauseMenuButton extends AbstractWidget {
 	private float hover;
 	private long last = System.nanoTime();
@@ -40,7 +40,7 @@ public final class PauseMenuButton extends AbstractWidget {
 		List<AbstractWidget> widgets = Screens.getWidgets(screen);
 		AbstractWidget anchor = null;
 		for (AbstractWidget wdg : widgets) {
-			if (wdg instanceof FriendsButton) {
+			if (McScreens.isFriendsButton(wdg)) {
 				anchor = wdg;
 				break;
 			}
@@ -108,7 +108,7 @@ public final class PauseMenuButton extends AbstractWidget {
 	@Override
 	public void onClick(MouseButtonEvent event, boolean doubleClick) {
 		Minecraft mc = Minecraft.getInstance();
-		mc.gui.setScreen(new HaloConfigScreen(mc.gui.screen()));
+		McScreens.open(mc, new HaloConfigScreen(McScreens.current(mc)));
 	}
 
 	@Override

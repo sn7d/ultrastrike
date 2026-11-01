@@ -61,7 +61,7 @@ public final class HaloNametag {
 		PoseStack ps = ctx.poseStack();
 		ps.pushPose();
 		ps.translate(fx, y, fz);
-		ps.mulPose(camera.orientation);
+		HaloDecor.rotate(ps, camera.orientation);
 		ps.scale(s, -s, s);
 
 		Font.DisplayMode behind = c.tagThroughWalls ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.NORMAL;

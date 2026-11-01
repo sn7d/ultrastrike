@@ -1,6 +1,6 @@
 package com.angelichalo.gametest;
 
-import org.lwjgl.glfw.GLFW;
+import com.mojang.blaze3d.platform.InputConstants;
 
 import net.minecraft.client.CameraType;
 import net.minecraft.client.gui.screens.worldselection.WorldCreationUiState;
@@ -9,6 +9,7 @@ import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
 
+import com.angelichalo.compat.McScreens;
 import com.angelichalo.config.HaloConfig;
 import com.angelichalo.gui.HaloConfigScreen;
 import com.angelichalo.render.HaloRenderer;
@@ -62,7 +63,7 @@ public class NametagFunctionTest implements FabricClientGameTest {
 			// 2) typing into the name field
 			click(ctx, NAME_FIELD, 0.5, 0.7);
 			ctx.getInput().typeChars("Angel");
-			ctx.getInput().pressKey(GLFW.GLFW_KEY_ENTER);
+			ctx.getInput().pressKey(InputConstants.KEY_RETURN);
 			ctx.waitTicks(2);
 			check(ctx, c -> c.tagText.equals("Angel"), "typed name is saved");
 
@@ -78,7 +79,7 @@ public class NametagFunctionTest implements FabricClientGameTest {
 			// 5) type a title with formatting codes
 			click(ctx, TITLE_FIELD, 0.5, 0.7);
 			ctx.getInput().typeChars(" &aGuardian");
-			ctx.getInput().pressKey(GLFW.GLFW_KEY_ENTER);
+			ctx.getInput().pressKey(InputConstants.KEY_RETURN);
 			ctx.waitTicks(2);
 			check(ctx, c -> c.tagTitle.equals("✦ &aGuardian"), "title with &-codes is saved");
 			ctx.takeScreenshot("func_nametag_menu");
@@ -113,7 +114,7 @@ public class NametagFunctionTest implements FabricClientGameTest {
 		// scroll the list with the real mouse wheel until the target point is visible
 		for (int attempt = 0; attempt < 20 && pos == null; attempt++) {
 			double[] r = ctx.computeOnClient(mc -> {
-				if (!(mc.gui.screen() instanceof HaloConfigScreen screen)) throw new AssertionError("settings screen is not open");
+				if (!(McScreens.current(mc) instanceof HaloConfigScreen screen)) throw new AssertionError("settings screen is not open");
 				int[] rect = screen.debugControlRect(control);
 				int[] area = screen.debugContentBounds();
 				double gx = absolute ? rect[0] + ox : rect[0] + rect[2] * ox;
@@ -134,7 +135,7 @@ public class NametagFunctionTest implements FabricClientGameTest {
 		if (pos == null) throw new AssertionError("control " + control + " never scrolled into view");
 		ctx.getInput().setCursorPos(pos[0], pos[1]);
 		ctx.waitTick();
-		ctx.getInput().pressMouse(GLFW.GLFW_MOUSE_BUTTON_LEFT);
+		ctx.getInput().pressMouse(InputConstants.MOUSE_BUTTON_LEFT);
 		ctx.waitTicks(2);
 	}
 

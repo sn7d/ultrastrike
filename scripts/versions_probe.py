@@ -34,11 +34,22 @@ def main():
     out = sys.argv[1] if len(sys.argv) > 1 else "versions.json"
     games = [g["version"] for g in get("https://meta.fabricmc.net/v2/versions/game")
              if g["stable"] and g["version"].startswith("26.")]
-    loaders = [l["version"] for l in get("https://meta.fabricmc.net/v2/versions/loader") if l.get("stable", True)][:5]
+    loaders = [l["version"] for l in get("https://meta.fabricmc.net/v2/versions/loader")
+               if not any(t in l["version"] for t in ("beta", "alpha", "rc", "pre"))][:6]
     rows = []
     for mc in games:
         rows.append({"mc": mc, "fabric_api": newest("fabric-api", mc), "modmenu": newest("modmenu", mc),
                      "iris": newest("iris", mc), "sodium": newest("sodium", mc)})
+    # which loader does each Fabric API build itself require?
+    for r in rows:
+        if r["fabric_api"]:
+            q = urllib.parse.urlencode({"loaders": json.dumps(["fabric"]), "game_versions": json.dumps([r["mc"]])})
+            v = get(f"https://api.modrinth.com/v2/project/fabric-api/version?{q}")[0]
+            url = next(f["url"] for f in v["files"] if f.get("primary")) if any(f.get("primary") for f in v["files"]) else v["files"][0]["url"]
+            import io, zipfile
+            with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=120) as resp:
+                meta = json.loads(zipfile.ZipFile(io.BytesIO(resp.read())).read("fabric.mod.json"))
+            r["fabric_api_needs_loader"] = meta.get("depends", {}).get("fabricloader")
     data = {"loaders": loaders, "versions": rows}
     with open(out, "w") as f:
         json.dump(data, f, indent=2)

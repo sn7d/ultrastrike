@@ -1,10 +1,5 @@
 package com.angelichalo.render;
 
-import com.mojang.blaze3d.pipeline.BlendFunction;
-import com.mojang.blaze3d.pipeline.ColorTargetState;
-import com.mojang.blaze3d.pipeline.DepthStencilState;
-import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.platform.CompareOp;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import org.joml.Matrix4f;
@@ -12,16 +7,14 @@ import org.joml.Matrix4f;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.rendertype.RenderSetup;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
-import net.minecraft.resources.Identifier;
 import net.minecraft.world.phys.Vec3;
 
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
 
 import com.angelichalo.AngelicHalo;
+import com.angelichalo.compat.HaloPipelines;
 import com.angelichalo.config.HaloConfig;
 
 /**
@@ -31,84 +24,10 @@ import com.angelichalo.config.HaloConfig;
 public final class HaloRenderer {
 	private HaloRenderer() { }
 
-	// Same as vanilla DEBUG_QUADS: translucent, POSITION_COLOR quads, depth test without depth writes, no culling.
-	private static final RenderPipeline DEPTH_PIPELINE = RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)
-			.withLocation(id("pipeline/halo"))
-			.withCull(false)
-			.build();
-
-	private static final RenderPipeline XRAY_PIPELINE = RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)
-			.withLocation(id("pipeline/halo_xray"))
-			.withCull(false)
-			.withDepthStencilState(new DepthStencilState(CompareOp.ALWAYS_PASS, false))
-			.build();
-
-	// Additive (SRC_ALPHA, ONE) bloom, like vanilla lightning.
-	private static final RenderPipeline GLOW_PIPELINE = RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)
-			.withLocation(id("pipeline/halo_glow"))
-			.withCull(false)
-			.withColorTargetState(new ColorTargetState(BlendFunction.LIGHTNING))
-			.build();
-
-	private static final RenderPipeline GLOW_XRAY_PIPELINE = RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)
-			.withLocation(id("pipeline/halo_glow_xray"))
-			.withCull(false)
-			.withColorTargetState(new ColorTargetState(BlendFunction.LIGHTNING))
-			.withDepthStencilState(new DepthStencilState(CompareOp.ALWAYS_PASS, false))
-			.build();
-
-	// Only where something is in front (reverse-Z: occluded fragments are LESS than the stored depth).
-	private static final RenderPipeline HIDDEN_PIPELINE = RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)
-			.withLocation(id("pipeline/halo_hidden"))
-			.withCull(false)
-			.withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN, false))
-			.build();
-
-	private static final RenderPipeline GLOW_HIDDEN_PIPELINE = RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)
-			.withLocation(id("pipeline/halo_glow_hidden"))
-			.withCull(false)
-			.withColorTargetState(new ColorTargetState(BlendFunction.LIGHTNING))
-			.withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN, false))
-			.build();
-
-	private static final RenderType CORE = type("halo_core", DEPTH_PIPELINE);
-	private static final RenderType CORE_HIDDEN = type("halo_core_hidden", HIDDEN_PIPELINE);
-	private static final RenderType GLOW_HIDDEN = type("halo_glow_hidden", GLOW_HIDDEN_PIPELINE);
-	private static final RenderType CORE_XRAY = type("halo_core_xray", XRAY_PIPELINE);
-	private static final RenderType GLOW = type("halo_glow", GLOW_PIPELINE);
-	private static final RenderType GLOW_XRAY = type("halo_glow_xray", GLOW_XRAY_PIPELINE);
-
 	private static final QuadBuffer CORE_QUADS = new QuadBuffer();
 	private static final QuadBuffer GLOW_QUADS = new QuadBuffer();
 
 	private static boolean loggedError;
-
-	/**
-	 * Shader support: Iris only draws render pipelines it knows. Register ours through Iris's public API
-	 * ({@code IrisApi.assignPipeline}, API v0.3) as basic coloured geometry, so the halo stays visible with
-	 * shaderpacks. Reflection keeps Iris an optional companion rather than a dependency.
-	 */
-	public static void registerWithIris() {
-		try {
-			Class<?> apiClass = Class.forName("net.irisshaders.iris.api.v0.IrisApi");
-			Class<?> programClass = Class.forName("net.irisshaders.iris.api.v0.IrisProgram");
-			Object api = apiClass.getMethod("getInstance").invoke(null);
-			@SuppressWarnings({"unchecked", "rawtypes"})
-			Object basic = Enum.valueOf((Class) programClass, "BASIC");
-			java.lang.reflect.Method assign = apiClass.getMethod("assignPipeline", RenderPipeline.class, programClass);
-			int count = 0;
-			for (RenderPipeline p : new RenderPipeline[] {DEPTH_PIPELINE, XRAY_PIPELINE, GLOW_PIPELINE, GLOW_XRAY_PIPELINE,
-					HIDDEN_PIPELINE, GLOW_HIDDEN_PIPELINE}) {
-				assign.invoke(api, p, basic);
-				count++;
-			}
-			AngelicHalo.LOGGER.info("Registered {} halo render pipelines with Iris for shaderpack support", count);
-		} catch (ClassNotFoundException e) {
-			// Iris not installed: nothing to do
-		} catch (ReflectiveOperationException | RuntimeException | LinkageError e) {
-			AngelicHalo.LOGGER.warn("Could not register halo pipelines with Iris; the halo may be hidden while shaders are on", e);
-		}
-	}
 
 	private static java.lang.invoke.MethodHandle shaderInUse;
 	private static boolean shaderLookupDone;
@@ -138,14 +57,6 @@ public final class HaloRenderer {
 	/** True if a render error was ever caught (checked by the in-game test). */
 	public static boolean hasFailed() {
 		return loggedError;
-	}
-
-	private static Identifier id(String path) {
-		return Identifier.fromNamespaceAndPath(AngelicHalo.MOD_ID, path);
-	}
-
-	private static RenderType type(String name, RenderPipeline pipeline) {
-		return RenderType.create(AngelicHalo.MOD_ID + "_" + name, RenderSetup.builder(pipeline).sortOnUpload().createRenderSetup());
 	}
 
 	public static void render(LevelRenderContext context) {
@@ -227,13 +138,13 @@ public final class HaloRenderer {
 		boolean hiddenPass = c.throughWalls && !allOnTop && c.hiddenOpacity > 0.005;
 
 		if (!GLOW_QUADS.isEmpty()) {
-			submit(context, poseStack, allOnTop ? GLOW_XRAY : GLOW, GLOW_QUADS, 1.0);
-			if (hiddenPass) submit(context, poseStack, GLOW_HIDDEN, GLOW_QUADS, c.hiddenOpacity);
+			submit(context, poseStack, allOnTop ? HaloPipelines.GLOW_XRAY : HaloPipelines.GLOW, GLOW_QUADS, 1.0);
+			if (hiddenPass) submit(context, poseStack, HaloPipelines.GLOW_HIDDEN, GLOW_QUADS, c.hiddenOpacity);
 		}
 
 		if (!CORE_QUADS.isEmpty()) {
-			submit(context, poseStack, allOnTop ? CORE_XRAY : CORE, CORE_QUADS, 1.0);
-			if (hiddenPass) submit(context, poseStack, CORE_HIDDEN, CORE_QUADS, c.hiddenOpacity);
+			submit(context, poseStack, allOnTop ? HaloPipelines.CORE_XRAY : HaloPipelines.CORE, CORE_QUADS, 1.0);
+			if (hiddenPass) submit(context, poseStack, HaloPipelines.CORE_HIDDEN, CORE_QUADS, c.hiddenOpacity);
 		}
 	}
 
