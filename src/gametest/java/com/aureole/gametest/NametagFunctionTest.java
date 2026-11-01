@@ -124,7 +124,7 @@ public class NametagFunctionTest implements FabricClientGameTest {
 			});
 			double scale = r[6];
 			if (r[1] >= r[3] + 2 && r[1] <= r[5] - 2) {
-				pos = new double[] {r[0] * scale, r[1] * scale};
+				pos = new double[] {r[0] * scale, r[1] * scale, scale};
 			} else {
 				ctx.getInput().setCursorPos((r[2] + r[4]) / 2 * scale, (r[3] + r[5]) / 2 * scale);
 				ctx.getInput().scroll(r[1] > r[5] ? -1 : 1);
@@ -133,11 +133,15 @@ public class NametagFunctionTest implements FabricClientGameTest {
 		}
 
 		if (pos == null) throw new AssertionError("control " + control + " never scrolled into view");
+		lastTarget = String.format(java.util.Locale.ROOT, "control %d at gui (%.1f, %.1f) -> cursor (%.1f, %.1f)",
+				control, pos[0] / pos[2], pos[1] / pos[2], pos[0], pos[1]);
 		ctx.getInput().setCursorPos(pos[0], pos[1]);
 		ctx.waitTick();
 		ctx.getInput().pressMouse(InputConstants.MOUSE_BUTTON_LEFT);
 		ctx.waitTicks(2);
 	}
+
+	private static String lastTarget = "none";
 
 	private interface Check {
 		boolean ok(HaloConfig c);
@@ -147,8 +151,12 @@ public class NametagFunctionTest implements FabricClientGameTest {
 		boolean ok = ctx.computeOnClient(mc -> check.ok(HaloConfig.get()));
 		if (!ok) {
 			HaloConfig c = ctx.computeOnClient(mc -> HaloConfig.get());
+			String window = ctx.computeOnClient(mc -> "gui " + mc.getWindow().getGuiScaledWidth() + "x"
+					+ mc.getWindow().getGuiScaledHeight() + " scale " + mc.getWindow().getGuiScale()
+					+ ", screen " + com.aureole.compat.McScreens.current(mc));
 			throw new AssertionError("Nametag menu test failed: " + what + " (name='" + c.tagText + "', title='" + c.tagTitle
-					+ "', enabled=" + c.tagEnabled + ")");
+					+ "', enabled=" + c.tagEnabled + "; clicked " + lastTarget + "; screen saw " + HaloConfigScreen.debugLastClick()
+					+ "; " + window + ")");
 		}
 	}
 }

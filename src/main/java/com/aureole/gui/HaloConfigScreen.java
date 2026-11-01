@@ -243,11 +243,19 @@ public class HaloConfigScreen extends Screen {
 	// ------------------------------------------------------------------------------------------------
 	// input
 
+	private static volatile String lastClick = "none";
+
+	/** Test hook: where the last click landed, in GUI coordinates. */
+	public static String debugLastClick() {
+		return lastClick;
+	}
+
 	@Override
 	public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
 		double mx = event.x();
 		double my = event.y();
 		int button = event.button();
+		lastClick = String.format(java.util.Locale.ROOT, "(%.1f, %.1f) button %d", mx, my, button);
 
 		Tab[] tabs = Tab.values();
 		for (int i = 0; i < tabs.length; i++) {
