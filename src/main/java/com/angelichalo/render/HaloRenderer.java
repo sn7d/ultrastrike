@@ -110,6 +110,31 @@ public final class HaloRenderer {
 		}
 	}
 
+	private static java.lang.invoke.MethodHandle shaderInUse;
+	private static boolean shaderLookupDone;
+
+	/** True while an Iris shaderpack is active (looked up reflectively; false without Iris). */
+	public static boolean shadersActive() {
+		if (!shaderLookupDone) {
+			shaderLookupDone = true;
+			try {
+				Class<?> apiClass = Class.forName("net.irisshaders.iris.api.v0.IrisApi");
+				Object api = apiClass.getMethod("getInstance").invoke(null);
+				shaderInUse = java.lang.invoke.MethodHandles.publicLookup()
+						.findVirtual(apiClass, "isShaderPackInUse", java.lang.invoke.MethodType.methodType(boolean.class))
+						.bindTo(api);
+			} catch (ReflectiveOperationException | RuntimeException | LinkageError e) {
+				shaderInUse = null;
+			}
+		}
+		if (shaderInUse == null) return false;
+		try {
+			return (boolean) shaderInUse.invokeExact();
+		} catch (Throwable t) {
+			return false;
+		}
+	}
+
 	/** True if a render error was ever caught (checked by the in-game test). */
 	public static boolean hasFailed() {
 		return loggedError;
@@ -175,11 +200,16 @@ public final class HaloRenderer {
 
 		CORE_QUADS.clear();
 		GLOW_QUADS.clear();
-		HaloGeometry.build(c, frame, CORE_QUADS, GLOW_QUADS);
+		// Shaderpacks bring their own bloom and dither soft alpha edges, so with a pack active the halo hands glow
+		// over to the pack (unless the player opts in) and draws crisp edges only. Keeps colours true, no white-out.
+		boolean shaders = shadersActive();
+		HaloGeometry.setShaderMode(shaders);
+		boolean ownGlow = !shaders || c.bloomWithShaders;
+		HaloGeometry.build(c, frame, CORE_QUADS, ownGlow ? GLOW_QUADS : HaloGeometry.DISCARD);
 
 		PoseStack poseStack = context.poseStack();
 		HaloDecor.render(context, c, player, frame.cx(), frame.cy(), frame.cz(), frame.time(), health,
-				c.throughWalls && c.hiddenOpacity >= 0.995, partial, GLOW_QUADS);
+				c.throughWalls && c.hiddenOpacity >= 0.995, partial, ownGlow ? GLOW_QUADS : HaloGeometry.DISCARD);
 		boolean allOnTop = c.throughWalls && c.hiddenOpacity >= 0.995;
 		boolean hiddenPass = c.throughWalls && !allOnTop && c.hiddenOpacity > 0.005;
 

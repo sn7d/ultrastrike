@@ -335,5 +335,7 @@
 	"angelichalo.option.emblem_bloom": "Emblem",
 	"angelichalo.option.emblem_bloom.tip": "Glow around the emblem image.",
 	"angelichalo.option.extras_bloom": "Particles",
-	"angelichalo.option.extras_bloom.tip": "Glow on embers, helix, jump rings and shockwaves."
+	"angelichalo.option.extras_bloom.tip": "Glow on embers, helix, jump rings and shockwaves.",
+	"angelichalo.option.bloom_with_shaders": "Bloom With Shaders",
+	"angelichalo.option.bloom_with_shaders.tip": "Shaderpacks have their own bloom, and stacking both washes colours out to white, so the halo's glow pauses while a pack is active. Turn this on to keep it anyway."
 }

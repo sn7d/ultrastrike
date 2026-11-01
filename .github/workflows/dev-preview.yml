@@ -18,6 +18,7 @@ jobs:
         with:
           java-version: '25'
           distribution: 'microsoft'
+          cache: 'gradle'
       - run: chmod +x ./gradlew
       - name: Sodium + Iris and the shaderpack
         run: |
@@ -29,6 +30,8 @@ jobs:
         continue-on-error: true
         run: |
           sudo apt-get update -q && sudo apt-get install -y -q xvfb mesa-utils libgl1-mesa-dri
+          # dependency downloads can hit Maven Central rate limits when many jobs run at once: retry them first
+          for i in 1 2 3; do ./gradlew gametestClasses -PcompatMods=compat-mods && break; sleep $((i * 30)); done
           xvfb-run -a -s "-screen 0 1920x1080x24" ./gradlew runClientGameTest -PcompatMods=compat-mods --stacktrace
       - name: Collect results
         if: always()

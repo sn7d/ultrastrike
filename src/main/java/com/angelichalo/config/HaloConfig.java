@@ -87,6 +87,8 @@ public final class HaloConfig {
 	public double textBloom = 1.0;
 	public double emblemBloom = 1.0;
 	public double extrasBloom = 1.0;
+	/** Keep the halo's own bloom even while an Iris shaderpack is active (packs usually have their own). */
+	public boolean bloomWithShaders = false;
 
 	// ---- Motion ----
 	public Motion motion = Motion.STATIC;

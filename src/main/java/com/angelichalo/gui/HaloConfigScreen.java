@@ -728,7 +728,8 @@ public class HaloConfigScreen extends Screen {
 				e.add(slider("text_bloom", 0, 2, 0.01, () -> cfg().textBloom, v -> cfg().textBloom = v, "%.2f×"));
 				e.add(slider("emblem_bloom", 0, 2, 0.01, () -> cfg().emblemBloom, v -> cfg().emblemBloom = v, "%.2f×"));
 				e.add(slider("extras_bloom", 0, 2, 0.01, () -> cfg().extrasBloom, v -> cfg().extrasBloom = v, "%.2f×"));
-				e.add(note("Bloom is additive light, so it shines brightest at night and over dark blocks. The Classic preset keeps it off so it matches the reference exactly."));
+				e.add(toggle("bloom_with_shaders", () -> cfg().bloomWithShaders, v -> cfg().bloomWithShaders = v));
+				e.add(note("Bloom is additive light, so it shines brightest at night and over dark blocks. The Classic preset keeps it off so it matches the reference exactly. With a shaderpack on, the pack's own bloom takes over unless you enable the toggle above."));
 			}
 			case TEXT -> {
 				e.add(toggle("text_enabled", () -> cfg().textEnabled, v -> cfg().textEnabled = v));

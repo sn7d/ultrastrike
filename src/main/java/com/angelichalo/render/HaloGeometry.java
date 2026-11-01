@@ -49,6 +49,16 @@ public final class HaloGeometry {
 	private static final float[] OY = new float[MAX];
 	private static final float[] OZ = new float[MAX];
 
+	/** A sink that drops everything (used to switch the glow pass off). */
+	public static final QuadSink DISCARD = (x0, y0, z0, c0, x1, y1, z1, c1, x2, y2, z2, c2, x3, y3, z3, c3) -> { };
+
+	private static boolean shaderMode;
+
+	/** With a shaderpack active, skip soft feathered edges (packs dither them into jagged teeth). */
+	public static void setShaderMode(boolean on) {
+		shaderMode = on;
+	}
+
 	// effective bloom for the current build (0 = off)
 	private static double ringBloom;
 	private static double trailBloom;
@@ -435,7 +445,7 @@ public final class HaloGeometry {
 		}
 
 		// anti-aliasing feather, ~1 screen pixel wide, as a fraction of the half width
-		double featherRatio = soft ? 0 : Math.min(1.5, 1.6 / Math.max(widthPx, 0.5));
+		double featherRatio = soft || shaderMode ? 0 : Math.min(1.5, 1.6 / Math.max(widthPx, 0.5));
 
 		for (int i = 0; i < n; i++) {
 			if (dashed) {
@@ -464,6 +474,7 @@ public final class HaloGeometry {
 						PX[j] + OX[j], PY[j] + OY[j], PZ[j] + OZ[j], COL[j],
 						PX[j] - OX[j], PY[j] - OY[j], PZ[j] - OZ[j], COL[j]);
 
+				if (featherRatio <= 0) continue;
 				// soft outer edges so thin lines look smooth instead of jagged
 				float k = (float) (1.0 + featherRatio);
 				int ei = COL[i] & 0x00FFFFFF;
