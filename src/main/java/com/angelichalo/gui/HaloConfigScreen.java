@@ -116,6 +116,11 @@ public class HaloConfigScreen extends Screen {
 		return new int[] {c.x, c.y, c.w, c.height()};
 	}
 
+	/** The scrolling list's visible area as {left, top, right, bottom} in GUI pixels (used by the in-game tests). */
+	public int[] debugContentBounds() {
+		return new int[] {cx0, contentTop, cx1, contentBottom};
+	}
+
 	/** Number of tabs (used by the in-game screenshot test). */
 	public static int tabCount() {
 		return Tab.values().length;

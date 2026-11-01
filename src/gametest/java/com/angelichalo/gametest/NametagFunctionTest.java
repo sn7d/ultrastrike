@@ -108,14 +108,30 @@ public class NametagFunctionTest implements FabricClientGameTest {
 	}
 
 	private static void click(ClientGameTestContext ctx, int control, double ox, double oy, boolean absolute) {
-		double[] pos = ctx.computeOnClient(mc -> {
-			if (!(mc.gui.screen() instanceof HaloConfigScreen screen)) throw new AssertionError("settings screen is not open");
-			int[] r = screen.debugControlRect(control);
-			double gx = absolute ? r[0] + ox : r[0] + r[2] * ox;
-			double gy = absolute ? r[1] + oy : r[1] + r[3] * oy;
-			double scale = mc.getWindow().getGuiScale();
-			return new double[] {gx * scale, gy * scale};
-		});
+		double[] pos = null;
+
+		// scroll the list with the real mouse wheel until the target point is visible
+		for (int attempt = 0; attempt < 20 && pos == null; attempt++) {
+			double[] r = ctx.computeOnClient(mc -> {
+				if (!(mc.gui.screen() instanceof HaloConfigScreen screen)) throw new AssertionError("settings screen is not open");
+				int[] rect = screen.debugControlRect(control);
+				int[] area = screen.debugContentBounds();
+				double gx = absolute ? rect[0] + ox : rect[0] + rect[2] * ox;
+				double gy = absolute ? rect[1] + oy : rect[1] + rect[3] * oy;
+				double scale = mc.getWindow().getGuiScale();
+				return new double[] {gx, gy, area[0], area[1], area[2], area[3], scale};
+			});
+			double scale = r[6];
+			if (r[1] >= r[3] + 2 && r[1] <= r[5] - 2) {
+				pos = new double[] {r[0] * scale, r[1] * scale};
+			} else {
+				ctx.getInput().setCursorPos((r[2] + r[4]) / 2 * scale, (r[3] + r[5]) / 2 * scale);
+				ctx.getInput().scroll(r[1] > r[5] ? -1 : 1);
+				ctx.waitTicks(4);
+			}
+		}
+
+		if (pos == null) throw new AssertionError("control " + control + " never scrolled into view");
 		ctx.getInput().setCursorPos(pos[0], pos[1]);
 		ctx.waitTick();
 		ctx.getInput().pressMouse(GLFW.GLFW_MOUSE_BUTTON_LEFT);
