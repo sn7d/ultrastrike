@@ -44,7 +44,7 @@ jobs:
           distribution: 'microsoft'
           cache: 'gradle'
       - run: chmod +x ./gradlew
-      - run: python3 scripts/fetch_skin.py itsd7 src/gametest/resources
+      - run: python3 scripts/fetch_skin.py itsd7 src/gametest/resources || echo "skin unavailable, using default"
       - run: python3 scripts/compat_mods.py "$(grep '^minecraft_version=' gradle.properties | cut -d= -f2)" compat-mods essential | tee mods.txt
       - id: test
         continue-on-error: true
