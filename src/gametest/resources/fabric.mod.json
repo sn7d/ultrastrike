@@ -5,7 +5,12 @@
 	"name": "Angelic Halo Client Tests",
 	"environment": "client",
 	"entrypoints": {
-		"fabric-client-gametest": ["com.angelichalo.gametest.HaloScreenshotTest"]
+		"fabric-client-gametest": [
+			"com.angelichalo.gametest.HaloScreenshotTest",
+			"com.angelichalo.gametest.ShaderCompatTest"
+		]
 	},
-	"depends": { "angelichalo": "*" }
+	"depends": {
+		"angelichalo": "*"
+	}
 }

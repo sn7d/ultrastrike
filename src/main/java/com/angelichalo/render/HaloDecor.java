@@ -29,13 +29,13 @@ final class HaloDecor {
 	static final FontDescription SMOOTH_FONT = new FontDescription.Resource(Identifier.fromNamespaceAndPath(AngelicHalo.MOD_ID, "world"));
 
 	static void render(LevelRenderContext ctx, HaloConfig c, LocalPlayer player, double fx, double fy, double fz,
-			double time, double health, boolean onTop, float partial) {
+			double time, double health, boolean onTop, float partial, HaloGeometry.QuadSink glow) {
 		if (c.emblemEnabled) {
 			emblem(ctx, c, player, fx, fy, fz, time, health, onTop, partial);
 		}
 
 		if (c.textEnabled && !c.text.isBlank()) {
-			text(ctx, c, player, fx, fy, fz, time, health, onTop);
+			text(ctx, c, player, fx, fy, fz, time, health, onTop, glow);
 		}
 	}
 
@@ -50,58 +50,68 @@ final class HaloDecor {
 		double pulse = 1.0 - c.emblemPulse * 0.5 * (1.0 + Math.sin(time * 2.2));
 		double h = player.getBbHeight();
 
-		// corners in a local (right, up) basis, uv per corner
-		double[][] local = {{-half, -half, 0, 1}, {half, -half, 1, 1}, {half, half, 1, 0}, {-half, half, 0, 0}};
-		float[][] pts = new float[4][3];
-		int[] cols = new int[4];
+		// bloom: a few larger, fainter copies of the image behind it give a soft glow in the image's own shape
+		double bloom = c.bloomFor(c.emblemBloom);
+		int glowLayers = bloom > 0.01 ? 4 : 0;
+		float[][][] layerPts = new float[glowLayers + 1][4][3];
+		int[][] layerCols = new int[glowLayers + 1][4];
 
-		for (int i = 0; i < 4; i++) {
-			double lx = local[i][0];
-			double ly = local[i][1];
-			double rx = lx * Math.cos(spin) - ly * Math.sin(spin);
-			double ry = lx * Math.sin(spin) + ly * Math.cos(spin);
-			double x;
-			double y;
-			double z;
+		for (int layer = 0; layer <= glowLayers; layer++) {
+			boolean main = layer == glowLayers;
+			double grow = main ? 1.0 : 1.0 + 0.045 * (glowLayers - layer);
+			double alphaMul = main ? pulse : pulse * Math.min(0.9, bloom) * 0.28 * (layer + 1) / glowLayers;
+			double hs = half * grow;
+			double[][] local = {{-hs, -hs}, {hs, -hs}, {hs, hs}, {-hs, hs}};
 
-			switch (c.emblemMode) {
-				case ABOVE -> {
-					double cy = fy + h + 0.45 + c.emblemHeight + half;
-					double[] b = billboard(fx, cy, fz);
-					x = fx + b[0] * rx + b[3] * ry;
-					y = cy + b[4] * ry;
-					z = fz + b[2] * rx + b[5] * ry;
+			for (int i = 0; i < 4; i++) {
+				double lx = local[i][0];
+				double ly = local[i][1];
+				double rx = lx * Math.cos(spin) - ly * Math.sin(spin);
+				double ry = lx * Math.sin(spin) + ly * Math.cos(spin);
+				double x;
+				double y;
+				double z;
+
+				switch (c.emblemMode) {
+					case ABOVE -> {
+						double cy = fy + h + 0.45 + c.emblemHeight + half;
+						double[] b = billboard(fx, cy, fz);
+						x = fx + b[0] * rx + b[3] * ry;
+						y = cy + b[4] * ry;
+						z = fz + b[2] * rx + b[5] * ry;
+					}
+					case BACK -> {
+						float bodyYaw = (float) Math.toRadians(player.yBodyRotO + (player.yBodyRot - player.yBodyRotO) * partial);
+						double fwdX = -Math.sin(bodyYaw);
+						double fwdZ = Math.cos(bodyYaw);
+						double cx = fx - fwdX * 0.38;
+						double cz = fz - fwdZ * 0.38;
+						double cy = fy + h * 0.6 + c.emblemHeight;
+						x = cx + (-fwdZ) * rx;
+						y = cy + ry;
+						z = cz + fwdX * rx;
+					}
+					default -> {
+						x = fx + rx;
+						y = fy + c.emblemHeight + (main ? 0.002 : 0.0);
+						z = fz + ry;
+					}
 				}
-				case BACK -> {
-					float bodyYaw = (float) Math.toRadians(player.yBodyRotO + (player.yBodyRot - player.yBodyRotO) * partial);
-					double fwdX = -Math.sin(bodyYaw);
-					double fwdZ = Math.cos(bodyYaw);
-					double cx = fx - fwdX * 0.38;
-					double cz = fz - fwdZ * 0.38;
-					double cy = fy + h * 0.6 + c.emblemHeight;
-					// plane spanned by the body's right vector and world up
-					x = cx + (-fwdZ) * rx;
-					y = cy + ry;
-					z = cz + fwdX * rx;
-				}
-				default -> {
-					x = fx + rx;
-					y = fy + c.emblemHeight;
-					z = fz + ry;
-				}
+
+				layerPts[layer][i][0] = (float) x;
+				layerPts[layer][i][1] = (float) y;
+				layerPts[layer][i][2] = (float) z;
+				layerCols[layer][i] = HaloColors.color(c.emblemColor, i / 4.0, i / 3.0, time, health, alphaMul);
 			}
-
-			pts[i][0] = (float) x;
-			pts[i][1] = (float) y;
-			pts[i][2] = (float) z;
-			cols[i] = HaloColors.color(c.emblemColor, i / 4.0, i / 3.0, time, health, pulse);
 		}
 
 		float[][] uv = {{0, 1}, {1, 1}, {1, 0}, {0, 0}};
 		boolean twoSided = c.emblemMode != com.angelichalo.config.HaloOptions.EmblemMode.ABOVE;
 		ctx.submitNodeCollector().submitCustomGeometry(ctx.poseStack(), type, (pose, buffer) -> {
-			quad(pose, buffer, pts, cols, uv, false);
-			if (twoSided) quad(pose, buffer, pts, cols, uv, true);
+			for (int layer = 0; layer < layerPts.length; layer++) {
+				quad(pose, buffer, layerPts[layer], layerCols[layer], uv, false);
+				if (twoSided) quad(pose, buffer, layerPts[layer], layerCols[layer], uv, true);
+			}
 		});
 	}
 
@@ -140,7 +150,8 @@ final class HaloDecor {
 	// ------------------------------------------------------------------------------------------------
 
 	private static void text(LevelRenderContext ctx, HaloConfig c, LocalPlayer player, double fx, double fy, double fz,
-			double time, double health, boolean onTop) {
+			double time, double health, boolean onTop, HaloGeometry.QuadSink glow) {
+		double bloom = c.bloomFor(c.textBloom);
 		Minecraft mc = Minecraft.getInstance();
 		Font font = mc.font;
 		CameraRenderState camera = ctx.levelState().cameraRenderState;
@@ -159,9 +170,15 @@ final class HaloDecor {
 			ps.mulPose(camera.orientation);
 			ps.scale(scale, -scale, scale);
 			float x = -total / 2.0f;
+			double[] basis = billboard(fx, y, fz);
 			for (int i = 0; i < len; i++) {
 				FormattedCharSequence g = glyph(c, text.charAt(i));
 				int col = HaloColors.color(c.textColor, len <= 1 ? 0 : (double) i / (len - 1), 0, time, health, 1.0);
+				if (bloom > 0.01) {
+					double off = (x + font.width(g) / 2.0) * scale;
+					HaloGeometry.glowSpot(glow, (float) (fx + basis[0] * off), (float) y, (float) (fz + basis[2] * off),
+							7.5 * scale, HaloColors.withAlpha(col, Math.min(0.9, bloom * 0.45)));
+				}
 				ctx.submitNodeCollector().submitText(ps, x, 0, g, c.textShadow, mode, FULL_BRIGHT, col, 0, 0);
 				x += font.width(g);
 			}
@@ -201,6 +218,10 @@ final class HaloDecor {
 
 				int col = HaloColors.color(c.textColor, len <= 1 ? 0 : (double) i / (len - 1), 0, time, health, alpha);
 				if ((col >>> 24) < 4) continue;
+				if (bloom > 0.01) {
+					HaloGeometry.glowSpot(glow, (float) px, (float) y, (float) pz, 7.0 * scale,
+							HaloColors.withAlpha(col, Math.min(0.9, bloom * 0.4)));
+				}
 
 				ps.pushPose();
 				ps.translate(px, y, pz);

@@ -152,7 +152,7 @@ public final class HaloRenderer {
 
 		PoseStack poseStack = context.poseStack();
 		HaloDecor.render(context, c, player, frame.cx(), frame.cy(), frame.cz(), frame.time(), health,
-				c.throughWalls && c.hiddenOpacity >= 0.995, partial);
+				c.throughWalls && c.hiddenOpacity >= 0.995, partial, GLOW_QUADS);
 		boolean allOnTop = c.throughWalls && c.hiddenOpacity >= 0.995;
 		boolean hiddenPass = c.throughWalls && !allOnTop && c.hiddenOpacity > 0.005;
 

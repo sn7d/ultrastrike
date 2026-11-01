@@ -76,6 +76,18 @@ public final class HaloConfig {
 	public int galaxyArms = 3;
 	public double lightningIntensity = 0.5;
 
+	// ---- Glow / bloom (applies to every layer) ----
+	/** Soft additive bloom around everything. Off for the classic look so it matches the reference exactly. */
+	public boolean bloom = false;
+	public double bloomStrength = 0.7;
+	/** Bloom radius in pixels (at 1080p). */
+	public double bloomRadius = 16.0;
+	public double ringBloom = 1.0;
+	public double trailBloom = 1.0;
+	public double textBloom = 1.0;
+	public double emblemBloom = 1.0;
+	public double extrasBloom = 1.0;
+
 	// ---- Motion ----
 	public Motion motion = Motion.STATIC;
 	/** Full sweeps per second. */
@@ -174,6 +186,11 @@ public final class HaloConfig {
 	/** Gentle opacity pulse, 0 = steady. */
 	public double emblemPulse = 0.25;
 	public ColorSpec emblemColor = new ColorSpec(ColorMode.SOLID, 0xFFD27A, 0xFF4B55, 0.8);
+
+	/** Effective bloom strength for a layer multiplier (0 when bloom is off). */
+	public double bloomFor(double layer) {
+		return bloom ? bloomStrength * layer : 0.0;
+	}
 
 	public static HaloConfig get() {
 		return instance;
@@ -274,6 +291,13 @@ public final class HaloConfig {
 		extrasColor.sanitize();
 
 		hiddenOpacity = clamp(hiddenOpacity, 0.0, 1.0);
+		bloomStrength = clamp(bloomStrength, 0.0, 1.5);
+		bloomRadius = clamp(bloomRadius, 4.0, 48.0);
+		ringBloom = clamp(ringBloom, 0.0, 2.0);
+		trailBloom = clamp(trailBloom, 0.0, 2.0);
+		textBloom = clamp(textBloom, 0.0, 2.0);
+		emblemBloom = clamp(emblemBloom, 0.0, 2.0);
+		extrasBloom = clamp(extrasBloom, 0.0, 2.0);
 		radius = clamp(radius, 0.2, 16.0);
 		lineWidth = clamp(lineWidth, 0.5, 12.0);
 		heightOffset = clamp(heightOffset, -1.0, 3.0);

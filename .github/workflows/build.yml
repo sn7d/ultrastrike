@@ -71,3 +71,41 @@ jobs:
         with:
           name: skyblock-compat-results
           path: results/
+
+  shaders:
+    # Same scenes with and without each popular shaderpack (Iris + Sodium), to make sure colours survive shaders.
+    needs: build
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        pack: [complementary-reimagined, complementary-unbound, bsl-shaders, photon-shader, solas-shader, bliss-shader, makeup-ultra-fast-shaders, sildurs-vibrant-shaders, rethinking-voxels]
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v5
+        with:
+          java-version: '25'
+          distribution: 'microsoft'
+      - run: chmod +x ./gradlew
+      - name: Sodium + Iris and the shaderpack
+        run: |
+          MC="$(grep '^minecraft_version=' gradle.properties | cut -d= -f2)"
+          python3 scripts/compat_mods.py "$MC" compat-mods sodium iris
+          echo "HALO_SHADERPACK=$(python3 scripts/shaderpacks.py ${{ matrix.pack }} shaderpack | tail -1)" >> "$GITHUB_ENV"
+      - name: In-game test with the shaderpack (singleplayer)
+        id: test
+        run: |
+          sudo apt-get update -q && sudo apt-get install -y -q xvfb mesa-utils libgl1-mesa-dri
+          xvfb-run -a -s "-screen 0 1920x1080x24" ./gradlew runClientGameTest -PcompatMods=compat-mods --stacktrace
+      - name: Collect results
+        if: always()
+        run: |
+          mkdir -p results
+          cp shaderpack/PACK.txt results/ || true
+          find . -path ./results -prune -o -type f -path '*screenshots*' -name '*.png' -exec cp {} results/ \; || true
+          find . -path ./results -prune -o -type f -name 'latest.log' -path '*logs*' -exec cp {} results/latest.log \; || true
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: shader-${{ matrix.pack }}
+          path: results/

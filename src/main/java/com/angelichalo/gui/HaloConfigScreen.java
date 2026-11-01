@@ -39,6 +39,7 @@ public class HaloConfigScreen extends Screen {
 		MOTION("Motion", "How the ring moves"),
 		TRAIL("Scan Trail", "The fading trail behind the scan"),
 		COLOURS("Colours", "Colour studio for every layer"),
+		GLOW("Glow", "Soft bloom around every effect"),
 		TEXT("Text", "Your own words around the ring"),
 		EMBLEM("Emblem", "Project an image under or above you"),
 		EXTRAS("Extras", "Particles and reactive effects"),
@@ -299,7 +300,8 @@ public class HaloConfigScreen extends Screen {
 	}
 
 	private int tabY(int i) {
-		return wy0 + 44 + i * 21;
+		int step = Math.max(17, Math.min(21, (wy1 - wy0 - 44 - 40) / Tab.values().length));
+		return wy0 + 44 + i * step;
 	}
 
 	// ------------------------------------------------------------------------------------------------
@@ -715,6 +717,18 @@ public class HaloConfigScreen extends Screen {
 					lastColorTarget = v;
 				}, v -> names[v]).tip("Every layer has its own full colour studio."));
 				colorStudio(e, this::spec);
+			}
+			case GLOW -> {
+				e.add(toggle("bloom", () -> cfg().bloom, v -> cfg().bloom = v));
+				e.add(slider("bloom_strength", 0, 1.5, 0.01, () -> cfg().bloomStrength, v -> cfg().bloomStrength = v, "%.2f"));
+				e.add(slider("bloom_radius", 4, 48, 0.5, () -> cfg().bloomRadius, v -> cfg().bloomRadius = v, "%.1f px"));
+				e.add(header("Per layer"));
+				e.add(slider("ring_bloom", 0, 2, 0.01, () -> cfg().ringBloom, v -> cfg().ringBloom = v, "%.2f×"));
+				e.add(slider("trail_bloom", 0, 2, 0.01, () -> cfg().trailBloom, v -> cfg().trailBloom = v, "%.2f×"));
+				e.add(slider("text_bloom", 0, 2, 0.01, () -> cfg().textBloom, v -> cfg().textBloom = v, "%.2f×"));
+				e.add(slider("emblem_bloom", 0, 2, 0.01, () -> cfg().emblemBloom, v -> cfg().emblemBloom = v, "%.2f×"));
+				e.add(slider("extras_bloom", 0, 2, 0.01, () -> cfg().extrasBloom, v -> cfg().extrasBloom = v, "%.2f×"));
+				e.add(note("Bloom is additive light, so it shines brightest at night and over dark blocks. The Classic preset keeps it off so it matches the reference exactly."));
 			}
 			case TEXT -> {
 				e.add(toggle("text_enabled", () -> cfg().textEnabled, v -> cfg().textEnabled = v));

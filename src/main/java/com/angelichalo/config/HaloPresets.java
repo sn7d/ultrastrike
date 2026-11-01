@@ -25,6 +25,8 @@ public final class HaloPresets {
 			c.throughWalls = current.throughWalls;
 			// effects wrap around you, so let your body/blocks partly hide the far side
 			c.hiddenOpacity = id.equals("classic") ? 1.0 : 0.3;
+			// every look except the reference one gets the soft bloom
+			c.bloom = !id.equals("classic");
 			apply.accept(c);
 			c.sanitize();
 			return c;

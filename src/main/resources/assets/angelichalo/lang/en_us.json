@@ -319,5 +319,21 @@
 	"angelichalo.enum.textmode.banner": "Banner",
 	"angelichalo.enum.emblemmode.floor": "Floor",
 	"angelichalo.enum.emblemmode.above": "Above Head",
-	"angelichalo.enum.emblemmode.back": "On Back"
+	"angelichalo.enum.emblemmode.back": "On Back",
+	"angelichalo.option.bloom": "Bloom",
+	"angelichalo.option.bloom.tip": "Soft, additive glow around every visual element.",
+	"angelichalo.option.bloom_strength": "Strength",
+	"angelichalo.option.bloom_strength.tip": "Overall brightness of the glow.",
+	"angelichalo.option.bloom_radius": "Radius",
+	"angelichalo.option.bloom_radius.tip": "How far the glow spreads, in pixels at 1080p.",
+	"angelichalo.option.ring_bloom": "Ring",
+	"angelichalo.option.ring_bloom.tip": "Glow amount for the ring itself.",
+	"angelichalo.option.trail_bloom": "Scan Trail",
+	"angelichalo.option.trail_bloom.tip": "Glow amount for the scan trail.",
+	"angelichalo.option.text_bloom": "Text",
+	"angelichalo.option.text_bloom.tip": "Glow behind your custom text.",
+	"angelichalo.option.emblem_bloom": "Emblem",
+	"angelichalo.option.emblem_bloom.tip": "Glow around the emblem image.",
+	"angelichalo.option.extras_bloom": "Particles",
+	"angelichalo.option.extras_bloom.tip": "Glow on embers, helix, jump rings and shockwaves."
 }

@@ -29,6 +29,7 @@ public class HaloScreenshotTest implements FabricClientGameTest {
 
 	@Override
 	public void runTest(ClientGameTestContext ctx) {
+		if (System.getenv("HALO_SHADERPACK") != null) return; // shader runs only do ShaderCompatTest
 		ctx.getInput().resizeWindow(1920, 1080);
 		ctx.waitTicks(2);
 
