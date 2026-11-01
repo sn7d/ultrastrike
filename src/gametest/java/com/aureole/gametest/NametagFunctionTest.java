@@ -82,12 +82,12 @@ public class NametagFunctionTest implements FabricClientGameTest {
 			ctx.getInput().pressKey(InputConstants.KEY_RETURN);
 			ctx.waitTicks(2);
 			check(ctx, c -> c.tagTitle.equals("✦ &aGuardian"), "title with &-codes is saved");
-			ctx.takeScreenshot("func_nametag_menu");
+			TestCompat.screenshot(ctx, "func_nametag_menu");
 
 			// 6) the title toggle hides and shows the title without deleting it
 			click(ctx, TITLE_TOGGLE, 0.95, 0.5);
 			check(ctx, c -> !c.tagTitleEnabled && c.tagTitle.equals("✦ &aGuardian"), "title toggle hides the title and keeps its text");
-			ctx.takeScreenshot("func_nametag_title_off");
+			TestCompat.screenshot(ctx, "func_nametag_title_off");
 			click(ctx, TITLE_TOGGLE, 0.95, 0.5);
 			check(ctx, c -> c.tagTitleEnabled, "title toggle shows the title again");
 
@@ -95,7 +95,7 @@ public class NametagFunctionTest implements FabricClientGameTest {
 			ctx.setScreen(() -> null);
 			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT));
 			ctx.waitTicks(10);
-			ctx.takeScreenshot("func_nametag_world");
+			TestCompat.screenshot(ctx, "func_nametag_world");
 
 			ctx.runOnClient(mc -> {
 				if (HaloRenderer.hasFailed()) throw new AssertionError("renderer threw while drawing the nametag");

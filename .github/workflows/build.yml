@@ -4,6 +4,11 @@ on:
   pull_request:
   workflow_dispatch:
 
+# Minecraft 26.3+ opens its window through SDL. On the CI's virtual display SDL can only get an OpenGL window via EGL
+# (GLX finds no matching visual), so prefer EGL; the "vulkan" build entry turns it off to cover the Vulkan fallback.
+env:
+  SDL_VIDEO_FORCE_EGL: '1'
+
 # a newer push to the same branch supersedes a running build
 concurrency:
   group: build-${{ github.ref }}
@@ -13,9 +18,11 @@ jobs:
   build:
     # Every supported Minecraft 26.x release: build, unit tests and the in-game test (singleplayer, screenshots).
     # A "line" is one jar (versions/<line>.properties); each patch release of the line is tested with it.
-    name: build (${{ matrix.mc }})
+    name: build (${{ matrix.mc }}${{ matrix.backend && format(', {0}', matrix.backend) || '' }})
     runs-on: ubuntu-24.04
     timeout-minutes: 45
+    env:
+      SDL_VIDEO_FORCE_EGL: ${{ matrix.backend == 'vulkan' && '0' || '1' }}
     strategy:
       fail-fast: false
       matrix:
@@ -25,6 +32,7 @@ jobs:
           - {line: '26.1', mc: '26.1.2', release: true}
           - {line: '26.2', mc: '26.2', release: true}
           - {line: '26.3', mc: '26.3', release: true}
+          - {line: '26.3', mc: '26.3', backend: 'vulkan'}
     steps:
       - uses: actions/checkout@v6
       - uses: gradle/actions/wrapper-validation@v6
@@ -43,10 +51,13 @@ jobs:
 
       - name: In-game test (singleplayer, screenshots)
         run: |
-          sudo apt-get update -q && sudo apt-get install -y -q xvfb mesa-utils libgl1-mesa-dri mesa-vulkan-drivers libvulkan1 vulkan-tools
+          sudo apt-get update -q && sudo apt-get install -y -q xvfb mesa-utils libgl1-mesa-dri mesa-vulkan-drivers libvulkan1 libegl1 libegl-mesa0 vulkan-tools
           # what the virtual display offers (26.3+ picks OpenGL or Vulkan itself)
           xvfb-run -a -s "-screen 0 1920x1080x24 +extension GLX" sh -c 'glxinfo -B | head -12; vulkaninfo --summary 2>&1 | grep -E "deviceName|apiVersion|driverName" | head -6' || true
-          xvfb-run -a -s "-screen 0 1920x1080x24 +extension GLX" ./gradlew runClientGameTest -Pmc=${{ matrix.line }} -Pminecraft_version=${{ matrix.mc }} --stacktrace
+          # still running after 15 minutes? print what every game thread is doing (diagnoses hangs)
+          ( sleep 900; echo "::warning::game still running after 15 min, thread dump follows"; for p in $(jps -l | grep -viE 'gradle|jps' | awk '{print $1}'); do jcmd $p Thread.print; done ) &
+          rc=0; xvfb-run -a -s "-screen 0 1920x1080x24 +extension GLX" ./gradlew runClientGameTest -Pmc=${{ matrix.line }} -Pminecraft_version=${{ matrix.mc }} --stacktrace || rc=$?
+          kill %1 2>/dev/null || true; exit $rc
 
       - name: Collect screenshots
         if: always()
@@ -67,7 +78,7 @@ jobs:
       - uses: actions/upload-artifact@v7
         if: always()
         with:
-          name: in-game-screenshots-${{ matrix.mc }}
+          name: in-game-screenshots-${{ matrix.mc }}${{ matrix.backend && format('-{0}', matrix.backend) || '' }}
           path: screenshots/
 
   loader-floor:
@@ -87,9 +98,12 @@ jobs:
         run: |
           MIN="$(grep '^loader_min=' gradle.properties | cut -d= -f2)"
           echo "Fabric Loader $MIN"
-          sudo apt-get update -q && sudo apt-get install -y -q xvfb mesa-utils libgl1-mesa-dri mesa-vulkan-drivers libvulkan1
+          sudo apt-get update -q && sudo apt-get install -y -q xvfb mesa-utils libgl1-mesa-dri mesa-vulkan-drivers libvulkan1 libegl1 libegl-mesa0
           for i in 1 2 3; do ./gradlew gametestClasses -Ploader_version=$MIN && break; sleep $((i * 30)); done
-          xvfb-run -a -s "-screen 0 1920x1080x24 +extension GLX" ./gradlew runClientGameTest -Ploader_version=$MIN --stacktrace
+          # still running after 15 minutes? print what every game thread is doing (diagnoses hangs)
+          ( sleep 900; echo "::warning::game still running after 15 min, thread dump follows"; for p in $(jps -l | grep -viE 'gradle|jps' | awk '{print $1}'); do jcmd $p Thread.print; done ) &
+          rc=0; xvfb-run -a -s "-screen 0 1920x1080x24 +extension GLX" ./gradlew runClientGameTest -Ploader_version=$MIN --stacktrace || rc=$?
+          kill %1 2>/dev/null || true; exit $rc
 
   skyblock-compat:
     # Same in-game test, but with a typical Hypixel Skyblock mod set (Sodium, Iris, Skyblocker, Firmament, ...)
@@ -114,9 +128,12 @@ jobs:
         run: python3 scripts/compat_mods.py "$(grep '^minecraft_version=' versions/${{ matrix.line }}.properties | cut -d= -f2)" compat-mods
       - name: In-game test with the mod set
         run: |
-          sudo apt-get update -q && sudo apt-get install -y -q xvfb mesa-utils libgl1-mesa-dri mesa-vulkan-drivers libvulkan1
+          sudo apt-get update -q && sudo apt-get install -y -q xvfb mesa-utils libgl1-mesa-dri mesa-vulkan-drivers libvulkan1 libegl1 libegl-mesa0
           for i in 1 2 3; do ./gradlew gametestClasses -Pmc=${{ matrix.line }} -PcompatMods=compat-mods && break; sleep $((i * 30)); done
-          xvfb-run -a -s "-screen 0 1920x1080x24 +extension GLX" ./gradlew runClientGameTest -Pmc=${{ matrix.line }} -PcompatMods=compat-mods --stacktrace
+          # still running after 15 minutes? print what every game thread is doing (diagnoses hangs)
+          ( sleep 900; echo "::warning::game still running after 15 min, thread dump follows"; for p in $(jps -l | grep -viE 'gradle|jps' | awk '{print $1}'); do jcmd $p Thread.print; done ) &
+          rc=0; xvfb-run -a -s "-screen 0 1920x1080x24 +extension GLX" ./gradlew runClientGameTest -Pmc=${{ matrix.line }} -PcompatMods=compat-mods --stacktrace || rc=$?
+          kill %1 2>/dev/null || true; exit $rc
       - name: Collect results
         if: always()
         run: |
@@ -157,9 +174,12 @@ jobs:
       - name: In-game test with the shaderpack (singleplayer)
         id: test
         run: |
-          sudo apt-get update -q && sudo apt-get install -y -q xvfb mesa-utils libgl1-mesa-dri mesa-vulkan-drivers libvulkan1
+          sudo apt-get update -q && sudo apt-get install -y -q xvfb mesa-utils libgl1-mesa-dri mesa-vulkan-drivers libvulkan1 libegl1 libegl-mesa0
           for i in 1 2 3; do ./gradlew gametestClasses -Pmc=${{ matrix.line }} -PcompatMods=compat-mods && break; sleep $((i * 30)); done
-          xvfb-run -a -s "-screen 0 1920x1080x24 +extension GLX" ./gradlew runClientGameTest -Pmc=${{ matrix.line }} -PcompatMods=compat-mods --stacktrace
+          # still running after 15 minutes? print what every game thread is doing (diagnoses hangs)
+          ( sleep 900; echo "::warning::game still running after 15 min, thread dump follows"; for p in $(jps -l | grep -viE 'gradle|jps' | awk '{print $1}'); do jcmd $p Thread.print; done ) &
+          rc=0; xvfb-run -a -s "-screen 0 1920x1080x24 +extension GLX" ./gradlew runClientGameTest -Pmc=${{ matrix.line }} -PcompatMods=compat-mods --stacktrace || rc=$?
+          kill %1 2>/dev/null || true; exit $rc
       - name: Collect results
         if: always()
         run: |
@@ -198,7 +218,7 @@ jobs:
       - name: In-game test with Essential (singleplayer)
         if: steps.mods.outputs.found == 'true'
         run: |
-          sudo apt-get update -q && sudo apt-get install -y -q xvfb mesa-utils libgl1-mesa-dri mesa-vulkan-drivers libvulkan1
+          sudo apt-get update -q && sudo apt-get install -y -q xvfb mesa-utils libgl1-mesa-dri mesa-vulkan-drivers libvulkan1 libegl1 libegl-mesa0
           for i in 1 2 3; do ./gradlew jar gametestJar -Pmc=${{ matrix.line }} -PcompatMods=compat-mods && break; sleep $((i * 30)); done
           mkdir -p run/prod && printf 'onboardAccessibility:false\nskipMultiplayerWarning:true\ntutorialStep:none\n' > run/prod/options.txt
           ./gradlew prodClientGameTest -Pmc=${{ matrix.line }} -PcompatMods=compat-mods --stacktrace

@@ -56,6 +56,8 @@ public class ShaderCompatTest implements FabricClientGameTest {
 				ctx.waitTicks(100);
 			}
 			ctx.getInput().pressKey(o -> o.keyToggleGui);
+			// let a few ordinary frames run first: Sodium sets up its terrain state in the normal frame loop
+			ctx.waitTicks(40);
 
 			scenes(ctx, server, "noshader");
 
@@ -143,7 +145,7 @@ public class ShaderCompatTest implements FabricClientGameTest {
 			mc.options.setCameraType(camera);
 		});
 		ctx.waitTicks(10);
-		ctx.takeScreenshot(name.toLowerCase(Locale.ROOT));
+		TestCompat.screenshot(ctx, name.toLowerCase(Locale.ROOT));
 	}
 
 	private void pose(TestServerContext server, float yaw, float pitch) {

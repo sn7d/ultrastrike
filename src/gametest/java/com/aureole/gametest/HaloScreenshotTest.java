@@ -95,7 +95,7 @@ public class HaloScreenshotTest implements FabricClientGameTest {
 			});
 			ctx.runOnClient(mc -> HaloState.simulateJump(mc.player.position()));
 			ctx.waitTicks(4);
-			ctx.takeScreenshot("extras_jump_ring_burst");
+			TestCompat.screenshot(ctx, "extras_jump_ring_burst");
 
 			// 6) the hero "selfie" for the README
 			server.runCommand("time set 12250");
@@ -109,7 +109,7 @@ public class HaloScreenshotTest implements FabricClientGameTest {
 				HaloConfig.set(n);
 			});
 			ctx.waitTicks(10);
-			ctx.takeScreenshot("hero_selfie_b");
+			TestCompat.screenshot(ctx, "hero_selfie_b");
 			shot(ctx, "hero_scan", CameraType.THIRD_PERSON_FRONT, c -> {
 				HaloConfig n = scan.copy();
 				n.embers = true;
@@ -213,7 +213,7 @@ public class HaloScreenshotTest implements FabricClientGameTest {
 			ctx.getInput().pressKey(o -> o.keyToggleGui);
 			ctx.getInput().pressKey(com.mojang.blaze3d.platform.InputConstants.KEY_ESCAPE);
 			ctx.waitTicks(4);
-			ctx.takeScreenshot("pause_menu");
+			TestCompat.screenshot(ctx, "pause_menu");
 			ctx.setScreen(() -> null);
 			ctx.getInput().pressKey(o -> o.keyToggleGui);
 			ctx.waitTicks(2);
@@ -234,7 +234,7 @@ public class HaloScreenshotTest implements FabricClientGameTest {
 				ctx.runOnClient(mc -> HaloConfigScreen.setStartTab(t));
 				ctx.setScreen(() -> new HaloConfigScreen(null));
 				ctx.waitTicks(4);
-				ctx.takeScreenshot("gui_tab_" + tab);
+				TestCompat.screenshot(ctx, "gui_tab_" + tab);
 				ctx.setScreen(() -> null);
 				ctx.waitTicks(1);
 			}
@@ -251,14 +251,14 @@ public class HaloScreenshotTest implements FabricClientGameTest {
 			ctx.runOnClient(mc -> HaloConfigScreen.setStartTab(8));
 			ctx.setScreen(() -> new HaloConfigScreen(null));
 			ctx.waitTicks(12);
-			ctx.takeScreenshot("gui_nametag");
+			TestCompat.screenshot(ctx, "gui_nametag");
 			ctx.setScreen(() -> null);
 
 			ctx.runOnClient(mc -> HaloConfigScreen.setStartColorTarget(1));
 			ctx.runOnClient(mc -> HaloConfigScreen.setStartTab(4));
 			ctx.setScreen(() -> new HaloConfigScreen(null));
 			ctx.waitTicks(4);
-			ctx.takeScreenshot("gui_trail_colors");
+			TestCompat.screenshot(ctx, "gui_trail_colors");
 			ctx.setScreen(() -> null);
 
 			ctx.runOnClient(mc -> {
@@ -284,7 +284,7 @@ public class HaloScreenshotTest implements FabricClientGameTest {
 			mc.options.setCameraType(camera);
 		});
 		ctx.waitTicks(6);
-		ctx.takeScreenshot(name);
+		TestCompat.screenshot(ctx, name);
 	}
 
 	private void pose(TestServerContext server, float yaw, float pitch) {
