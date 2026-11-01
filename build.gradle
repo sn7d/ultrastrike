@@ -97,10 +97,15 @@ configurations {
 	prodMods {
 		transitive = false
 	}
+	// resolves Fabric API's modules, to pick out the dev-only client gametest module (not in the fat jar)
+	prodApiModules {
+		transitive = true
+	}
 }
 
 dependencies {
 	prodMods "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+	prodApiModules "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 }
 
 def gametestJar = tasks.register('gametestJar', Jar) {
@@ -113,6 +118,7 @@ tasks.register('prodClientGameTest', net.fabricmc.loom.task.prod.ClientProductio
 	mods.from(tasks.named('jar'))
 	mods.from(gametestJar)
 	mods.from(configurations.prodMods)
+	mods.from(configurations.prodApiModules.filter { it.name.startsWith('fabric-client-gametest-api-v1') })
 	if (project.hasProperty('compatMods')) {
 		mods.from(fileTree(dir: project.property('compatMods'), include: '*.jar'))
 	}
