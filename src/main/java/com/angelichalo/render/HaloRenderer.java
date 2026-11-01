@@ -213,6 +213,11 @@ public final class HaloRenderer {
 		boolean allOnTop = c.throughWalls && c.hiddenOpacity >= 0.995;
 		boolean hiddenPass = c.throughWalls && !allOnTop && c.hiddenOpacity > 0.005;
 
+		if (shaders && c.shaderColorBoost > 1.001) {
+			CORE_QUADS.saturate((float) c.shaderColorBoost);
+			GLOW_QUADS.saturate((float) c.shaderColorBoost);
+		}
+
 		if (!GLOW_QUADS.isEmpty()) {
 			QuadBuffer glow = GLOW_QUADS.snapshot();
 			submit(context, poseStack, allOnTop ? GLOW_XRAY : GLOW, glow, 1.0);
@@ -285,6 +290,21 @@ public final class HaloRenderer {
 			put(x1, y1, z1, c1);
 			put(x2, y2, z2, c2);
 			put(x3, y3, z3, c3);
+		}
+
+		/** Pushes every colour away from its grey value (1 = unchanged). */
+		void saturate(float k) {
+			for (int v = 0; v < vertices; v++) {
+				int c = col[v];
+				float r = (c >> 16) & 0xFF;
+				float g = (c >> 8) & 0xFF;
+				float b = c & 0xFF;
+				float l = 0.299f * r + 0.587f * g + 0.114f * b;
+				int nr = Math.max(0, Math.min(255, Math.round(l + (r - l) * k)));
+				int ng = Math.max(0, Math.min(255, Math.round(l + (g - l) * k)));
+				int nb = Math.max(0, Math.min(255, Math.round(l + (b - l) * k)));
+				col[v] = (c & 0xFF000000) | (nr << 16) | (ng << 8) | nb;
+			}
 		}
 
 		void emit(PoseStack.Pose pose, VertexConsumer buffer, double alpha) {

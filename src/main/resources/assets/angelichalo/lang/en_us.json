@@ -337,5 +337,7 @@
 	"angelichalo.option.extras_bloom": "Particles",
 	"angelichalo.option.extras_bloom.tip": "Glow on embers, helix, jump rings and shockwaves.",
 	"angelichalo.option.bloom_with_shaders": "Bloom With Shaders",
-	"angelichalo.option.bloom_with_shaders.tip": "Shaderpacks have their own bloom, and stacking both washes colours out to white, so the halo's glow pauses while a pack is active. Turn this on to keep it anyway."
+	"angelichalo.option.bloom_with_shaders.tip": "Shaderpacks have their own bloom, and stacking both washes colours out to white, so the halo's glow pauses while a pack is active. Turn this on to keep it anyway.",
+	"angelichalo.option.shader_color_boost": "Shader Colour Boost",
+	"angelichalo.option.shader_color_boost.tip": "Extra saturation applied only while an Iris shaderpack is active, because some packs grade thin coloured lines towards white. 1.00 = off."
 }

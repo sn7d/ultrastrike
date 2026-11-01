@@ -89,6 +89,8 @@ public final class HaloConfig {
 	public double extrasBloom = 1.0;
 	/** Keep the halo's own bloom even while an Iris shaderpack is active (packs usually have their own). */
 	public boolean bloomWithShaders = false;
+	/** Extra saturation while a shaderpack is active, to counter packs that grade thin coloured lines to white. */
+	public double shaderColorBoost = 1.4;
 
 	// ---- Motion ----
 	public Motion motion = Motion.STATIC;
@@ -300,6 +302,7 @@ public final class HaloConfig {
 		textBloom = clamp(textBloom, 0.0, 2.0);
 		emblemBloom = clamp(emblemBloom, 0.0, 2.0);
 		extrasBloom = clamp(extrasBloom, 0.0, 2.0);
+		shaderColorBoost = clamp(shaderColorBoost, 1.0, 2.5);
 		radius = clamp(radius, 0.2, 16.0);
 		lineWidth = clamp(lineWidth, 0.5, 12.0);
 		heightOffset = clamp(heightOffset, -1.0, 3.0);
