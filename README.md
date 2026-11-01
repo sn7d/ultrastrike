@@ -260,7 +260,7 @@ Every push also runs the full in-game test inside a **typical Skyblock setup** d
 | Mod Menu | 20.0.3 |
 | Zoomify | 2.17.0 |
 
-Firmament had no 26.2 build at the time, so it wasn't tested. The list lives in `scripts/compat_mods.py`; add your own mods there to test them too.
+Firmament had no 26.2 build at the time, so it wasn't tested. The list lives in `scripts/compat_mods.py`. It also accepts your own list (`--list mods.txt` with slugs, jar file names or `sha1:` hashes), so you can test your exact mod folder.
 
 ## Server safety
 
