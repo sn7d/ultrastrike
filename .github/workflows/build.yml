@@ -116,3 +116,34 @@ jobs:
         with:
           name: shader-${{ matrix.pack }}
           path: results/
+
+  essential:
+    # Launcher-style run with Essential (it refuses to start in a development environment).
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v5
+        with:
+          java-version: '25'
+          distribution: 'microsoft'
+          cache: 'gradle'
+      - run: chmod +x ./gradlew
+      - run: python3 scripts/compat_mods.py "$(grep '^minecraft_version=' gradle.properties | cut -d= -f2)" compat-mods essential
+      - name: In-game test with Essential (singleplayer)
+        run: |
+          sudo apt-get update -q && sudo apt-get install -y -q xvfb mesa-utils libgl1-mesa-dri
+          for i in 1 2 3; do ./gradlew jar gametestJar -PcompatMods=compat-mods && break; sleep $((i * 30)); done
+          mkdir -p run/prod && printf 'onboardAccessibility:false\nskipMultiplayerWarning:true\ntutorialStep:none\n' > run/prod/options.txt
+          ./gradlew prodClientGameTest -PcompatMods=compat-mods --stacktrace
+      - name: Collect results
+        if: always()
+        run: |
+          mkdir -p results
+          find run/prod -type f -path '*screenshots*' -name '*.png' -exec cp {} results/ \; || true
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: essential-results
+          path: results/

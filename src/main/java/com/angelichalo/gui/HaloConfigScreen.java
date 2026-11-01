@@ -70,6 +70,10 @@ public class HaloConfigScreen extends Screen {
 			0x38E8FF, 0x2F7BFF, 0x7C4DFF, 0xC77DFF, 0xFF9EC7, 0xFF00AA, 0xFFFFFF, 0x101010
 	};
 
+	private static final String VERSION = net.fabricmc.loader.api.FabricLoader.getInstance()
+			.getModContainer(com.angelichalo.AngelicHalo.MOD_ID)
+			.map(m -> m.getMetadata().getVersion().getFriendlyString()).orElse("?");
+
 	private static Tab lastTab = Tab.PRESETS;
 	private static int lastColorTarget = 0;
 
@@ -394,7 +398,7 @@ public class HaloConfigScreen extends Screen {
 			Ui.fill(g, px, py, px + 1, py + 1, HaloColors.hsv(0.11 + 0.05 * Math.sin(a), 0.55, 1.0) | 0xFF000000);
 		}
 		Ui.text(g, "Angelic Halo", wx0 + 28, wy0 + 12, Ui.TEXT, Ui.FONT_TITLE);
-		Ui.text(g, "v1.0 · client-side", wx0 + 29, wy0 + 26, Ui.TEXT_DIM);
+		Ui.text(g, "v" + VERSION + " · client-side", wx0 + 29, wy0 + 26, Ui.TEXT_DIM);
 
 		Tab[] tabs = Tab.values();
 		int sel = tab.ordinal();

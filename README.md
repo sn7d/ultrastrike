@@ -47,7 +47,7 @@ Built for Minecraft 26.2 on Fabric. Nothing is sent to the server; only you see 
 - [Opening the menu](#opening-the-menu)
 - [The menu](#the-menu)
 - [Ring styles](#ring-styles) · [Motion](#motion) · [Scan trail](#scan-trail) · [Colour studio](#colour-studio)
-- [Glow](#glow) · [Custom text](#custom-text) · [Emblems & your own images](#emblems--your-own-images) · [Extras](#extras)
+- [Glow](#glow) · [Nametags](#nametags) · [Custom text](#custom-text) · [Emblems & your own images](#emblems--your-own-images) · [Extras](#extras)
 - [Presets](#presets) · [Sharing & saved looks](#sharing--saved-looks)
 - [Compatibility](#compatibility) · [Shaders](#shaders) · [Server safety](#server-safety)
 - [How it's drawn](#how-its-drawn)
@@ -104,7 +104,7 @@ Optional keys, unbound by default: **Toggle halo** and **Next preset**.
 
 A dark glass window drawn entirely by the mod in the **Poppins** typeface (no vanilla buttons):
 
-- **Sidebar** with a sliding selection indicator: *Presets · Ring · Motion · Scan Trail · Colours · Glow · Text · Emblem · Extras · General · Share*.
+- **Sidebar** with a sliding selection indicator: *Presets · Ring · Motion · Scan Trail · Colours · Glow · Text · Emblem · Nametag · Extras · General · Share*.
 - **Animated controls**: sliders, switches, selectors and colour pickers that respond smoothly as you use them.
 - **Smooth motion**: the window eases in, tabs cross-fade and slide, lists scroll with inertia, and tooltips fade in after a moment.
 - **Live 3D projector** on the right: the same geometry code as in-game, rendered around a mannequin with perspective and depth sorting. It turns slowly on its own; **drag to orbit**, **scroll to zoom**.
@@ -198,6 +198,21 @@ Size, spacing, speed and placement are all adjustable. You can use a smooth mode
 
 One switch adds a soft bloom of light around **everything**: the ring, the trail, your text, your emblem and the particles. Turn the overall strength up or down, or make one layer glow more than the others. Every preset except *Classic* turns it on.
 
+## Nametags
+
+<img src="docs/images/gallery/feature_nametag.jpg" width="49%"> <img src="docs/images/gallery/feature_nametag_rainbow.jpg" width="49%">
+
+Give yourself a custom nametag (you see it in third person):
+
+- **Your own name**, with Minecraft-style formatting codes for colours, bold, italic and more, or leave it empty to show your username.
+- **A title line** above it, with its own on/off switch.
+- **Any colour effect** (rainbow, gradient, pulse…), applied letter by letter.
+- **Icons** on either side: built-ins such as a crown, star, heart, sword or gem, or your own PNGs from `config/angelichalo/icons`.
+- **A symbols picker** with ★ ♛ ⚔ ❤ ☾ ⚡ ✦ and many more, one click to insert.
+- Size, height, background plate, glow, shadow and font controls, all previewed live on the projector, which zooms to the head.
+
+It only changes what **you** see. Your real name isn't changed and nothing is sent to the server.
+
 ## Extras
 
 | Extra | |
@@ -262,7 +277,9 @@ Every push also runs the full in-game test inside a **typical Skyblock setup** d
 | Mod Menu | 20.0.3 |
 | Zoomify | 2.17.0 |
 
-Firmament had no 26.2 build at the time, so it wasn't tested. The list lives in `scripts/compat_mods.py`. It also accepts your own list (`--list mods.txt` with slugs, jar file names or `sha1:` hashes), so you can test your exact mod folder.
+Firmament had no 26.2 build at the time, so it wasn't tested.
+
+**Essential** (1.5.1, from Modrinth) is tested separately in a launcher-style run, because it won't start in a mod-development environment. The full suite passes, including the nametag menu test (real clicks and typing). Essential's own menu and the halo button sit side by side on the Esc screen. The list lives in `scripts/compat_mods.py`. It also accepts your own list (`--list mods.txt` with slugs, jar file names or `sha1:` hashes), so you can test your exact mod folder.
 
 ## Shaders
 
