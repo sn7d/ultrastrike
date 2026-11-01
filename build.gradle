@@ -38,6 +38,11 @@ dependencies {
 	testImplementation "org.junit.jupiter:junit-jupiter"
 	testRuntimeOnly "org.junit.platform:junit-platform-launcher"
 
+	// CI compatibility run: -PcompatMods=<dir of jars> loads a typical Skyblock mod set next to the mod
+	if (project.hasProperty('compatMods')) {
+		runtimeOnly fileTree(dir: project.property('compatMods'), include: '*.jar')
+	}
+
 	if (project.hasProperty('modmenu_version')) {
 		compileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
 	}

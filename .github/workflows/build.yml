@@ -40,3 +40,34 @@ jobs:
         with:
           name: in-game-screenshots
           path: screenshots/
+
+  skyblock-compat:
+    # Same in-game test, but with a typical Hypixel Skyblock mod set (Sodium, Iris, Skyblocker, Firmament, ...)
+    # downloaded from Modrinth, to catch conflicts. Singleplayer only, never connects to a server.
+    needs: build
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v5
+        with:
+          java-version: '25'
+          distribution: 'microsoft'
+      - run: chmod +x ./gradlew
+      - name: Download Skyblock mod set from Modrinth
+        run: python3 scripts/compat_mods.py "$(grep '^minecraft_version=' gradle.properties | cut -d= -f2)" compat-mods
+      - name: In-game test with the mod set
+        run: |
+          sudo apt-get update -q && sudo apt-get install -y -q xvfb mesa-utils libgl1-mesa-dri
+          xvfb-run -a -s "-screen 0 1920x1080x24" ./gradlew runClientGameTest -PcompatMods=compat-mods --stacktrace
+      - name: Collect results
+        if: always()
+        run: |
+          mkdir -p results
+          cp compat-mods/MODS.txt results/ || true
+          find . -path ./results -prune -o -type f -path '*screenshots*' -name '*.png' -exec cp {} results/ \; || true
+          find . -path ./results -prune -o -type f -name 'latest.log' -path '*logs*' -exec cp {} results/latest.log \; || true
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: skyblock-compat-results
+          path: results/

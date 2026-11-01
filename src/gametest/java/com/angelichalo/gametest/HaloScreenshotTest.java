@@ -42,7 +42,7 @@ public class HaloScreenshotTest implements FabricClientGameTest {
 			sz = p.getZ();
 			buildStage(server);
 			server.runCommand("weather clear");
-			sp.getConnection().waitForChunksRender();
+			waitForChunks(ctx, sp);
 			ctx.getInput().pressKey(o -> o.keyToggleGui); // clean shots: hide HUD
 			ctx.waitTicks(5);
 
@@ -50,7 +50,7 @@ public class HaloScreenshotTest implements FabricClientGameTest {
 			buildCorridor(server);
 			server.runCommand("time set 18000");
 			server.runCommand(String.format(java.util.Locale.ROOT, "tp @a %d.5 %d %d.5 180 12", sx + 40, sy, sz));
-			sp.getConnection().waitForChunksRender();
+			waitForChunks(ctx, sp);
 			shot(ctx, "classic_first_person", CameraType.FIRST_PERSON, c -> HaloConfig.set(new HaloConfig()));
 			shot(ctx, "classic_third_person", CameraType.THIRD_PERSON_BACK, c -> { });
 
@@ -226,6 +226,15 @@ public class HaloScreenshotTest implements FabricClientGameTest {
 					throw new AssertionError("Halo renderer threw during the test — see log");
 				}
 			});
+		}
+	}
+
+	/** Chunk-render waiting relies on vanilla's renderer; with renderer mods (Sodium) fall back to a fixed wait. */
+	private static void waitForChunks(ClientGameTestContext ctx, TestSingleplayerContext sp) {
+		try {
+			sp.getConnection().waitForChunksRender();
+		} catch (RuntimeException | AssertionError e) {
+			ctx.waitTicks(100);
 		}
 	}
 
