@@ -47,9 +47,9 @@ Built for Minecraft 26.2 on Fabric. Nothing is sent to the server; only you see 
 - [Opening the menu](#opening-the-menu)
 - [The menu](#the-menu)
 - [Ring styles](#ring-styles) · [Motion](#motion) · [Scan trail](#scan-trail) · [Colour studio](#colour-studio)
-- [Custom text](#custom-text) · [Emblems & your own images](#emblems--your-own-images) · [Extras](#extras)
+- [Glow](#glow) · [Custom text](#custom-text) · [Emblems & your own images](#emblems--your-own-images) · [Extras](#extras)
 - [Presets](#presets) · [Sharing & saved looks](#sharing--saved-looks)
-- [Compatibility](#compatibility) · [Server safety](#server-safety)
+- [Compatibility](#compatibility) · [Shaders](#shaders) · [Server safety](#server-safety)
 - [How it's drawn](#how-its-drawn)
 - [Building from source](#building-from-source)
 
@@ -60,7 +60,9 @@ Built for Minecraft 26.2 on Fabric. Nothing is sent to the server; only you see 
 - **Custom text and images.** Write anything around you or project any PNG under, above or behind you.
 - **Custom menu**: a fully hand-drawn, animated UI with a **live 3D projector** that renders your exact settings on a mannequin as you drag sliders.
 - **Esc-menu shortcut**: a small animated halo button sits right next to *Friends*.
-- **Refined rendering**: constant-width anti-aliased lines, two-layer bloom, soft radial orbs, depth-aware "through blocks".
+- **Bloom on everything**: a soft additive glow for the ring, trail, text, emblem and particles, with its own strength per layer.
+- **Shader-proof**: tested with nine popular shaderpacks; colours stay intact (details below).
+- **Refined rendering**: constant-width anti-aliased lines, soft radial orbs, depth-aware "through blocks".
 - **Share codes and a saved-looks library**, in their own tab.
 - **Never reacts to hurt or death** unless you opt in. The ring is anchored in the world, not on your player model.
 
@@ -102,7 +104,7 @@ Optional keys, unbound by default: **Toggle halo** and **Next preset**.
 
 A dark glass window drawn entirely by the mod in the **Poppins** typeface (no vanilla buttons):
 
-- **Sidebar** with a sliding selection indicator: *Presets · Ring · Motion · Scan Trail · Colours · Text · Emblem · Extras · General · Share*.
+- **Sidebar** with a sliding selection indicator: *Presets · Ring · Motion · Scan Trail · Colours · Glow · Text · Emblem · Extras · General · Share*.
 - **Animated controls**: sliders that glide to their value, pill toggles that slide, `‹ value ›` selectors (left or right-click to step), hue and brightness pickers, palettes and preset cards that lift on hover.
 - **Smooth motion**: the window eases in, tabs cross-fade and slide, lists scroll with inertia, and tooltips fade in after a moment.
 - **Live 3D projector** on the right: the same geometry code as in-game, rendered around a mannequin with perspective and depth sorting. It turns slowly on its own; **drag to orbit**, **scroll to zoom**.
@@ -196,6 +198,16 @@ You also control size, distance, height, orbit speed, number of copies, letter s
 - **Placement**: on the **floor**, **above your head** (facing you) or **on your back** (turns with your body).
 - Size, spin, height and a gentle opacity pulse.
 
+## Glow
+
+One switch adds a soft, additive **bloom** to every visual element, with a global strength and radius plus a separate amount for each layer: **ring, scan trail, text, emblem and particles**.
+
+- The ring and trail get a two-layer halo of light, so the trail glows as it fades.
+- Text gets a soft glow behind each letter, and emblems get a glow in the image's own shape.
+- Embers, helix orbs, jump rings and shockwaves get glowing cores.
+
+All presets except *Classic* turn bloom on. Classic stays off to match the reference.
+
 ## Extras
 
 | Extra | |
@@ -262,6 +274,30 @@ Every push also runs the full in-game test inside a **typical Skyblock setup** d
 
 Firmament had no 26.2 build at the time, so it wasn't tested. The list lives in `scripts/compat_mods.py`. It also accepts your own list (`--list mods.txt` with slugs, jar file names or `sha1:` hashes), so you can test your exact mod folder.
 
+## Shaders
+
+Iris only draws render pipelines it knows about, so many mods' custom effects vanish when a shaderpack is on. Angelic Halo registers its pipelines through **Iris's public API** (`IrisApi.assignPipeline`), so the halo keeps rendering with shaders. While a pack is active:
+
+- the pack's own bloom takes over (stacking both washes colours to white). You can force the halo's glow back on with *Glow → Bloom With Shaders*;
+- soft feathered edges are skipped, because packs dither them into jagged teeth;
+- a **shader colour boost** (default 1.4×) restores saturation that some packs grade away.
+
+<img src="docs/images/shaders.png" alt="The rainbow scanning ring photographed without shaders and with nine shaderpacks; the colours stay intact in every pack">
+
+Every push runs the same five scenes without and with each pack (Iris 1.11.4 + Sodium):
+
+| Shaderpack | Version | Result |
+|---|---|---|
+| Complementary Reimagined | r5.9.3 | ✅ |
+| Complementary Unbound | r5.9.3 | ✅ |
+| BSL | 10.1.8 | ✅ |
+| Photon | v1.4 | ✅ |
+| Solas | 3.8 | ✅ |
+| Bliss | 2.1.2 | ✅ |
+| MakeUp Ultra Fast | 9.6 | ✅ |
+| Sildur's Vibrant | 2.02 | ✅ |
+| Rethinking Voxels | r0.1-beta9 | ✅ |
+
 ## Server safety
 
 Built to be safe on servers like Hypixel:
@@ -277,7 +313,7 @@ It's a cosmetic, like a resource pack, that only you can see. As always, the ser
 
 - Geometry is rebuilt every frame in camera-relative space and submitted through Fabric's `LevelRenderEvents.COLLECT_SUBMITS` as custom geometry.
 - Lines are **camera-facing ribbons**. Each vertex is pushed sideways by `width × distance × 2 / (projection.m11 × 1080)`, so 2 px stays 2 px at any distance or FOV. A one-pixel feather on each edge anti-aliases them.
-- Six small pipelines derive from vanilla's position-colour debug pipeline: translucent and additive bloom, each normal, *always on top*, or *hidden-only* (reverse-Z `LESS_THAN`). That gives "through blocks" with an adjustable opacity for the hidden parts. Vanilla shaders only, so it works on both the **OpenGL and Vulkan** backends.
+- Six small pipelines (registered with Iris for shader support) derive from vanilla's position-colour debug pipeline: translucent and additive bloom, each normal, *always on top*, or *hidden-only* (reverse-Z `LESS_THAN`). That gives "through blocks" with an adjustable opacity for the hidden parts. Vanilla shaders only, so it works on both the **OpenGL and Vulkan** backends.
 - Text is submitted with `submitText`; emblems use the vanilla text render type with full-bright light.
 - The menu's projector reuses the same geometry builder, projects it through its own orbit camera and depth-sorts every quad (halo, floor grid and mannequin) into one GUI element.
 - Animation runs on real time, so it stays smooth when the game is paused or lagging.
