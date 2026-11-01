@@ -4,10 +4,11 @@
 
 # Angelic Halo
 
-**A cosmetic ring of light around your player — Minecraft 26.2 · Fabric.**
+**A ring of light that follows you — purely cosmetic, entirely client-side.**
 
-Scanning sweeps with fading trails, glowing crowns, orbiting text, projected emblems and a full colour studio,<br>
-tuned in a custom animated menu with a live 3D preview. Everything is drawn on your screen only.
+Sweeping scans with fading trails, crowns of light, orbiting text and projected emblems,<br>
+each with its own colour studio, all tuned live in an animated menu with a 3D preview.<br>
+Built for Minecraft 26.2 on Fabric. Nothing is sent to the server; only you see it.
 
 ![Minecraft](https://img.shields.io/badge/Minecraft-26.2-62B47A?style=flat-square)
 ![Loader](https://img.shields.io/badge/Fabric_Loader-0.20.1+-DBD0B4?style=flat-square)
@@ -48,7 +49,7 @@ tuned in a custom animated menu with a live 3D preview. Everything is drawn on y
 - [Ring styles](#ring-styles) · [Motion](#motion) · [Scan trail](#scan-trail) · [Colour studio](#colour-studio)
 - [Custom text](#custom-text) · [Emblems & your own images](#emblems--your-own-images) · [Extras](#extras)
 - [Presets](#presets) · [Sharing & saved looks](#sharing--saved-looks)
-- [Server safety](#server-safety)
+- [Compatibility](#compatibility) · [Server safety](#server-safety)
 - [How it's drawn](#how-its-drawn)
 - [Building from source](#building-from-source)
 
@@ -70,7 +71,7 @@ tuned in a custom animated menu with a live 3D preview. Everything is drawn on y
 
    | Mod | Required? | Where |
    |---|---|---|
-   | **Angelic Halo** | yes | [Releases](../../releases), or build it (see below) |
+   | **Angelic Halo** | yes | [Releases](https://github.com/sn7d/angelic-halo/releases), or build it (see below) |
    | **Fabric API** `0.161.0+26.2` or newer | yes | [Modrinth](https://modrinth.com/mod/fabric-api) |
    | **Mod Menu** `20.0.x` | optional (adds a *Config* button to the mod list) | [Modrinth](https://modrinth.com/mod/modmenu) |
 
@@ -242,6 +243,24 @@ The **Share** tab:
 
 - **Copy my code / Paste a code**: your whole look as one line of text (`AH1:…`), ready to send in chat or Discord.
 - **Saved looks**: name it and save it. Saved looks live in `config/angelichalo/presets/*.json`; load or delete them from the list, and share the files directly if you like.
+
+## Compatibility
+
+Every push also runs the full in-game test inside a **typical Skyblock setup** downloaded fresh from Modrinth. The last run passed with:
+
+| Mod | Version |
+|---|---|
+| Sodium | 0.9.2 |
+| Iris | 1.11.4 |
+| Lithium | 0.25.3 |
+| ImmediatelyFast | 1.16.5 |
+| EntityCulling | 1.11.3 |
+| FerriteCore | 9.0.0 |
+| Skyblocker | 6.11.0 |
+| Mod Menu | 20.0.3 |
+| Zoomify | 2.17.0 |
+
+Firmament had no 26.2 build at the time, so it wasn't tested. The list lives in `scripts/compat_mods.py`; add your own mods there to test them too.
 
 ## Server safety
 
