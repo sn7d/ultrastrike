@@ -1,0 +1,413 @@
+
+Welcome to Gradle 9.8.2!
+
+Here are the highlights of this release:
+ - Java 27 support
+ - Maven mirror settings reuse
+ - Linked problem locations in build output
+
+For more details see https://docs.gradle.org/9.8.2/release-notes.html
+
+Starting a Gradle Daemon (subsequent builds will be faster)
+
+> Configure project :
+Fabric Loom: 1.19.3
+
+> Task :compileJava
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/GuiQuads.java:3: error: cannot find symbol
+import com.mojang.blaze3d.pipeline.RenderPipeline;
+                                  ^
+  symbol:   class RenderPipeline
+  location: package com.mojang.blaze3d.pipeline
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/GuiQuads.java:30: error: cannot find symbol
+	public RenderPipeline pipeline() {
+	       ^
+  symbol:   class RenderPipeline
+  location: class GuiQuads
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:3: error: cannot find symbol
+import com.mojang.blaze3d.pipeline.BlendFunction;
+                                  ^
+  symbol:   class BlendFunction
+  location: package com.mojang.blaze3d.pipeline
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:4: error: cannot find symbol
+import com.mojang.blaze3d.pipeline.ColorTargetState;
+                                  ^
+  symbol:   class ColorTargetState
+  location: package com.mojang.blaze3d.pipeline
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:5: error: cannot find symbol
+import com.mojang.blaze3d.pipeline.DepthStencilState;
+                                  ^
+  symbol:   class DepthStencilState
+  location: package com.mojang.blaze3d.pipeline
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:6: error: cannot find symbol
+import com.mojang.blaze3d.pipeline.RenderPipeline;
+                                  ^
+  symbol:   class RenderPipeline
+  location: package com.mojang.blaze3d.pipeline
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:7: error: cannot find symbol
+import com.mojang.blaze3d.platform.CompareOp;
+                                  ^
+  symbol:   class CompareOp
+  location: package com.mojang.blaze3d.platform
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:25: error: cannot find symbol
+	private static final RenderPipeline DEPTH_PIPELINE = RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)
+	                     ^
+  symbol:   class RenderPipeline
+  location: class HaloPipelines
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:30: error: cannot find symbol
+	private static final RenderPipeline XRAY_PIPELINE = RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)
+	                     ^
+  symbol:   class RenderPipeline
+  location: class HaloPipelines
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:37: error: cannot find symbol
+	private static final RenderPipeline GLOW_PIPELINE = RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)
+	                     ^
+  symbol:   class RenderPipeline
+  location: class HaloPipelines
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:43: error: cannot find symbol
+	private static final RenderPipeline GLOW_XRAY_PIPELINE = RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)
+	                     ^
+  symbol:   class RenderPipeline
+  location: class HaloPipelines
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:51: error: cannot find symbol
+	private static final RenderPipeline HIDDEN_PIPELINE = RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)
+	                     ^
+  symbol:   class RenderPipeline
+  location: class HaloPipelines
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:57: error: cannot find symbol
+	private static final RenderPipeline GLOW_HIDDEN_PIPELINE = RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)
+	                     ^
+  symbol:   class RenderPipeline
+  location: class HaloPipelines
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:102: error: cannot find symbol
+	private static RenderType type(String name, RenderPipeline pipeline) {
+	                                            ^
+  symbol:   class RenderPipeline
+  location: class HaloPipelines
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:25: error: cannot find symbol
+	private static final RenderPipeline DEPTH_PIPELINE = RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)
+	                                                     ^
+  symbol:   variable RenderPipeline
+  location: class HaloPipelines
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:33: error: cannot find symbol
+			.withDepthStencilState(new DepthStencilState(CompareOp.ALWAYS_PASS, false))
+			                           ^
+  symbol:   class DepthStencilState
+  location: class HaloPipelines
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:33: error: cannot find symbol
+			.withDepthStencilState(new DepthStencilState(CompareOp.ALWAYS_PASS, false))
+			                                             ^
+  symbol:   variable CompareOp
+  location: class HaloPipelines
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:30: error: cannot find symbol
+	private static final RenderPipeline XRAY_PIPELINE = RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)
+	                                                    ^
+  symbol:   variable RenderPipeline
+  location: class HaloPipelines
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:40: error: cannot find symbol
+			.withColorTargetState(new ColorTargetState(BlendFunction.LIGHTNING))
+			                          ^
+  symbol:   class ColorTargetState
+  location: class HaloPipelines
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:40: error: cannot find symbol
+			.withColorTargetState(new ColorTargetState(BlendFunction.LIGHTNING))
+			                                           ^
+  symbol:   variable BlendFunction
+  location: class HaloPipelines
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:37: error: cannot find symbol
+	private static final RenderPipeline GLOW_PIPELINE = RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)
+	                                                    ^
+  symbol:   variable RenderPipeline
+  location: class HaloPipelines
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:47: error: cannot find symbol
+			.withDepthStencilState(new DepthStencilState(CompareOp.ALWAYS_PASS, false))
+			                           ^
+  symbol:   class DepthStencilState
+  location: class HaloPipelines
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:47: error: cannot find symbol
+			.withDepthStencilState(new DepthStencilState(CompareOp.ALWAYS_PASS, false))
+			                                             ^
+  symbol:   variable CompareOp
+  location: class HaloPipelines
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:46: error: cannot find symbol
+			.withColorTargetState(new ColorTargetState(BlendFunction.LIGHTNING))
+			                          ^
+  symbol:   class ColorTargetState
+  location: class HaloPipelines
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:46: error: cannot find symbol
+			.withColorTargetState(new ColorTargetState(BlendFunction.LIGHTNING))
+			                                           ^
+  symbol:   variable BlendFunction
+  location: class HaloPipelines
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:43: error: cannot find symbol
+	private static final RenderPipeline GLOW_XRAY_PIPELINE = RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)
+	                                                         ^
+  symbol:   variable RenderPipeline
+  location: class HaloPipelines
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:54: error: cannot find symbol
+			.withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN, false))
+			                           ^
+  symbol:   class DepthStencilState
+  location: class HaloPipelines
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:54: error: cannot find symbol
+			.withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN, false))
+			                                             ^
+  symbol:   variable CompareOp
+  location: class HaloPipelines
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:51: error: cannot find symbol
+	private static final RenderPipeline HIDDEN_PIPELINE = RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)
+	                                                      ^
+  symbol:   variable RenderPipeline
+  location: class HaloPipelines
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:61: error: cannot find symbol
+			.withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN, false))
+			                           ^
+  symbol:   class DepthStencilState
+  location: class HaloPipelines
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:61: error: cannot find symbol
+			.withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN, false))
+			                                             ^
+  symbol:   variable CompareOp
+  location: class HaloPipelines
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:60: error: cannot find symbol
+			.withColorTargetState(new ColorTargetState(BlendFunction.LIGHTNING))
+			                          ^
+  symbol:   class ColorTargetState
+  location: class HaloPipelines
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:60: error: cannot find symbol
+			.withColorTargetState(new ColorTargetState(BlendFunction.LIGHTNING))
+			                                           ^
+  symbol:   variable BlendFunction
+  location: class HaloPipelines
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:57: error: cannot find symbol
+	private static final RenderPipeline GLOW_HIDDEN_PIPELINE = RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)
+	                                                           ^
+  symbol:   variable RenderPipeline
+  location: class HaloPipelines
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:83: error: cannot find symbol
+			java.lang.reflect.Method assign = apiClass.getMethod("assignPipeline", RenderPipeline.class, programClass);
+			                                                                       ^
+  symbol:   class RenderPipeline
+  location: class HaloPipelines
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:85: error: cannot find symbol
+			for (RenderPipeline p : new RenderPipeline[] {DEPTH_PIPELINE, XRAY_PIPELINE, GLOW_PIPELINE, GLOW_XRAY_PIPELINE,
+			                            ^
+  symbol:   class RenderPipeline
+  location: class HaloPipelines
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:85: error: cannot find symbol
+			for (RenderPipeline p : new RenderPipeline[] {DEPTH_PIPELINE, XRAY_PIPELINE, GLOW_PIPELINE, GLOW_XRAY_PIPELINE,
+			     ^
+  symbol:   class RenderPipeline
+  location: class HaloPipelines
+37 errors
+
+> Task :compileJava FAILED
+> Task :processResources
+> Task :processTestResources NO-SOURCE
+
+[Incubating] Problems report is available at: file:///home/runner/work/ultrastrike/ultrastrike/build/reports/problems/problems-report.html
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':compileJava' (registered by plugin class 'org.gradle.api.plugins.JavaBasePlugin').
+> Compilation failed; see the compiler output below.
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/GuiQuads.java:3: error: cannot find symbol
+  import com.mojang.blaze3d.pipeline.RenderPipeline;
+                                    ^
+    symbol:   class RenderPipeline
+    location: package com.mojang.blaze3d.pipeline
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/GuiQuads.java:30: error: cannot find symbol
+  	public RenderPipeline pipeline() {
+  	       ^
+    symbol:   class RenderPipeline
+    location: class GuiQuads
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:3: error: cannot find symbol
+  import com.mojang.blaze3d.pipeline.BlendFunction;
+                                    ^
+    symbol:   class BlendFunction
+    location: package com.mojang.blaze3d.pipeline
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:4: error: cannot find symbol
+  import com.mojang.blaze3d.pipeline.ColorTargetState;
+                                    ^
+    symbol:   class ColorTargetState
+    location: package com.mojang.blaze3d.pipeline
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:5: error: cannot find symbol
+  import com.mojang.blaze3d.pipeline.DepthStencilState;
+                                    ^
+    symbol:   class DepthStencilState
+    location: package com.mojang.blaze3d.pipeline
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:6: error: cannot find symbol
+  import com.mojang.blaze3d.pipeline.RenderPipeline;
+                                    ^
+    symbol:   class RenderPipeline
+    location: package com.mojang.blaze3d.pipeline
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:7: error: cannot find symbol
+  import com.mojang.blaze3d.platform.CompareOp;
+                                    ^
+    symbol:   class CompareOp
+    location: package com.mojang.blaze3d.platform
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:25: error: cannot find symbol
+  	private static final RenderPipeline DEPTH_PIPELINE = RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)
+  	                     ^
+    symbol:   class RenderPipeline
+    location: class HaloPipelines
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:30: error: cannot find symbol
+  	private static final RenderPipeline XRAY_PIPELINE = RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)
+  	                     ^
+    symbol:   class RenderPipeline
+    location: class HaloPipelines
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:37: error: cannot find symbol
+  	private static final RenderPipeline GLOW_PIPELINE = RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)
+  	                     ^
+    symbol:   class RenderPipeline
+    location: class HaloPipelines
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:43: error: cannot find symbol
+  	private static final RenderPipeline GLOW_XRAY_PIPELINE = RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)
+  	                     ^
+    symbol:   class RenderPipeline
+    location: class HaloPipelines
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:51: error: cannot find symbol
+  	private static final RenderPipeline HIDDEN_PIPELINE = RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)
+  	                     ^
+    symbol:   class RenderPipeline
+    location: class HaloPipelines
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:57: error: cannot find symbol
+  	private static final RenderPipeline GLOW_HIDDEN_PIPELINE = RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)
+  	                     ^
+    symbol:   class RenderPipeline
+    location: class HaloPipelines
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:102: error: cannot find symbol
+  	private static RenderType type(String name, RenderPipeline pipeline) {
+  	                                            ^
+    symbol:   class RenderPipeline
+    location: class HaloPipelines
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:25: error: cannot find symbol
+  	private static final RenderPipeline DEPTH_PIPELINE = RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)
+  	                                                     ^
+    symbol:   variable RenderPipeline
+    location: class HaloPipelines
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:33: error: cannot find symbol
+  			.withDepthStencilState(new DepthStencilState(CompareOp.ALWAYS_PASS, false))
+  			                           ^
+    symbol:   class DepthStencilState
+    location: class HaloPipelines
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:33: error: cannot find symbol
+  			.withDepthStencilState(new DepthStencilState(CompareOp.ALWAYS_PASS, false))
+  			                                             ^
+    symbol:   variable CompareOp
+    location: class HaloPipelines
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:30: error: cannot find symbol
+  	private static final RenderPipeline XRAY_PIPELINE = RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)
+  	                                                    ^
+    symbol:   variable RenderPipeline
+    location: class HaloPipelines
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:40: error: cannot find symbol
+  			.withColorTargetState(new ColorTargetState(BlendFunction.LIGHTNING))
+  			                          ^
+    symbol:   class ColorTargetState
+    location: class HaloPipelines
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:40: error: cannot find symbol
+  			.withColorTargetState(new ColorTargetState(BlendFunction.LIGHTNING))
+  			                                           ^
+    symbol:   variable BlendFunction
+    location: class HaloPipelines
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:37: error: cannot find symbol
+  	private static final RenderPipeline GLOW_PIPELINE = RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)
+  	                                                    ^
+    symbol:   variable RenderPipeline
+    location: class HaloPipelines
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:47: error: cannot find symbol
+  			.withDepthStencilState(new DepthStencilState(CompareOp.ALWAYS_PASS, false))
+  			                           ^
+    symbol:   class DepthStencilState
+    location: class HaloPipelines
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:47: error: cannot find symbol
+  			.withDepthStencilState(new DepthStencilState(CompareOp.ALWAYS_PASS, false))
+  			                                             ^
+    symbol:   variable CompareOp
+    location: class HaloPipelines
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:46: error: cannot find symbol
+  			.withColorTargetState(new ColorTargetState(BlendFunction.LIGHTNING))
+  			                          ^
+    symbol:   class ColorTargetState
+    location: class HaloPipelines
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:46: error: cannot find symbol
+  			.withColorTargetState(new ColorTargetState(BlendFunction.LIGHTNING))
+  			                                           ^
+    symbol:   variable BlendFunction
+    location: class HaloPipelines
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:43: error: cannot find symbol
+  	private static final RenderPipeline GLOW_XRAY_PIPELINE = RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)
+  	                                                         ^
+    symbol:   variable RenderPipeline
+    location: class HaloPipelines
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:54: error: cannot find symbol
+  			.withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN, false))
+  			                           ^
+    symbol:   class DepthStencilState
+    location: class HaloPipelines
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:54: error: cannot find symbol
+  			.withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN, false))
+  			                                             ^
+    symbol:   variable CompareOp
+    location: class HaloPipelines
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:51: error: cannot find symbol
+  	private static final RenderPipeline HIDDEN_PIPELINE = RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)
+  	                                                      ^
+    symbol:   variable RenderPipeline
+    location: class HaloPipelines
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:61: error: cannot find symbol
+  			.withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN, false))
+  			                           ^
+    symbol:   class DepthStencilState
+    location: class HaloPipelines
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:61: error: cannot find symbol
+  			.withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN, false))
+  			                                             ^
+    symbol:   variable CompareOp
+    location: class HaloPipelines
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:60: error: cannot find symbol
+  			.withColorTargetState(new ColorTargetState(BlendFunction.LIGHTNING))
+  			                          ^
+    symbol:   class ColorTargetState
+    location: class HaloPipelines
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:60: error: cannot find symbol
+  			.withColorTargetState(new ColorTargetState(BlendFunction.LIGHTNING))
+  			                                           ^
+    symbol:   variable BlendFunction
+    location: class HaloPipelines
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:57: error: cannot find symbol
+  	private static final RenderPipeline GLOW_HIDDEN_PIPELINE = RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)
+  	                                                           ^
+    symbol:   variable RenderPipeline
+    location: class HaloPipelines
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:83: error: cannot find symbol
+  			java.lang.reflect.Method assign = apiClass.getMethod("assignPipeline", RenderPipeline.class, programClass);
+  			                                                                       ^
+    symbol:   class RenderPipeline
+    location: class HaloPipelines
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:85: error: cannot find symbol
+  			for (RenderPipeline p : new RenderPipeline[] {DEPTH_PIPELINE, XRAY_PIPELINE, GLOW_PIPELINE, GLOW_XRAY_PIPELINE,
+  			                            ^
+    symbol:   class RenderPipeline
+    location: class HaloPipelines
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:85: error: cannot find symbol
+  			for (RenderPipeline p : new RenderPipeline[] {DEPTH_PIPELINE, XRAY_PIPELINE, GLOW_PIPELINE, GLOW_XRAY_PIPELINE,
+  			     ^
+    symbol:   class RenderPipeline
+    location: class HaloPipelines
+  37 errors
+
+* Try:
+> Check your code and dependencies to fix the compilation error(s)
+> Run with --scan to get full insights from a Build Scan (powered by Develocity).
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.8.2/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD FAILED in 20s
+2 actionable tasks: 2 executed

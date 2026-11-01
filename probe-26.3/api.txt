@@ -1,0 +1,512 @@
+### jars
+joml-1.10.9.jar
+lwjgl-freetype-3.4.3.jar
+lwjgl-jemalloc-3.4.3.jar
+lwjgl-openal-3.4.3.jar
+lwjgl-opengl-3.4.3.jar
+lwjgl-sdl-3.4.3.jar
+lwjgl-shaderc-3.4.3.jar
+lwjgl-spvc-3.4.3.jar
+lwjgl-stb-3.4.3.jar
+lwjgl-vma-3.4.3.jar
+lwjgl-vulkan-3.4.3.jar
+lwjgl-3.4.3.jar
+minecraft-merged-1b0498e74c-26.3.jar
+### class search
+minecraft-merged-1b0498e74c-26.3.jar: com/mojang/blaze3d/platform/InputConstants.class
+minecraft-merged-1b0498e74c-26.3.jar: com/mojang/blaze3d/vertex/PoseStack.class
+minecraft-merged-1b0498e74c-26.3.jar: com/mojang/renderpearl/api/pipeline/BlendFunction.class
+minecraft-merged-1b0498e74c-26.3.jar: com/mojang/renderpearl/api/pipeline/ColorTargetState.class
+minecraft-merged-1b0498e74c-26.3.jar: com/mojang/renderpearl/api/pipeline/CompareOp.class
+minecraft-merged-1b0498e74c-26.3.jar: com/mojang/renderpearl/api/pipeline/DepthStencilState.class
+minecraft-merged-1b0498e74c-26.3.jar: com/mojang/renderpearl/api/pipeline/RenderPipeline.class
+minecraft-merged-1b0498e74c-26.3.jar: net/minecraft/client/gui/components/FriendsButton.class
+minecraft-merged-1b0498e74c-26.3.jar: net/minecraft/client/input/KeyEvent.class
+minecraft-merged-1b0498e74c-26.3.jar: net/minecraft/client/input/MouseButtonEvent.class
+lwjgl-sdl-3.4.3.jar: org/lwjgl/sdl/SDLKeyboard.class
+lwjgl-sdl-3.4.3.jar: org/lwjgl/sdl/SDLKeycode.class
+lwjgl-sdl-3.4.3.jar: org/lwjgl/sdl/SDLMouse.class
+### javap com.mojang.renderpearl.api.pipeline.BlendFunction
+Compiled from "BlendFunction.java"
+public final class com.mojang.renderpearl.api.pipeline.BlendFunction extends java.lang.Record {
+  public static final com.mojang.renderpearl.api.pipeline.BlendFunction LIGHTNING;
+  public static final com.mojang.renderpearl.api.pipeline.BlendFunction GLINT;
+  public static final com.mojang.renderpearl.api.pipeline.BlendFunction OVERLAY;
+  public static final com.mojang.renderpearl.api.pipeline.BlendFunction TRANSLUCENT;
+  public static final com.mojang.renderpearl.api.pipeline.BlendFunction TRANSLUCENT_PREMULTIPLIED_ALPHA;
+  public static final com.mojang.renderpearl.api.pipeline.BlendFunction ADDITIVE;
+  public static final com.mojang.renderpearl.api.pipeline.BlendFunction ENTITY_OUTLINE_BLIT;
+  public static final com.mojang.renderpearl.api.pipeline.BlendFunction INVERT;
+  public static final com.mojang.renderpearl.api.pipeline.BlendFunction MAX;
+  public com.mojang.renderpearl.api.pipeline.BlendFunction(com.mojang.renderpearl.api.pipeline.BlendFactor, com.mojang.renderpearl.api.pipeline.BlendFactor, com.mojang.renderpearl.api.pipeline.BlendOp, com.mojang.renderpearl.api.pipeline.BlendFactor, com.mojang.renderpearl.api.pipeline.BlendFactor, com.mojang.renderpearl.api.pipeline.BlendOp);
+  public com.mojang.renderpearl.api.pipeline.BlendFunction(com.mojang.renderpearl.api.pipeline.BlendFactor, com.mojang.renderpearl.api.pipeline.BlendFactor, com.mojang.renderpearl.api.pipeline.BlendFactor, com.mojang.renderpearl.api.pipeline.BlendFactor);
+  public com.mojang.renderpearl.api.pipeline.BlendFunction(com.mojang.renderpearl.api.pipeline.BlendEquation);
+  public com.mojang.renderpearl.api.pipeline.BlendFunction(com.mojang.renderpearl.api.pipeline.BlendFactor, com.mojang.renderpearl.api.pipeline.BlendFactor, com.mojang.renderpearl.api.pipeline.BlendOp);
+  public com.mojang.renderpearl.api.pipeline.BlendFunction(com.mojang.renderpearl.api.pipeline.BlendFactor, com.mojang.renderpearl.api.pipeline.BlendFactor);
+  public com.mojang.renderpearl.api.pipeline.BlendFunction(com.mojang.renderpearl.api.pipeline.BlendEquation, com.mojang.renderpearl.api.pipeline.BlendEquation);
+  public final java.lang.String toString();
+  public final int hashCode();
+  public final boolean equals(java.lang.Object);
+  public com.mojang.renderpearl.api.pipeline.BlendEquation color();
+  public com.mojang.renderpearl.api.pipeline.BlendEquation alpha();
+}
+### javap com.mojang.renderpearl.api.pipeline.ColorTargetState
+Compiled from "ColorTargetState.java"
+public final class com.mojang.renderpearl.api.pipeline.ColorTargetState extends java.lang.Record {
+  public static final int WRITE_RED;
+  public static final int WRITE_GREEN;
+  public static final int WRITE_BLUE;
+  public static final int WRITE_ALPHA;
+  public static final int WRITE_COLOR;
+  public static final int WRITE_ALL;
+  public static final int WRITE_NONE;
+  public static final com.mojang.renderpearl.api.pipeline.ColorTargetState DEFAULT;
+  public static final int MAX_COLOR_TARGETS;
+  public com.mojang.renderpearl.api.pipeline.ColorTargetState(com.mojang.renderpearl.api.pipeline.BlendFunction);
+  public com.mojang.renderpearl.api.pipeline.ColorTargetState(java.util.Optional<com.mojang.renderpearl.api.pipeline.BlendFunction>, com.mojang.renderpearl.api.GpuFormat, int);
+  public boolean writeRed();
+  public boolean writeGreen();
+  public boolean writeBlue();
+  public boolean writeAlpha();
+  public final java.lang.String toString();
+  public final int hashCode();
+  public final boolean equals(java.lang.Object);
+  public java.util.Optional<com.mojang.renderpearl.api.pipeline.BlendFunction> blendFunction();
+  public com.mojang.renderpearl.api.GpuFormat format();
+  public int writeMask();
+}
+### javap com.mojang.renderpearl.api.pipeline.CompareOp
+Compiled from "CompareOp.java"
+public final class com.mojang.renderpearl.api.pipeline.CompareOp extends java.lang.Enum<com.mojang.renderpearl.api.pipeline.CompareOp> {
+  public static final com.mojang.renderpearl.api.pipeline.CompareOp ALWAYS_PASS;
+  public static final com.mojang.renderpearl.api.pipeline.CompareOp LESS_THAN;
+  public static final com.mojang.renderpearl.api.pipeline.CompareOp LESS_THAN_OR_EQUAL;
+  public static final com.mojang.renderpearl.api.pipeline.CompareOp EQUAL;
+  public static final com.mojang.renderpearl.api.pipeline.CompareOp NOT_EQUAL;
+  public static final com.mojang.renderpearl.api.pipeline.CompareOp GREATER_THAN_OR_EQUAL;
+  public static final com.mojang.renderpearl.api.pipeline.CompareOp GREATER_THAN;
+  public static final com.mojang.renderpearl.api.pipeline.CompareOp NEVER_PASS;
+  public static com.mojang.renderpearl.api.pipeline.CompareOp[] values();
+  public static com.mojang.renderpearl.api.pipeline.CompareOp valueOf(java.lang.String);
+}
+### javap com.mojang.renderpearl.api.pipeline.DepthStencilState
+Compiled from "DepthStencilState.java"
+public final class com.mojang.renderpearl.api.pipeline.DepthStencilState extends java.lang.Record {
+  public static final com.mojang.renderpearl.api.pipeline.DepthStencilState DEFAULT;
+  public com.mojang.renderpearl.api.pipeline.DepthStencilState(com.mojang.renderpearl.api.pipeline.CompareOp, boolean);
+  public com.mojang.renderpearl.api.pipeline.DepthStencilState(com.mojang.renderpearl.api.pipeline.CompareOp, boolean, float, float);
+  public final java.lang.String toString();
+  public final int hashCode();
+  public final boolean equals(java.lang.Object);
+  public com.mojang.renderpearl.api.pipeline.CompareOp depthTest();
+  public boolean writeDepth();
+  public float depthBiasScaleFactor();
+  public float depthBiasConstant();
+}
+### javap com.mojang.renderpearl.api.pipeline.RenderPipeline
+Compiled from "RenderPipeline.java"
+public class com.mojang.renderpearl.api.pipeline.RenderPipeline implements net.fabricmc.fabric.api.client.rendering.v1.FabricRenderPipeline {
+  public int getSortKey();
+  public static void updateSortKeySeed();
+  public java.lang.String toString();
+  public com.mojang.renderpearl.api.pipeline.PolygonMode getPolygonMode();
+  public boolean isCull();
+  public java.util.List<com.mojang.renderpearl.api.pipeline.ColorTargetState> getColorTargetStates();
+  public com.mojang.renderpearl.api.pipeline.DepthStencilState getDepthStencilState();
+  public net.minecraft.resources.Identifier getLocation();
+  public java.util.List<com.mojang.renderpearl.api.vertex.VertexFormat> getVertexFormatBindings();
+  public com.mojang.renderpearl.api.vertex.VertexFormat getVertexFormatBinding(int);
+  public com.mojang.renderpearl.api.pipeline.PrimitiveTopology getPrimitiveTopology();
+  public java.util.Map<com.mojang.renderpearl.api.pipeline.ShaderType, net.minecraft.resources.Identifier> getShaders();
+  public net.minecraft.client.renderer.ShaderDefines getShaderDefines();
+  public java.util.List<com.mojang.renderpearl.api.pipeline.BindGroupLayout> getBindGroupLayouts();
+  public boolean wantsDepthTexture();
+  public int pushConstantSize();
+  public static com.mojang.renderpearl.api.pipeline.RenderPipeline$Builder builder(com.mojang.renderpearl.api.pipeline.RenderPipeline$Snippet...);
+}
+### javap net.minecraft.client.gui.components.FriendsButton
+Compiled from "FriendsButton.java"
+public class net.minecraft.client.gui.components.FriendsButton extends net.minecraft.client.gui.components.SpriteIconButton$CenteredIcon {
+  public net.minecraft.client.gui.components.FriendsButton(int, net.minecraft.client.gui.components.Button$OnPress, boolean);
+  public void refreshIncomingRequestCount();
+  public void extractContents(net.minecraft.client.gui.GuiGraphicsExtractor, int, int, float);
+}
+### javap com.mojang.blaze3d.platform.InputConstants
+Compiled from "InputConstants.java"
+public class com.mojang.blaze3d.platform.InputConstants {
+  public static final int KEY_0;
+  public static final int KEY_1;
+  public static final int KEY_2;
+  public static final int KEY_3;
+  public static final int KEY_4;
+  public static final int KEY_5;
+  public static final int KEY_6;
+  public static final int KEY_7;
+  public static final int KEY_8;
+  public static final int KEY_9;
+  public static final int KEY_A;
+  public static final int KEY_B;
+  public static final int KEY_C;
+  public static final int KEY_D;
+  public static final int KEY_E;
+  public static final int KEY_F;
+  public static final int KEY_G;
+  public static final int KEY_H;
+  public static final int KEY_I;
+  public static final int KEY_J;
+  public static final int KEY_K;
+  public static final int KEY_L;
+  public static final int KEY_M;
+  public static final int KEY_N;
+  public static final int KEY_O;
+  public static final int KEY_P;
+  public static final int KEY_Q;
+  public static final int KEY_R;
+  public static final int KEY_S;
+  public static final int KEY_T;
+  public static final int KEY_U;
+  public static final int KEY_V;
+  public static final int KEY_W;
+  public static final int KEY_X;
+  public static final int KEY_Y;
+  public static final int KEY_Z;
+  public static final int KEY_F1;
+  public static final int KEY_F2;
+  public static final int KEY_F3;
+  public static final int KEY_F4;
+  public static final int KEY_F5;
+  public static final int KEY_F6;
+  public static final int KEY_F7;
+  public static final int KEY_F8;
+  public static final int KEY_F9;
+  public static final int KEY_F10;
+  public static final int KEY_F11;
+  public static final int KEY_F12;
+  public static final int KEY_F13;
+  public static final int KEY_F14;
+  public static final int KEY_F15;
+  public static final int KEY_F16;
+  public static final int KEY_F17;
+  public static final int KEY_F18;
+  public static final int KEY_F19;
+  public static final int KEY_F20;
+  public static final int KEY_F21;
+  public static final int KEY_F22;
+  public static final int KEY_F23;
+  public static final int KEY_F24;
+  public static final int KEY_NUMLOCK;
+  public static final int KEY_NUMPAD0;
+  public static final int KEY_NUMPAD1;
+  public static final int KEY_NUMPAD2;
+  public static final int KEY_NUMPAD3;
+  public static final int KEY_NUMPAD4;
+  public static final int KEY_NUMPAD5;
+  public static final int KEY_NUMPAD6;
+  public static final int KEY_NUMPAD7;
+  public static final int KEY_NUMPAD8;
+  public static final int KEY_NUMPAD9;
+  public static final int KEY_NUMPADCOMMA;
+  public static final int KEY_NUMPADENTER;
+  public static final int KEY_NUMPADEQUALS;
+  public static final int KEY_DOWN;
+  public static final int KEY_LEFT;
+  public static final int KEY_RIGHT;
+  public static final int KEY_UP;
+  public static final int KEY_ADD;
+  public static final int KEY_APOSTROPHE;
+  public static final int KEY_BACKSLASH;
+  public static final int KEY_COMMA;
+  public static final int KEY_EQUALS;
+  public static final int KEY_GRAVE;
+  public static final int KEY_LBRACKET;
+  public static final int KEY_MINUS;
+  public static final int KEY_MULTIPLY;
+  public static final int KEY_PERIOD;
+  public static final int KEY_RBRACKET;
+  public static final int KEY_SEMICOLON;
+  public static final int KEY_SLASH;
+  public static final int KEY_SPACE;
+  public static final int KEY_TAB;
+  public static final int KEY_LALT;
+  public static final int KEY_LCONTROL;
+  public static final int KEY_LSHIFT;
+  public static final int KEY_LGUI;
+  public static final int KEY_RALT;
+  public static final int KEY_RCONTROL;
+  public static final int KEY_RSHIFT;
+  public static final int KEY_RGUI;
+  public static final int KEY_RETURN;
+  public static final int KEY_ESCAPE;
+  public static final int KEY_BACKSPACE;
+  public static final int KEY_DELETE;
+  public static final int KEY_END;
+  public static final int KEY_HOME;
+  public static final int KEY_INSERT;
+  public static final int KEY_PAGEDOWN;
+  public static final int KEY_PAGEUP;
+  public static final int KEY_CAPSLOCK;
+  public static final int KEY_PAUSE;
+  public static final int KEY_SCROLLLOCK;
+  public static final int KEY_PRINTSCREEN;
+  public static final int PRESS;
+  public static final int RELEASE;
+  public static final int REPEAT;
+  public static final int MOUSE_BUTTON_LEFT;
+  public static final int MOUSE_BUTTON_MIDDLE;
+  public static final int MOUSE_BUTTON_RIGHT;
+  public static final int MOUSE_BUTTON_4;
+  public static final int MOUSE_BUTTON_5;
+  public static final int MOUSE_BUTTON_6;
+  public static final int MOUSE_BUTTON_7;
+  public static final int MOUSE_BUTTON_8;
+  public static final int MOD_SHIFT;
+  public static final int MOD_CONTROL;
+  public static final int MOD_ALT;
+  public static final int MOD_SUPER;
+  public static final int MOD_CAPS_LOCK;
+  public static final int MOD_NUM_LOCK;
+  public static final int KEYCODE_A;
+  public static final int KEYCODE_B;
+  public static final int KEYCODE_C;
+  public static final int KEYCODE_E;
+  public static final int KEYCODE_F;
+  public static final int KEYCODE_L;
+  public static final int KEYCODE_M;
+  public static final int KEYCODE_O;
+  public static final int KEYCODE_R;
+  public static final int KEYCODE_U;
+  public static final int KEYCODE_V;
+  public static final int KEYCODE_W;
+  public static final int KEYCODE_X;
+  public static final int KEYCODE_Y;
+  public static final int KEYCODE_Z;
+  public static final int KEYCODE_RETURN;
+  public static final int KEYCODE_NUMPADENTER;
+  public static final int KEYCODE_PAGEUP;
+  public static final int KEYCODE_PAGEDOWN;
+  public static final int KEYCODE_BACKSPACE;
+  public static final int KEYCODE_UP;
+  public static final int KEYCODE_DOWN;
+  public static final int KEYCODE_FORWARD;
+  public static final int KEYCODE_BACKWARD;
+  public static final int KEYCODE_LEFT;
+  public static final int KEYCODE_RIGHT;
+  public static final int KEYCODE_NUMPAD9;
+  public static final int KEYCODE_NUMPAD3;
+  public static final int KEYCODE_DELETE;
+  public static final int KEYCODE_HOME;
+  public static final int KEYCODE_END;
+  public static final int KEYCODE_F5;
+  public static final int KEYCODE_TAB;
+  public static final int KEYCODE_LCONTROL;
+  public static final int KEYCODE_RCONTROL;
+  public static final int KEYCODE_SPACE;
+  public static final com.mojang.blaze3d.platform.InputConstants$Key UNKNOWN;
+  public com.mojang.blaze3d.platform.InputConstants();
+  public static com.mojang.blaze3d.platform.InputConstants$Key getKey(net.minecraft.client.input.KeyEvent);
+  public static com.mojang.blaze3d.platform.InputConstants$Key getKey(java.lang.String);
+  public static boolean isKeyDown(int);
+  public static void grabMouse(com.mojang.blaze3d.platform.Window, double, double);
+  public static void releaseMouse(com.mojang.blaze3d.platform.Window, double, double);
+}
+### javap com.mojang.blaze3d.vertex.PoseStack
+Compiled from "PoseStack.java"
+public class com.mojang.blaze3d.vertex.PoseStack {
+  public com.mojang.blaze3d.vertex.PoseStack();
+  public void translate(double, double, double);
+  public void translate(float, float, float);
+  public void translate(net.minecraft.world.phys.Vec3);
+  public void scale(float, float, float);
+  public void rotate(org.joml.Quaternionfc);
+  public void rotate(com.mojang.math.Axis, float);
+  public void rotateDegrees(com.mojang.math.Axis, float);
+  public void rotateAround(org.joml.Quaternionfc, float, float, float);
+  public void pushPose();
+  public void popPose();
+  public com.mojang.blaze3d.vertex.PoseStack$Pose last();
+  public boolean isEmpty();
+  public void setIdentity();
+  public void mulPose(org.joml.Matrix4fc);
+  public void mulPose(com.mojang.math.Transformation);
+}
+### javap net.minecraft.client.Camera
+Compiled from "Camera.java"
+public class net.minecraft.client.Camera implements net.minecraft.world.waypoints.TrackedWaypoint$Camera {
+  public static final float PROJECTION_Z_NEAR;
+  public static final float BASE_HUD_FOV;
+  public net.minecraft.client.Camera();
+  public void tick();
+  public void update(net.minecraft.client.DeltaTracker);
+  public float getCameraEntityPartialTicks(net.minecraft.client.DeltaTracker);
+  public void extractRenderState(net.minecraft.client.renderer.state.level.CameraRenderState, net.minecraft.client.DeltaTracker);
+  public net.minecraft.client.renderer.culling.Frustum getCullFrustum();
+  public net.minecraft.client.renderer.culling.Frustum getCapturedFrustum();
+  public void captureFrustum();
+  public void killFrustum();
+  public boolean isPanoramicMode();
+  public float getFov();
+  public net.minecraft.world.phys.Vec3 position();
+  public net.minecraft.core.BlockPos blockPosition();
+  public float xRot();
+  public float yRot();
+  public float yaw();
+  public org.joml.Quaternionf rotation();
+  public org.joml.Matrix4f getViewRotationMatrix(org.joml.Matrix4f);
+  public org.joml.Matrix4f getViewRotationProjectionMatrix(org.joml.Matrix4f);
+  public net.minecraft.world.entity.Entity entity();
+  public void setEntity(net.minecraft.world.entity.Entity);
+  public boolean isInitialized();
+  public boolean isDetached();
+  public net.minecraft.world.attribute.EnvironmentAttributeProbe attributeProbe();
+  public net.minecraft.client.Camera$NearPlane getNearPlane(float);
+  public net.minecraft.world.level.material.FogType getFluidInCamera();
+  public org.joml.Vector3fc forwardVector();
+  public org.joml.Vector3fc panoramicForwards();
+  public org.joml.Vector3fc upVector();
+  public org.joml.Vector3fc leftVector();
+  public void reset();
+  public void setLevel(net.minecraft.client.multiplayer.ClientLevel);
+  public void enablePanoramicMode();
+  public void disablePanoramicMode();
+}
+### javap net.minecraft.client.gui.Gui
+Compiled from "Gui.java"
+public class net.minecraft.client.gui.Gui {
+  public static final net.minecraft.network.chat.Component SAVING_LEVEL;
+  public final net.minecraft.client.gui.Hud hud;
+  public net.minecraft.client.gui.Gui(net.minecraft.client.Minecraft, net.minecraft.client.gui.Hud, net.minecraft.client.renderer.state.gui.GuiRenderState);
+  public void registerReloadListeners(net.minecraft.server.packs.resources.ReloadableResourceManager);
+  public void tick();
+  public void update();
+  public void extractRenderState(net.minecraft.client.DeltaTracker, boolean, boolean);
+  public net.minecraft.client.gui.screens.Screen screen();
+  public void setScreen(net.minecraft.client.gui.screens.Screen);
+  public net.minecraft.client.gui.screens.Overlay overlay();
+  public void setOverlay(net.minecraft.client.gui.screens.Overlay);
+  public boolean isPausing();
+  public net.minecraft.client.resources.SplashManager splashManager();
+  public net.minecraft.client.gui.components.toasts.ToastManager toastManager();
+  public net.minecraft.client.multiplayer.chat.ChatListener chatListener();
+  public void addSocialInteractionsToast();
+  public void setPauseScreen(boolean, boolean);
+  public void handleKeybinds();
+  public void openChatScreen(net.minecraft.client.gui.components.ChatComponent$ChatMethod);
+  public void openChatAndAddText(net.minecraft.client.gui.components.ChatComponent$ChatMethod, java.lang.String);
+  public java.lang.Runnable buildInitialScreens(net.minecraft.client.GameLoadCookie);
+  public boolean canInterruptScreen();
+  public void setClientLevelTeardownInProgress(boolean);
+}
+public class net.minecraft.client.Minecraft extends net.minecraft.util.thread.ReentrantBlockableEventLoop<java.lang.Runnable> implements com.mojang.blaze3d.platform.WindowEventHandler {
+  public final net.minecraft.client.gui.components.debug.DebugScreenEntryList debugEntries;
+  public void fullscreenStateChanged(boolean);
+  public net.minecraft.client.gui.screens.worldselection.WorldOpenFlows createWorldOpenFlows();
+  public void disconnectWithSavingScreen();
+  public void disconnectWithProgressScreen();
+  public void disconnectWithProgressScreen(boolean);
+  public void disconnect(net.minecraft.client.gui.screens.Screen, boolean);
+  public void disconnect(net.minecraft.client.gui.screens.Screen, boolean, boolean);
+  public void clearClientLevel(net.minecraft.client.gui.screens.Screen);
+  public void setScreenAndShow(net.minecraft.client.gui.screens.Screen);
+  public net.minecraft.network.chat.Component grabPanoramixScreenshot(java.io.File);
+  public net.minecraft.client.gui.screens.social.PlayerSocialManager getPlayerSocialManager();
+  public net.minecraft.client.gui.components.DebugScreenOverlay getDebugOverlay();
+  public boolean canInterruptScreen();
+public class net.minecraft.client.renderer.RenderPipelines {
+  public static final com.mojang.renderpearl.api.pipeline.RenderPipeline$Snippet DEBUG_FILLED_SNIPPET;
+  public static final com.mojang.renderpearl.api.pipeline.RenderPipeline$Snippet OIT_DEBUG_FILLED_SNIPPET;
+  public static final com.mojang.renderpearl.api.pipeline.RenderPipeline$Snippet DEBUG_POINTS_SNIPPET;
+  public static final com.mojang.renderpearl.api.pipeline.RenderPipeline DEBUG_POINTS;
+  public static final net.minecraft.client.renderer.oit.OitPipelineSet OIT_DEBUG_POINTS;
+  public static final com.mojang.renderpearl.api.pipeline.RenderPipeline DEBUG_FILLED_BOX;
+  public static final net.minecraft.client.renderer.oit.OitPipelineSet OIT_DEBUG_FILLED_BOX;
+  public static final com.mojang.renderpearl.api.pipeline.RenderPipeline DEBUG_QUADS;
+  public static final net.minecraft.client.renderer.oit.OitPipelineSet OIT_DEBUG_QUADS;
+  public static final com.mojang.renderpearl.api.pipeline.RenderPipeline DEBUG_TRIANGLE_FAN;
+  public static final net.minecraft.client.renderer.oit.OitPipelineSet OIT_DEBUG_TRIANGLE_FAN;
+### javap net.minecraft.client.input.KeyEvent
+Compiled from "KeyEvent.java"
+public final class net.minecraft.client.input.KeyEvent extends java.lang.Record implements net.minecraft.client.input.InputWithModifiers {
+  public net.minecraft.client.input.KeyEvent(int, int, int);
+  public int input();
+  public int shortcutKey();
+  public final java.lang.String toString();
+  public final int hashCode();
+  public final boolean equals(java.lang.Object);
+  public int key();
+  public int keycode();
+  public int modifiers();
+}
+### javap net.minecraft.client.input.MouseButtonEvent
+Compiled from "MouseButtonEvent.java"
+public final class net.minecraft.client.input.MouseButtonEvent extends java.lang.Record implements net.minecraft.client.input.InputWithModifiers {
+  public net.minecraft.client.input.MouseButtonEvent(double, double, net.minecraft.client.input.MouseButtonInfo);
+  public int input();
+  public int button();
+  public int modifiers();
+  public final java.lang.String toString();
+  public final int hashCode();
+  public final boolean equals(java.lang.Object);
+  public double x();
+  public double y();
+  public net.minecraft.client.input.MouseButtonInfo buttonInfo();
+}
+### javap net.fabricmc.fabric.api.client.gametest.v1.TestInput
+Compiled from "TestInput.java"
+public interface net.fabricmc.fabric.api.client.gametest.v1.TestInput {
+  public abstract void holdKey(net.minecraft.client.KeyMapping);
+  public abstract void holdKey(java.util.function.Function<net.minecraft.client.Options, net.minecraft.client.KeyMapping>);
+  public abstract void holdKey(com.mojang.blaze3d.platform.InputConstants$Key);
+  public abstract void holdKey(int);
+  public abstract void holdMouse(int);
+  public abstract void holdControl();
+  public abstract void holdShift();
+  public abstract void holdAlt();
+  public abstract void releaseKey(net.minecraft.client.KeyMapping);
+  public abstract void releaseKey(java.util.function.Function<net.minecraft.client.Options, net.minecraft.client.KeyMapping>);
+  public abstract void releaseKey(com.mojang.blaze3d.platform.InputConstants$Key);
+  public abstract void releaseKey(int);
+  public abstract void releaseMouse(int);
+  public abstract void releaseControl();
+  public abstract void releaseShift();
+  public abstract void releaseAlt();
+  public abstract void pressKey(net.minecraft.client.KeyMapping);
+  public abstract void pressKey(java.util.function.Function<net.minecraft.client.Options, net.minecraft.client.KeyMapping>);
+  public abstract void pressKey(com.mojang.blaze3d.platform.InputConstants$Key);
+  public abstract void pressKey(int);
+  public abstract void pressMouse(int);
+  public abstract void holdKeyFor(net.minecraft.client.KeyMapping, int);
+  public abstract void holdKeyFor(java.util.function.Function<net.minecraft.client.Options, net.minecraft.client.KeyMapping>, int);
+  public abstract void holdKeyFor(com.mojang.blaze3d.platform.InputConstants$Key, int);
+  public abstract void holdKeyFor(int, int);
+  public abstract void holdMouseFor(int, int);
+  public abstract void lookAt(float, float);
+  public abstract void lookAt(net.minecraft.core.BlockPos);
+  public abstract void typeChar(int);
+  public abstract void typeChars(java.lang.String);
+  public abstract void scroll(double);
+  public abstract void scroll(double, double);
+  public abstract void setCursorPos(double, double);
+  public abstract void moveCursor(double, double);
+  public abstract void resizeWindow(int, int);
+}
+public class net.minecraft.client.KeyMapping implements java.lang.Comparable<net.minecraft.client.KeyMapping> {
+  public net.minecraft.client.KeyMapping(java.lang.String, int, net.minecraft.client.KeyMapping$Category);
+  public net.minecraft.client.KeyMapping(java.lang.String, com.mojang.blaze3d.platform.InputConstants$Type, int, net.minecraft.client.KeyMapping$Category);
+  public net.minecraft.client.KeyMapping(java.lang.String, com.mojang.blaze3d.platform.InputConstants$Type, int, net.minecraft.client.KeyMapping$Category, int);
+### javap com.mojang.blaze3d.platform.InputConstants$Type
+Compiled from "InputConstants.java"
+public final class com.mojang.blaze3d.platform.InputConstants$Type extends java.lang.Enum<com.mojang.blaze3d.platform.InputConstants$Type> {
+  public static final com.mojang.blaze3d.platform.InputConstants$Type KEYBOARD;
+  public static final com.mojang.blaze3d.platform.InputConstants$Type MOUSE;
+  public static com.mojang.blaze3d.platform.InputConstants$Type[] values();
+  public static com.mojang.blaze3d.platform.InputConstants$Type valueOf(java.lang.String);
+  public com.mojang.blaze3d.platform.InputConstants$Key getOrCreate(int);
+}
+### javap net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext
+Compiled from "TestSingleplayerContext.java"
+public interface net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext extends java.lang.AutoCloseable {
+  public abstract net.fabricmc.fabric.api.client.gametest.v1.world.TestWorldSave getWorldSave();
+  public abstract net.fabricmc.fabric.api.client.gametest.v1.context.TestServerConnection getConnection();
+  public abstract net.fabricmc.fabric.api.client.gametest.v1.context.TestServerContext getServer();
+  public abstract void close();
+}

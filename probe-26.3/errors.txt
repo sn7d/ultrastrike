@@ -1,0 +1,76 @@
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/GuiQuads.java:3: error: cannot find symbol
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/GuiQuads.java:30: error: cannot find symbol
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:3: error: cannot find symbol
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:4: error: cannot find symbol
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:5: error: cannot find symbol
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:6: error: cannot find symbol
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:7: error: cannot find symbol
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:25: error: cannot find symbol
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:30: error: cannot find symbol
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:37: error: cannot find symbol
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:43: error: cannot find symbol
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:51: error: cannot find symbol
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:57: error: cannot find symbol
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:102: error: cannot find symbol
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:25: error: cannot find symbol
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:33: error: cannot find symbol
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:33: error: cannot find symbol
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:30: error: cannot find symbol
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:40: error: cannot find symbol
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:40: error: cannot find symbol
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:37: error: cannot find symbol
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:47: error: cannot find symbol
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:47: error: cannot find symbol
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:46: error: cannot find symbol
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:46: error: cannot find symbol
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:43: error: cannot find symbol
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:54: error: cannot find symbol
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:54: error: cannot find symbol
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:51: error: cannot find symbol
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:61: error: cannot find symbol
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:61: error: cannot find symbol
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:60: error: cannot find symbol
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:60: error: cannot find symbol
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:57: error: cannot find symbol
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:83: error: cannot find symbol
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:85: error: cannot find symbol
+/home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:85: error: cannot find symbol
+> Task :compileJava FAILED
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/GuiQuads.java:3: error: cannot find symbol
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/GuiQuads.java:30: error: cannot find symbol
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:3: error: cannot find symbol
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:4: error: cannot find symbol
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:5: error: cannot find symbol
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:6: error: cannot find symbol
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:7: error: cannot find symbol
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:25: error: cannot find symbol
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:30: error: cannot find symbol
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:37: error: cannot find symbol
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:43: error: cannot find symbol
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:51: error: cannot find symbol
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:57: error: cannot find symbol
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:102: error: cannot find symbol
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:25: error: cannot find symbol
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:33: error: cannot find symbol
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:33: error: cannot find symbol
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:30: error: cannot find symbol
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:40: error: cannot find symbol
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:40: error: cannot find symbol
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:37: error: cannot find symbol
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:47: error: cannot find symbol
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:47: error: cannot find symbol
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:46: error: cannot find symbol
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:46: error: cannot find symbol
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:43: error: cannot find symbol
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:54: error: cannot find symbol
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:54: error: cannot find symbol
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:51: error: cannot find symbol
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:61: error: cannot find symbol
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:61: error: cannot find symbol
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:60: error: cannot find symbol
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:60: error: cannot find symbol
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:57: error: cannot find symbol
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:83: error: cannot find symbol
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:85: error: cannot find symbol
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/pipeline_blaze3d/java/com/aureole/compat/HaloPipelines.java:85: error: cannot find symbol
+BUILD FAILED in 20s

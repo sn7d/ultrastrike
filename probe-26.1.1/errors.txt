@@ -1,0 +1,10 @@
+/home/runner/work/ultrastrike/ultrastrike/src/compat/screen_gui/java/com/aureole/compat/McScreens.java:7: error: cannot find symbol
+/home/runner/work/ultrastrike/ultrastrike/src/compat/screen_gui/java/com/aureole/compat/McScreens.java:15: error: cannot find symbol
+/home/runner/work/ultrastrike/ultrastrike/src/compat/screen_gui/java/com/aureole/compat/McScreens.java:19: error: cannot find symbol
+/home/runner/work/ultrastrike/ultrastrike/src/compat/screen_gui/java/com/aureole/compat/McScreens.java:23: error: cannot find symbol
+> Task :compileJava FAILED
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/screen_gui/java/com/aureole/compat/McScreens.java:7: error: cannot find symbol
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/screen_gui/java/com/aureole/compat/McScreens.java:23: error: cannot find symbol
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/screen_gui/java/com/aureole/compat/McScreens.java:15: error: cannot find symbol
+  /home/runner/work/ultrastrike/ultrastrike/src/compat/screen_gui/java/com/aureole/compat/McScreens.java:19: error: cannot find symbol
+BUILD FAILED in 11s
