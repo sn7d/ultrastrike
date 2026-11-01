@@ -90,7 +90,7 @@ Built for every Minecraft 26.x release (26.1 – 26.3) on Fabric. Nothing is sen
 | Way | |
 |---|---|
 | **H** | rebind under *Options → Controls → Aureole* |
-| **Esc menu** | the halo button next to *Friends* |
+| **Esc menu** | the halo button next to *Friends* (26.1 has no Friends button: it sits left of *Back to Game*) |
 | **`/aureole`** | also `toggle`, `reload`, `preset <name>` (tab-completes) |
 | **Mod Menu** | *Config* button, if installed |
 
