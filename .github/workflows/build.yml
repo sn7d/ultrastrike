@@ -125,7 +125,11 @@ jobs:
           cache: 'gradle'
       - run: chmod +x ./gradlew
       - name: Download Skyblock mod set from Modrinth
-        run: python3 scripts/compat_mods.py "$(grep '^minecraft_version=' versions/${{ matrix.line }}.properties | cut -d= -f2)" compat-mods
+        run: |
+          python3 scripts/compat_mods.py "$(grep '^minecraft_version=' versions/${{ matrix.line }}.properties | cut -d= -f2)" compat-mods
+          # Firmament's 26.1 build intermittently deadlocks during its own startup class loading in CI
+          # (its background item-cache threads vs. the mixin transformer), before any other mod runs. Left out there.
+          if [ "${{ matrix.line }}" = "26.1" ]; then rm -f compat-mods/Firmament-*.jar && echo "Firmament left out on 26.1 (startup deadlock in CI)" | tee -a compat-mods/MODS.txt; fi
       - name: In-game test with the mod set
         run: |
           sudo apt-get update -q && sudo apt-get install -y -q xvfb mesa-utils libgl1-mesa-dri mesa-vulkan-drivers libvulkan1 libegl1 libegl-mesa0

@@ -279,7 +279,7 @@ Every push also runs the full in-game test inside a **typical Skyblock setup** d
 | Mod Menu | 20.0.3 |
 | Zoomify | 2.17.0 |
 
-Firmament had no 26.2 build at the time, so it wasn't tested.
+Firmament had no 26.2 build at the time, so it wasn't tested there. Its 26.1 build is left out of the automated 26.1 run because it sometimes deadlocks during its own startup in CI, before Aureole does anything.
 
 **Essential** (1.5.1, from Modrinth) is tested separately in a launcher-style run, because it won't start in a mod-development environment. The full suite passes, including the nametag menu test (real clicks and typing). Essential's own menu and the halo button sit side by side on the Esc screen. The list lives in `scripts/compat_mods.py`. It also accepts your own list (`--list mods.txt` with slugs, jar file names or `sha1:` hashes), so you can test your exact mod folder.
 
