@@ -1,0 +1,62 @@
+# Scratch-repo only: which 26.x versions exist, and does the mod compile + pass unit tests against each.
+name: versions-probe
+on:
+  push:
+    branches: [angelic-halo]
+    paths: ['scripts/versions_probe.py', '.github/workflows/probe.yml', 'probe.trigger']
+permissions:
+  contents: write
+jobs:
+  resolve:
+    runs-on: ubuntu-24.04
+    outputs:
+      matrix: ${{ steps.r.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v6
+      - id: r
+        run: |
+          python3 scripts/versions_probe.py versions.json
+          echo "matrix=$(python3 -c "import json;print(json.dumps([v for v in json.load(open('versions.json'))['versions'] if v['fabric_api']]))")" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@v7
+        with: {name: probe-versions, path: versions.json}
+  compile:
+    needs: resolve
+    strategy:
+      fail-fast: false
+      matrix:
+        v: ${{ fromJSON(needs.resolve.outputs.matrix) }}
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v5
+        with: {java-version: '25', distribution: 'microsoft', cache: 'gradle'}
+      - run: chmod +x ./gradlew
+      - continue-on-error: true
+        run: |
+          MM="${{ matrix.v.modmenu }}"; [ -z "$MM" ] && MM=$(grep '^modmenu_version=' gradle.properties | cut -d= -f2)
+          set -o pipefail
+          for i in 1 2 3; do
+            ./gradlew compileJava compileTestJava compileGametestJava test --continue \
+              -Pminecraft_version=${{ matrix.v.mc }} -Pfabric_api_version=${{ matrix.v.fabric_api }} -Pmodmenu_version=$MM \
+              2>&1 | tee build.log && echo OK > result.txt && break
+            grep -q "error:" build.log && { echo FAIL > result.txt; break; }
+            sleep $((i * 30))
+          done
+          [ -f result.txt ] || echo FAIL > result.txt
+      - if: always()
+        run: |
+          mkdir -p o && cp build.log result.txt o/ || true
+          grep -E "error:|warning: \[removal\]|FAILED" build.log | head -200 > o/errors.txt || true
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with: {name: 'probe-${{ matrix.v.mc }}', path: o/}
+  collect:
+    needs: [resolve, compile]
+    if: always()
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/download-artifact@v4
+        with: {path: out}
+      - run: |
+          cd out && git init -q -b ci-probe && git config user.name ci && git config user.email ci@users.noreply.github.com
+          git add -A && git commit -q -m "probe ${{ github.sha }}" && git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}" ci-probe
