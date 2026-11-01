@@ -193,7 +193,7 @@ public final class Controls {
 
 		@Override
 		public boolean mouseDown(double mx, double my, int button) {
-			if (button != 0 || !contains(mx, my)) return false;
+			if (button != InputConstants.MOUSE_BUTTON_LEFT || !contains(mx, my)) return false;
 			dragging = true;
 			mouseDrag(mx, my);
 			return true;
@@ -250,7 +250,7 @@ public final class Controls {
 
 		@Override
 		public boolean mouseDown(double mx, double my, int button) {
-			if (button != 0 || !contains(mx, my)) return false;
+			if (button != InputConstants.MOUSE_BUTTON_LEFT || !contains(mx, my)) return false;
 			set.accept(!get.getAsBoolean());
 			return true;
 		}
@@ -300,7 +300,7 @@ public final class Controls {
 		public boolean mouseDown(double mx, double my, int button) {
 			if (!contains(mx, my)) return false;
 			int i = Math.max(0, values.indexOf(get.get()));
-			boolean back = button == 1 || mx < x + w * 0.5;
+			boolean back = button == InputConstants.MOUSE_BUTTON_RIGHT || mx < x + w * 0.5;
 			int n = values.size();
 			set.accept(values.get(((i + (back ? -1 : 1)) % n + n) % n));
 			flash = 1f;
@@ -339,7 +339,7 @@ public final class Controls {
 
 		@Override
 		public boolean mouseDown(double mx, double my, int button) {
-			if (button != 0 || !contains(mx, my)) return false;
+			if (button != InputConstants.MOUSE_BUTTON_LEFT || !contains(mx, my)) return false;
 			press = 1f;
 			Minecraft.getInstance().execute(action);
 			return true;
@@ -701,7 +701,7 @@ public final class Controls {
 			for (int i = 0; i < colors.length; i++) {
 				int sx = x + i * (s + 3);
 				if (mx >= sx && mx < sx + s && my >= y && my < y + s + 2) {
-					(button == 1 ? secondary : primary).accept(colors[i]);
+					(button == InputConstants.MOUSE_BUTTON_RIGHT ? secondary : primary).accept(colors[i]);
 					return true;
 				}
 			}
@@ -796,7 +796,7 @@ public final class Controls {
 
 		@Override
 		public boolean mouseDown(double mx, double my, int button) {
-			if (button != 0 || !contains(mx, my)) return false;
+			if (button != InputConstants.MOUSE_BUTTON_LEFT || !contains(mx, my)) return false;
 			List<T> list = items.get();
 			int cols = cols();
 			int cw = (w - 6 * (cols - 1)) / cols;
@@ -854,7 +854,7 @@ public final class Controls {
 
 		@Override
 		public boolean mouseDown(double mx, double my, int button) {
-			if (button != 0 || !contains(mx, my)) return false;
+			if (button != InputConstants.MOUSE_BUTTON_LEFT || !contains(mx, my)) return false;
 			int cols = cols();
 			int col = (int) ((mx - x) / 19);
 			int row = (int) ((my - y) / 19);
