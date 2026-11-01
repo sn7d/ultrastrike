@@ -43,7 +43,7 @@ fabricApi {
 	// Minecraft client, create a test world, and take screenshots of the halo.
 	configureTests {
 		createSourceSet = true
-		modId = 'angelichalo-gametest'
+		modId = 'aureole-gametest'
 		enableGameTests = false
 		enableClientGameTests = true
 		eula = true

@@ -17,7 +17,7 @@ def get(url, attempts=5):
     import time
     for i in range(attempts):
         try:
-            with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "angelic-halo-ci"}), timeout=30) as r:
+            with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "aureole-ci"}), timeout=30) as r:
                 return r.read()
         except Exception:  # noqa: BLE001 - rate limits (429) and hiccups: back off and retry
             if i == attempts - 1:

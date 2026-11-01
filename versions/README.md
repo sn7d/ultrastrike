@@ -1,12 +1,12 @@
 # Supported Minecraft lines
 
-Each file here describes one Minecraft line that Angelic Halo is built for. Build a line with `-Pmc=<line>`, e.g.
+Each file here describes one Minecraft line that Aureole is built for. Build a line with `-Pmc=<line>`, e.g.
 
 ```
 ./gradlew build -Pmc=26.1
 ```
 
-which produces `build/libs/angelic-halo-<version>+26.1.jar`. Without `-Pmc` the line in `gradle.properties` (`mc_line`) is used.
+which produces `build/libs/aureole-<version>+26.1.jar`. Without `-Pmc` the line in `gradle.properties` (`mc_line`) is used.
 
 | Key | Meaning |
 |---|---|

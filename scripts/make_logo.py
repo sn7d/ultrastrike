@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Draws the 16x16 pixel-art Angelic Halo logo and writes it at 16px and upscaled (nearest neighbour, so the pixels
+"""Draws the 16x16 pixel-art Aureole logo and writes it at 16px and upscaled (nearest neighbour, so the pixels
 stay crisp) for the mod icon and the Modrinth project icon.
 
 Usage: python3 scripts/make_logo.py
@@ -69,7 +69,7 @@ def main() -> None:
     logo = draw()
     logo.save(ROOT / "docs/modrinth/icon_16.png")
     logo.resize((512, 512), Image.NEAREST).save(ROOT / "docs/modrinth/icon.png")
-    logo.resize((128, 128), Image.NEAREST).save(ROOT / "src/main/resources/assets/angelichalo/icon.png")
+    logo.resize((128, 128), Image.NEAREST).save(ROOT / "src/main/resources/assets/aureole/icon.png")
 
 
 if __name__ == "__main__":

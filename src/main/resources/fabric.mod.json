@@ -1,26 +1,26 @@
 {
 	"schemaVersion": 1,
-	"id": "angelichalo",
+	"id": "aureole",
 	"version": "${version}",
-	"name": "Angelic Halo",
+	"name": "Aureole",
 	"description": "A ring of light that follows you. Sweeping scans with fading trails, crowns of light, orbiting text and projected emblems, each with its own colour studio, tuned live in an animated menu with a 3D preview. Purely cosmetic and client-side: nothing is sent to the server.",
 	"authors": [
 		"Cookiecodes (sn7d)"
 	],
 	"contact": {
-		"homepage": "https://github.com/sn7d/angelic-halo",
-		"sources": "https://github.com/sn7d/angelic-halo",
-		"issues": "https://github.com/sn7d/angelic-halo/issues"
+		"homepage": "https://github.com/sn7d/aureole",
+		"sources": "https://github.com/sn7d/aureole",
+		"issues": "https://github.com/sn7d/aureole/issues"
 	},
 	"license": "MIT",
-	"icon": "assets/angelichalo/icon.png",
+	"icon": "assets/aureole/icon.png",
 	"environment": "client",
 	"entrypoints": {
 		"client": [
-			"com.angelichalo.AngelicHalo"
+			"com.aureole.Aureole"
 		],
 		"modmenu": [
-			"com.angelichalo.compat.ModMenuCompat"
+			"com.aureole.compat.ModMenuCompat"
 		]
 	},
 	"depends": {
@@ -35,7 +35,7 @@
 	"custom": {
 		"modmenu": {
 			"links": {
-				"modmenu.github_releases": "https://github.com/sn7d/angelic-halo/releases"
+				"modmenu.github_releases": "https://github.com/sn7d/aureole/releases"
 			}
 		}
 	}

@@ -4,7 +4,7 @@ import math
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFilter, ImageChops
 
-OUT = Path(__file__).resolve().parent.parent / "src/main/resources/assets/angelichalo/textures/emblem"
+OUT = Path(__file__).resolve().parent.parent / "src/main/resources/assets/aureole/textures/emblem"
 S = 2048
 C = S / 2
 

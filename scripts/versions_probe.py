@@ -10,7 +10,7 @@ import time
 import urllib.parse
 import urllib.request
 
-UA = {"User-Agent": "angelic-halo-ci (github.com/sn7d/angelic-halo)"}
+UA = {"User-Agent": "aureole-ci (github.com/sn7d/aureole)"}
 
 
 def get(url):

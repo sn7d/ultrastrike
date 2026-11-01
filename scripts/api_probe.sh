@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Dev helper (CI): dumps the API shapes Angelic Halo touches for one Minecraft version.
+# Dev helper (CI): dumps the API shapes Aureole touches for one Minecraft version.
 # Usage: scripts/api_probe.sh <mc> <fabric_api> <modmenu> > out.txt
 set -u
 MC=$1; API=$2; MM=$3

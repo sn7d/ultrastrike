@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Downloads a typical Hypixel Skyblock mod set for the target Minecraft version from Modrinth, resolving required
-dependencies, so the in-game test can run Angelic Halo alongside them.
+dependencies, so the in-game test can run Aureole alongside them.
 
 Usage: python3 scripts/compat_mods.py <minecraft_version> <out_dir> [slug ...]
        python3 scripts/compat_mods.py <minecraft_version> <out_dir> --list mods.txt
@@ -17,7 +17,7 @@ import urllib.request
 from pathlib import Path
 
 API = "https://api.modrinth.com/v2"
-UA = {"User-Agent": "angelic-halo-ci (github.com/sn7d/angelic-halo)"}
+UA = {"User-Agent": "aureole-ci (github.com/sn7d/aureole)"}
 
 DEFAULT = [
     "sodium",            # renderer replacement — the most important one to be compatible with

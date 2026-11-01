@@ -1,20 +1,20 @@
 {
 	"schemaVersion": 1,
-	"id": "angelichalo-gametest",
+	"id": "aureole-gametest",
 	"version": "1.0.0",
-	"name": "Angelic Halo Client Tests",
+	"name": "Aureole Client Tests",
 	"environment": "client",
 	"entrypoints": {
 		"fabric-client-gametest": [
-			"com.angelichalo.gametest.HaloScreenshotTest",
-			"com.angelichalo.gametest.NametagFunctionTest",
-			"com.angelichalo.gametest.ShaderCompatTest"
+			"com.aureole.gametest.HaloScreenshotTest",
+			"com.aureole.gametest.NametagFunctionTest",
+			"com.aureole.gametest.ShaderCompatTest"
 		],
 		"client": [
-			"com.angelichalo.gametest.TestWatchdog"
+			"com.aureole.gametest.TestWatchdog"
 		]
 	},
 	"depends": {
-		"angelichalo": "*"
+		"aureole": "*"
 	}
 }

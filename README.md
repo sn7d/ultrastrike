@@ -2,16 +2,16 @@
 
 <img src="docs/images/hero.png" alt="A player in third person wearing a glowing golden crown-halo under a cherry-blossom arch at sunset" width="100%">
 
-# Angelic Halo
+# Aureole
 
 **A ring of light that follows you — purely cosmetic, entirely client-side.**
 
 Sweeping scans with fading trails, crowns of light, orbiting text and projected emblems,<br>
 each with its own colour studio, all tuned live in an animated menu with a 3D preview.<br>
-Built for Minecraft 26.2 on Fabric. Nothing is sent to the server; only you see it.
+Built for every Minecraft 26.x release (26.1 – 26.3) on Fabric. Nothing is sent to the server; only you see it.
 
-![Minecraft](https://img.shields.io/badge/Minecraft-26.2-62B47A?style=flat-square)
-![Loader](https://img.shields.io/badge/Fabric_Loader-0.20.1+-DBD0B4?style=flat-square)
+![Minecraft](https://img.shields.io/badge/Minecraft-26.1--26.3-62B47A?style=flat-square)
+![Loader](https://img.shields.io/badge/Fabric_Loader-0.19.5+-DBD0B4?style=flat-square)
 ![Java](https://img.shields.io/badge/Java-25-E76F00?style=flat-square)
 ![Side](https://img.shields.io/badge/side-client_only-5865F2?style=flat-square)
 ![Network](https://img.shields.io/badge/packets_sent-0-2EA043?style=flat-square)
@@ -31,7 +31,7 @@ Built for Minecraft 26.2 on Fabric. Nothing is sent to the server; only you see 
 <td align="center"><b>Scan + trail</b>: sweeps feet to head and leaves a fading trail you can colour separately.</td>
 </tr>
 <tr>
-<td width="50%"><img src="docs/images/text.png" alt="The words ANGELIC HALO wrapping around a golden ring at the player's feet"></td>
+<td width="50%"><img src="docs/images/text.png" alt="The words AUREOLE wrapping around a golden ring at the player's feet"></td>
 <td width="50%"><img src="docs/images/emblem.png" alt="A golden magic-circle sigil projected on the floor around the player"></td>
 </tr>
 <tr>
@@ -68,14 +68,16 @@ Built for Minecraft 26.2 on Fabric. Nothing is sent to the server; only you see 
 
 ## Install
 
-1. Install **[Fabric Loader](https://fabricmc.net/use/) 0.20.1+** for **Minecraft 26.2**.
-2. Put these in your `mods` folder:
+1. Install **[Fabric Loader](https://fabricmc.net/use/) 0.19.5 or newer** for your Minecraft version.
+2. Put the **Aureole** jar for your version and **[Fabric API](https://modrinth.com/mod/fabric-api)** in your `mods` folder ([Mod Menu](https://modrinth.com/mod/modmenu) is optional and adds a *Config* button to the mod list):
 
-   | Mod | Required? | Where |
+   | Minecraft | Aureole jar | Fabric API |
    |---|---|---|
-   | **Angelic Halo** | yes | [Releases](https://github.com/sn7d/angelic-halo/releases), or build it (see below) |
-   | **Fabric API** `0.161.0+26.2` or newer | yes | [Modrinth](https://modrinth.com/mod/fabric-api) |
-   | **Mod Menu** `20.0.x` | optional (adds a *Config* button to the mod list) | [Modrinth](https://modrinth.com/mod/modmenu) |
+   | 26.1, 26.1.1, 26.1.2 | `aureole-<version>+26.1.jar` | `0.155.3+26.1.2` or newer |
+   | 26.2 | `aureole-<version>+26.2.jar` | `0.161.0+26.2` or newer |
+   | 26.3 | `aureole-<version>+26.3.jar` | `0.165.0+26.3` or newer |
+
+   Get it from [Modrinth](https://modrinth.com/mod/aureole) (it picks the right file for you) or the [Releases](https://github.com/sn7d/aureole/releases) page, or build it yourself (see below).
 
 3. Launch and press **H**.
 
@@ -87,20 +89,20 @@ Built for Minecraft 26.2 on Fabric. Nothing is sent to the server; only you see 
 
 | Way | |
 |---|---|
-| **H** | rebind under *Options → Controls → Angelic Halo* |
+| **H** | rebind under *Options → Controls → Aureole* |
 | **Esc menu** | the halo button next to *Friends* |
-| **`/angelichalo`** | also `toggle`, `reload`, `preset <name>` (tab-completes) |
+| **`/aureole`** | also `toggle`, `reload`, `preset <name>` (tab-completes) |
 | **Mod Menu** | *Config* button, if installed |
 
 Optional keys, unbound by default: **Toggle halo** and **Next preset**.
 
-`/angelichalo` is a Fabric **client command**: it runs on your machine and is never sent to the server.
+`/aureole` is a Fabric **client command**: it runs on your machine and is never sent to the server.
 
 <br clear="right">
 
 ## The menu
 
-<img src="docs/images/menu.png" alt="The Angelic Halo settings window: sidebar of tabs, preset cards, and a live 3D preview of a mannequin with a glowing ring">
+<img src="docs/images/menu.png" alt="The Aureole settings window: sidebar of tabs, preset cards, and a live 3D preview of a mannequin with a glowing ring">
 
 A dark glass window drawn entirely by the mod in the **Poppins** typeface (no vanilla buttons):
 
@@ -190,7 +192,7 @@ Size, spacing, speed and placement are all adjustable. You can use a smooth mode
 <img src="docs/images/gallery/feature_emblem_floor.jpg" width="32%"> <img src="docs/images/gallery/feature_emblem_above.jpg" width="32%"> <img src="docs/images/gallery/feature_emblem_back.jpg" width="32%">
 
 - **Built-in emblems**: *Sigil, Sunburst, Compass, Lotus, Snowflake, Crescent*. They are drawn in white so the colour studio can tint them any colour or effect.
-- **Your own images**: drop any `.png` into `config/angelichalo/images/` and it shows up in the Emblem tab within seconds, no restart. Transparent PNGs look best.
+- **Your own images**: drop any `.png` into `config/aureole/images/` and it shows up in the Emblem tab within seconds, no restart. Transparent PNGs look best.
 - **Placement**: on the **floor**, **above your head** (facing you) or **on your back** (turns with your body).
 - Adjustable size, spin and height, with an optional gentle pulse.
 
@@ -207,7 +209,7 @@ Give yourself a custom nametag (you see it in third person):
 - **Your own name**, with Minecraft-style formatting codes for colours, bold, italic and more, or leave it empty to show your username.
 - **A title line** above it, with its own on/off switch.
 - **Any colour effect** (rainbow, gradient, pulse…), applied letter by letter.
-- **Icons** on either side: built-ins such as a crown, star, heart, sword or gem, or your own PNGs from `config/angelichalo/icons`.
+- **Icons** on either side: built-ins such as a crown, star, heart, sword or gem, or your own PNGs from `config/aureole/icons`.
 - **A symbols picker** with ★ ♛ ⚔ ❤ ☾ ⚡ ✦ and many more, one click to insert.
 - Size, height, background plate, glow, shadow and font controls, all previewed live on the projector, which zooms to the head.
 
@@ -258,12 +260,12 @@ Presets replace the look and keep your visibility settings.
 
 The **Share** tab:
 
-- **Copy my code / Paste a code**: your whole look as one line of text (`AH1:…`), ready to send in chat or Discord.
-- **Saved looks**: name it and save it. Saved looks live in `config/angelichalo/presets/*.json`; load or delete them from the list, and share the files directly if you like.
+- **Copy my code / Paste a code**: your whole look as one line of text (`AU1:…`), ready to send in chat or Discord.
+- **Saved looks**: name it and save it. Saved looks live in `config/aureole/presets/*.json`; load or delete them from the list, and share the files directly if you like.
 
 ## Compatibility
 
-Every push also runs the full in-game test inside a **typical Skyblock setup** downloaded fresh from Modrinth. The last run passed with:
+Every push also runs the full in-game test inside a **typical Skyblock setup** downloaded fresh from Modrinth, on every supported Minecraft line. The last 26.2 run passed with:
 
 | Mod | Version |
 |---|---|
@@ -283,7 +285,7 @@ Firmament had no 26.2 build at the time, so it wasn't tested.
 
 ## Shaders
 
-Iris only draws render pipelines it knows about, so many mods' custom effects vanish when a shaderpack is on. Angelic Halo registers its pipelines through **Iris's public API** (`IrisApi.assignPipeline`), so the halo keeps rendering with shaders. While a pack is active:
+Iris only draws render pipelines it knows about, so many mods' custom effects vanish when a shaderpack is on. Aureole registers its pipelines through **Iris's public API** (`IrisApi.assignPipeline`), so the halo keeps rendering with shaders. While a pack is active:
 
 - the pack's own bloom takes over (stacking both washes colours to white). You can force the halo's glow back on with *Glow → Bloom With Shaders*;
 - soft feathered edges are skipped, because packs dither them into jagged teeth;
@@ -310,7 +312,7 @@ Every push runs the same five scenes without and with each pack (Iris 1.11.4 + S
 Built to be safe on servers like Hypixel:
 
 - **Client-only.** It declares `"environment": "client"` and does nothing on a server.
-- **No networking.** It registers no packets or channels and never sends chat or commands. `/angelichalo` is a local Fabric client command.
+- **No networking.** It registers no packets or channels and never sends chat or commands. `/aureole` is a local Fabric client command.
 - **No game changes.** No mixins at all. It only adds draw calls through Fabric's public rendering and screen events, and reads your own position, ground state and health bar for the reactive extras.
 - **Read-only.** It never touches blocks, entities, inventory, movement or the camera.
 
@@ -331,15 +333,19 @@ Requires JDK 25.
 
 ```bash
 ./gradlew build                 # jar -> build/libs/, also runs the unit tests
+./gradlew build -Pmc=26.1       # the same for another Minecraft line (26.1, 26.2, 26.3; see versions/)
 ./gradlew runClient             # development client
 ./gradlew runClientGameTest     # boots a real client, renders every preset, style, feature and menu tab, saves screenshots
 ```
 
-Every push runs CI: build, unit tests (every style × motion × colour combination must produce finite geometry), then an in-game test in a throwaway **singleplayer** world (never a server) that captures the screenshots in this README.
+Each Minecraft line is described by one small file in [`versions/`](versions/README.md); the few classes whose Minecraft API differs between lines live in `src/compat/`.
+
+Every push runs CI for every 26.x release (26.1, 26.1.1, 26.1.2, 26.2, 26.3) and on the oldest supported Fabric Loader: build, unit tests (every style × motion × colour combination must produce finite geometry), then an in-game test in a throwaway **singleplayer** world (never a server) that captures the screenshots in this README.
 
 ## Credits
 
 - [Poppins](https://github.com/itfoundry/Poppins) by Indian Type Foundry, SIL Open Font License 1.1 (`licenses/Poppins-OFL.txt` inside the jar).
 - Built-in emblems are generated by `scripts/make_emblems.py` and ship under this project's MIT license.
+- Formerly called *Angelic Halo*. Your settings, saved looks, images and share codes from that name carry over automatically.
 
 <sub>Not affiliated with Mojang, Microsoft or Hypixel. Minecraft is a trademark of Mojang AB.</sub>

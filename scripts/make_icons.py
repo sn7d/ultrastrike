@@ -4,7 +4,7 @@ import math
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFilter
 
-OUT = Path(__file__).resolve().parent.parent / "src/main/resources/assets/angelichalo/textures/icon"
+OUT = Path(__file__).resolve().parent.parent / "src/main/resources/assets/aureole/textures/icon"
 S = 512
 C = S / 2
 

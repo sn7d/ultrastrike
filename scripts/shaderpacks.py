@@ -11,7 +11,7 @@ import urllib.request
 from pathlib import Path
 
 API = "https://api.modrinth.com/v2"
-UA = {"User-Agent": "angelic-halo-ci (github.com/sn7d/angelic-halo)"}
+UA = {"User-Agent": "aureole-ci (github.com/sn7d/aureole)"}
 
 # the best-known packs on Modrinth
 PACKS = [

@@ -58,7 +58,7 @@ jobs:
       - uses: actions/upload-artifact@v7
         if: matrix.release
         with:
-          name: angelic-halo-${{ matrix.line }}
+          name: aureole-${{ matrix.line }}
           path: build/libs/
 
       - uses: actions/upload-artifact@v7

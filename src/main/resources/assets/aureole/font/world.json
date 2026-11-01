@@ -1,0 +1,22 @@
+{
+	"providers": [
+		{
+			"type": "ttf",
+			"file": "aureole:poppins_semibold.ttf",
+			"size": 9.0,
+			"oversample": 8.0,
+			"shift": [
+				0.0,
+				0.5
+			]
+		},
+		{
+			"type": "reference",
+			"id": "minecraft:include/default"
+		},
+		{
+			"type": "reference",
+			"id": "minecraft:include/unifont"
+		}
+	]
+}
