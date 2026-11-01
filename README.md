@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="docs/images/hero.png" alt="A player wearing a glowing golden crown-halo with drifting light motes in a SkyBlock-style village square with a fountain and market stalls" width="100%">
+<img src="docs/images/hero.png" alt="A player in third person wearing a glowing golden crown-halo under a cherry-blossom arch at sunset" width="100%">
 
 # Angelic Halo
 
@@ -27,7 +27,7 @@ Built for Minecraft 26.2 on Fabric. Nothing is sent to the server; only you see 
 <td width="50%"><img src="docs/images/scan.png" alt="A cyan and violet ring scanning up a player's body with a rainbow trail and sparkles"></td>
 </tr>
 <tr>
-<td align="center"><b>Classic</b>: the thin soft-red ring at your feet, drawn through walls, just like the reference clip. The default look.</td>
+<td align="center"><b>Classic</b>: the thin soft-red ring, 3 blocks out at your feet, drawn through walls. The default look.</td>
 <td align="center"><b>Scan + trail</b>: sweeps feet to head and leaves a fading trail you can colour separately.</td>
 </tr>
 <tr>
